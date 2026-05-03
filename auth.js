@@ -526,6 +526,32 @@ const SQ = (() => {
       `${SUPABASE_URL}/auth/v1/authorize?provider=${encodeURIComponent(provider)}&redirect_to=${redirectTo}`;
   }
 
+  /**
+   * Sends Supabase password-recovery email. User must open the link and set
+   * a new password on update-password.html (add that URL under Auth → Redirect URLs).
+   */
+  async function requestPasswordReset(email, redirectTo) {
+    const trimmed = String(email || '').trim().toLowerCase();
+    if (!trimmed) throw new Error('Email is required');
+    const target =
+      redirectTo ||
+      new URL('update-password.html', window.location.href).href;
+    const url = new URL(`${SUPABASE_URL}/auth/v1/recover`);
+    url.searchParams.set('redirect_to', target);
+    const res = await fetch(url.toString(), {
+      method: 'POST',
+      headers: { apikey: SUPABASE_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: trimmed }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(
+        data.error_description || data.msg || data.message || 'Could not send reset email'
+      );
+    }
+    return true;
+  }
+
   return {
     setSession: saveSession,
     saveSession,
@@ -550,6 +576,7 @@ const SQ = (() => {
     deleteUserSavedBySlug,
     signOut,
     signInWithOAuth,
+    requestPasswordReset,
     _debug: {
       enabled: AUTH_DEBUG,
       devBypassEnabled: DEV_AUTH_BYPASS,

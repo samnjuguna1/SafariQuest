@@ -162,36 +162,16 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ── Forgot password ── */
   const forgotLink = document.querySelector('.forgot-link');
   if (forgotLink) {
-    forgotLink.addEventListener('click', async function (e) {
+    forgotLink.addEventListener('click', function (e) {
       e.preventDefault();
-      const email = emailInput.value.trim();
+      const email = emailInput.value.trim().toLowerCase();
       if (!email || !isValidEmail(email)) {
         showToast('Enter your email above first, then click Forgot password.', 'error', 4000);
         emailInput.focus();
         return;
       }
-      
-      setLoading(true);
-      try {
-        // Check if email exists in public.profiles table
-        const res = await fetch(`${window.SQ_PUBLIC.url}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id`, {
-          headers: { 'apikey': window.SQ_PUBLIC.anon }
-        });
-        
-        if (res.ok) {
-          const rows = await res.json();
-          if (!rows || rows.length === 0) {
-            setLoading(false);
-            showToast('Account not found in our database. Please check your email or register.', 'error', 4000);
-            return;
-          }
-        }
-      } catch (err) {
-        console.warn('Network error during email check', err);
-      }
-      
-      setLoading(false);
-      setTimeout(() => { window.location.href = 'forgot-password.html'; }, 500);
+      window.location.href =
+        'forgot-password.html?email=' + encodeURIComponent(email);
     });
   }
 
