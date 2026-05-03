@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disable Dev Auth - SafariQuest</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #1a202c;
+    }
+    p {
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .status.enabled {
+      background: #fed7d7;
+      color: #c53030;
+    }
+    .status.disabled {
+      background: #c6f6d5;
+      color: #2f855a;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #2d3748;
+    }
+    .btn-secondary:hover {
+      background: #cbd5e0;
+    }
+    .info {
+      background: #ebf8ff;
+      border-left: 4px solid #3182ce;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #2c5282;
+    }
+    .code {
+      background: #2d3748;
+      color: #68d391;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔧 Dev Authentication Manager</h1>
+    <p>Manage your development authentication bypass setting for SafariQuest.</p>
+    
+    <div class="status" id="status">
+      Checking status...
+    </div>
+
+    <button class="btn-primary" id="disableBtn" onclick="disableDevAuth()">
+      Disable Dev Bypass (Enable Real Auth)
+    </button>
+
+    <button class="btn-secondary" id="enableBtn" onclick="enableDevAuth()">
+      Enable Dev Bypass (For Development)
+    </button>
+
+    <button class="btn-secondary" onclick="checkStatus()">
+      🔄 Refresh Status
+    </button>
+
+    <div class="info">
+      <strong>ℹ️ What is Dev Bypass?</strong><br>
+      Dev bypass allows you to test the app without a real Supabase account. However, M-Pesa payments and saved bookings require real authentication.
+      <br><br>
+      <strong>After disabling:</strong>
+      <ol style="margin-left: 20px; margin-top: 10px;">
+        <li>Go to the main site</li>
+        <li>Click "Sign Up" or "Login"</li>
+        <li>Create a real account</li>
+        <li>You can now use M-Pesa payments</li>
+      </ol>
+    </div>
+
+    <div class="info" style="background: #fffaf0; border-left-color: #dd6b20; color: #7c2d12; margin-top: 10px;">
+      <strong>⚠️ Current Session Info:</strong>
+      <div class="code" id="sessionInfo">Loading...</div>
+    </div>
+  </div>
+
+  <script>
+    function checkStatus() {
+      const devBypassEnabled = localStorage.getItem('sq_enable_dev_auth_bypass') === '1';
+      const statusEl = document.getElementById('status');
+      
+      if (devBypassEnabled) {
+        statusEl.className = 'status enabled';
+        statusEl.innerHTML = '🔴 Dev Bypass is <strong>ENABLED</strong><br>M-Pesa payments will not work';
+      } else {
+        statusEl.className = 'status disabled';
+        statusEl.innerHTML = '✅ Dev Bypass is <strong>DISABLED</strong><br>Real authentication is active';
+      }
+
+      // Show session info
+      let sessionInfo = 'No session found';
+      try {
+        const session = JSON.parse(localStorage.getItem('sq_session') || 'null');
+        if (session) {
+          sessionInfo = `Email: ${session.user?.email || 'N/A'}\n`;
+          sessionInfo += `User ID: ${session.user?.id || 'N/A'}\n`;
+          sessionInfo += `Dev Auth: ${session.is_dev_auth ? 'YES ❌' : 'NO ✅'}\n`;
+          sessionInfo += `Has Token: ${session.access_token ? 'YES' : 'NO'}`;
+        }
+      } catch (e) {
+        sessionInfo = 'Error reading session';
+      }
+      document.getElementById('sessionInfo').textContent = sessionInfo;
+    }
+
+    function disableDevAuth() {
+      localStorage.removeItem('sq_enable_dev_auth_bypass');
+      localStorage.removeItem('sq_session'); // Clear dev session
+      localStorage.removeItem('sq_dev_users'); // Clear dev users
+      alert('✅ Dev bypass disabled!\n\nYou will now need to:\n1. Go to the main site\n2. Sign up with a real account\n3. Then you can use M-Pesa payments');
+      checkStatus();
+    }
+
+    function enableDevAuth() {
+      localStorage.setItem('sq_enable_dev_auth_bypass', '1');
+      alert('⚠️ Dev bypass enabled!\n\nYou can now test without real auth, but M-Pesa payments will not work.');
+      checkStatus();
+    }
+
+    // Check status on load
+    checkStatus();
+  </script>
+</body>
+</html>

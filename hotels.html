@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hotels & Accommodation — SafariQuest Kenya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --green:#1a3c2e; --orange:#E8732A; --light:#f7f5f0; --white:#fff; --text:#333; --muted:#777; }
+    body { font-family:'DM Sans',sans-serif; color:var(--text); background:var(--light); }
+
+    .hero { position:relative;height:320px;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center; }
+    .hero-bg { position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1400&q=85') center/cover no-repeat;filter:brightness(.4); }
+    .hero-content { position:relative;z-index:2;color:var(--white);padding:0 20px; }
+    .hero-badge { display:inline-block;background:var(--orange);color:var(--white);padding:5px 16px;border-radius:20px;font-size:.8rem;font-weight:700;letter-spacing:.04em;margin-bottom:14px; }
+    .hero-title { font-family:'Playfair Display',serif;font-size:2.6rem;margin-bottom:10px; }
+    .hero-sub { font-size:1rem;opacity:.85;max-width:520px; }
+
+    .filter-bar { max-width:1200px;margin:30px auto 0;padding:0 24px;display:flex;gap:12px;flex-wrap:wrap; }
+    .filter-select { padding:9px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:.88rem;font-family:inherit;color:var(--text);background:var(--white);cursor:pointer; }
+    .filter-select:focus { outline:none;border-color:var(--orange); }
+    .btn-clear { padding:9px 18px;background:transparent;border:2px solid #ccc;border-radius:10px;font-size:.85rem;cursor:pointer;color:var(--muted);font-family:inherit; }
+    .btn-clear:hover { border-color:var(--orange);color:var(--orange); }
+
+    .pills { max-width:1200px;margin:16px auto 0;padding:0 24px;display:flex;gap:10px;flex-wrap:wrap; }
+    .pill { padding:7px 18px;border:2px solid #e0e0e0;border-radius:20px;font-size:.83rem;cursor:pointer;background:var(--white);font-family:inherit;font-weight:500;transition:all .2s; }
+    .pill.active,.pill:hover { background:var(--orange);border-color:var(--orange);color:var(--white); }
+
+    .main-content { max-width:1200px;margin:32px auto 60px;padding:0 24px; }
+    .section-title { font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--green);margin-bottom:24px; }
+    .hotels-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px; }
+
+    .hotel-card { background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.07);transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column; }
+    .hotel-card:hover { transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,.13); }
+    .hotel-img { width:100%;height:200px;object-fit:cover; }
+    .hotel-body { padding:18px;flex:1;display:flex;flex-direction:column; }
+    .hotel-top { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px; }
+    .hotel-name { font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--green);line-height:1.3; }
+    .hotel-stars { color:#f59e0b;font-size:.9rem; }
+    .hotel-loc { font-size:.82rem;color:var(--muted);margin-bottom:10px; }
+    .hotel-desc { font-size:.85rem;color:var(--muted);line-height:1.55;margin-bottom:14px;flex:1; }
+    .hotel-amenities { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px; }
+    .amenity { font-size:.73rem;background:#f0f9f4;color:#2e7d32;padding:3px 8px;border-radius:6px; }
+    .hotel-footer { display:flex;justify-content:space-between;align-items:center; }
+    .hotel-price { font-weight:700;color:var(--green);font-size:.95rem; }
+    .hotel-price span { font-size:.72rem;color:var(--muted);font-weight:400; }
+    .btn-book-hotel { padding:8px 18px;background:var(--orange);color:var(--white);border:none;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s; }
+    .btn-book-hotel:hover { background:#c9621e; }
+
+    .empty-state { text-align:center;padding:60px 20px;color:var(--muted); }
+    .empty-state .icon { font-size:3.5rem;margin-bottom:12px; }
+
+    @media(max-width:768px){ .hero-title{font-size:1.8rem;} }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
+</head>
+<body data-nav-active="hotels">
+
+<div id="sq-nav-root"></div>
+
+
+
+
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🏨 Verified Accommodations</div>
+    <h1 class="hero-title">Hotels & Lodges in Kenya</h1>
+    <p class="hero-sub">From luxury safari lodges to budget-friendly guesthouses — find your perfect stay</p>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <select class="filter-select" id="cityFilter" onchange="applyFilters()">
+    <option value="all">All Cities</option>
+    <option value="Nairobi">Nairobi</option>
+    <option value="Mombasa">Mombasa</option>
+    <option value="Maasai Mara">Maasai Mara</option>
+    <option value="Diani">Diani</option>
+    <option value="Amboseli">Amboseli</option>
+    <option value="Nakuru">Nakuru</option>
+    <option value="Samburu">Samburu</option>
+  </select>
+  <select class="filter-select" id="typeFilter" onchange="applyFilters()">
+    <option value="all">All Types</option>
+    <option value="Luxury">Luxury</option>
+    <option value="Lodge">Safari Lodge</option>
+    <option value="Beach">Beach Resort</option>
+    <option value="Budget">Budget</option>
+    <option value="Boutique">Boutique</option>
+  </select>
+  <select class="filter-select" id="starFilter" onchange="applyFilters()">
+    <option value="all">All Star Ratings</option>
+    <option value="5">5 Stars</option>
+    <option value="4">4 Stars</option>
+    <option value="3">3 Stars</option>
+  </select>
+  <button class="btn-clear" onclick="clearFilters()">Clear Filters</button>
+</div>
+
+<div class="pills" id="pillsRow">
+  <button class="pill active" onclick="setPill(this,'all')">All Hotels</button>
+  <button class="pill" onclick="setPill(this,'Luxury')">⭐ Luxury</button>
+  <button class="pill" onclick="setPill(this,'Lodge')">🦁 Safari Lodges</button>
+  <button class="pill" onclick="setPill(this,'Beach')">🏖️ Beach Resorts</button>
+  <button class="pill" onclick="setPill(this,'Budget')">💰 Budget</button>
+  <button class="pill" onclick="setPill(this,'Boutique')">🌿 Boutique</button>
+</div>
+
+<div class="main-content">
+  <h2 class="section-title" id="gridTitle">All Hotels & Accommodation</h2>
+  <div class="hotels-grid" id="hotelsGrid"></div>
+</div>
+
+<!-- BOOKING MODAL - Removed, now redirects to booking.html -->
+
+
+
+<script>
+var HOTELS = [
+  { id:'hemingways-nairobi', name:'Hemingways Nairobi', city:'Nairobi', type:'Luxury', stars:5, pricePerNight:32000, description:'A stunning all-suite luxury hotel in the leafy suburb of Karen, offering butler service, spa, and panoramic views of the Ngong Hills.', amenities:['Free WiFi','Spa','Pool','Butler Service','Restaurant'], image:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80' },
+  { id:'fairmont-norfolk', name:'Fairmont The Norfolk', city:'Nairobi', type:'Luxury', stars:5, pricePerNight:28000, description:'Nairobi\'s most historic hotel, open since 1904. Colonial grandeur meets modern luxury in the heart of the city, steps from museums and parks.', amenities:['Free WiFi','Pool','Spa','Bar','Gardens'], image:'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80' },
+  { id:'sarova-mara', name:'Sarova Mara Game Camp', city:'Maasai Mara', type:'Lodge', stars:4, pricePerNight:45000, description:'A luxury tented camp set in the heart of the Maasai Mara with full board, game drives, and panoramic savannah views from every tent.', amenities:['Full Board','Game Drives','Swimming Pool','Wi-Fi','Bush Dinners'], image:'https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=600&q=80' },
+  { id:'ol-tukai-amboseli', name:'Ol Tukai Lodge', city:'Amboseli', type:'Lodge', stars:4, pricePerNight:38000, description:'Perfectly positioned at the foot of Mount Kilimanjaro, Ol Tukai offers breathtaking elephant views from the open-sided dining area and infinity pool.', amenities:['Full Board','Pool','Game Drives','Wi-Fi','Bar'], image:'https://images.unsplash.com/photo-1612099197788-bde7f41d9710?w=600&q=80' },
+  { id:'diani-reef', name:'Diani Reef Beach Resort & Spa', city:'Diani', type:'Beach', stars:5, pricePerNight:25000, description:'The ultimate Indian Ocean beach resort with pristine white sand beach, multiple pools, world-class spa, and a full range of water sports.', amenities:['Beachfront','Spa','5 Pools','Water Sports','Kids Club'], image:'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80' },
+  { id:'baobab-beach', name:'Baobab Beach Resort & Spa', city:'Diani', type:'Beach', stars:4, pricePerNight:18000, description:'Set amongst ancient baobab trees on Diani Beach, this resort blends natural beauty with modern amenities and exceptional marine activities.', amenities:['Beachfront','Pool','Diving Centre','Wi-Fi','Restaurant'], image:'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80' },
+  { id:'serena-mombasa', name:'Serena Beach Resort & Spa', city:'Mombasa', type:'Beach', stars:5, pricePerNight:22000, description:'A Swahili-inspired luxury beach resort on Shanzu Beach, Mombasa, featuring stunning architecture, private beach, and authentic coastal cuisine.', amenities:['Private Beach','Spa','Pool','Restaurant','Cultural Tours'], image:'https://images.unsplash.com/photo-1510784722466-f2aa240d9562?w=600&q=80' },
+  { id:'nairobi-serena', name:'Serena Hotel Nairobi', city:'Nairobi', type:'Luxury', stars:5, pricePerNight:26000, description:'Set within beautifully landscaped gardens adjacent to Uhuru Park, Nairobi Serena is a city oasis blending African heritage with five-star luxury.', amenities:['Pool','Spa','Wi-Fi','Business Centre','Multiple Restaurants'], image:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80' },
+  { id:'sarova-nakuru', name:'Sarova Lion Hill Game Lodge', city:'Nakuru', type:'Lodge', stars:4, pricePerNight:20000, description:'Perched on a hill overlooking Lake Nakuru National Park, this lodge offers spectacular flamingo and rhino viewing from its elevated terrace.', amenities:['Full Board','Game Drives','Pool','Wi-Fi','Flamingo Views'], image:'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&q=80' },
+  { id:'samburu-serian', name:'Serian Samburu Camp', city:'Samburu', type:'Lodge', stars:5, pricePerNight:55000, description:'An intimate luxury camp on the Ewaso Ng\'iro riverbank in Samburu. Six private tents with plunge pools, superb guiding, and unmatched exclusivity.', amenities:['Private Plunge Pool','Game Drives','Full Board','River Views','Expert Guides'], image:'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&q=80' },
+  { id:'urban-eatery-nairobi', name:'The Boma Nairobi', city:'Nairobi', type:'Boutique', stars:4, pricePerNight:12000, description:'A modern boutique hotel in the heart of Nairobi\'s Upper Hill business district, offering stylish rooms, rooftop bar, and exceptional service.', amenities:['Rooftop Bar','Pool','Wi-Fi','Gym','Business Centre'], image:'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80' },
+  { id:'backpackers-nairobi', name:'Wildebeest Eco Camp', city:'Nairobi', type:'Budget', stars:3, pricePerNight:3500, description:'A popular backpacker favourite in Karen, Nairobi — eco-friendly bandas, great communal areas, and the best budget breakfast in the city.', amenities:['Free WiFi','Communal Kitchen','Garden','Bar','Safari Bookings'], image:'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80' }
+];
+
+var filtered = HOTELS.slice();
+var currentHotel = null;
+
+function stars(n) {
+  return '★'.repeat(n) + '☆'.repeat(5-n);
+}
+
+function renderGrid() {
+  var grid = document.getElementById('hotelsGrid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">🏨</div><p>No hotels match your filters. Try clearing them.</p></div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(function(h) {
+    return '<div class="hotel-card">' +
+      '<img class="hotel-img" src="' + h.image + '" alt="' + h.name + '" loading="lazy">' +
+      '<div class="hotel-body">' +
+        '<div class="hotel-top">' +
+          '<div class="hotel-name">' + h.name + '</div>' +
+          '<div class="hotel-stars">' + stars(h.stars) + '</div>' +
+        '</div>' +
+        '<div class="hotel-loc">📍 ' + h.city + ' &nbsp;·&nbsp; ' + h.type + '</div>' +
+        '<div class="hotel-desc">' + h.description + '</div>' +
+        '<div class="hotel-amenities">' + h.amenities.map(function(a){ return '<span class="amenity">✓ ' + a + '</span>'; }).join('') + '</div>' +
+        '<div class="hotel-footer">' +
+          '<div class="hotel-price">KSh ' + h.pricePerNight.toLocaleString() + ' <span>/ night</span></div>' +
+          '<button class="btn-book-hotel" onclick="openModal(\'' + h.id + '\')">Book Now</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function applyFilters() {
+  var city  = document.getElementById('cityFilter').value;
+  var type  = document.getElementById('typeFilter').value;
+  var stars_f = document.getElementById('starFilter').value;
+  filtered = HOTELS.filter(function(h) {
+    return (city    === 'all' || h.city  === city)  &&
+           (type    === 'all' || h.type  === type)  &&
+           (stars_f === 'all' || String(h.stars) === stars_f);
+  });
+  var label = [];
+  if (city    !== 'all') label.push(city);
+  if (type    !== 'all') label.push(type);
+  if (stars_f !== 'all') label.push(stars_f + '-Star');
+  document.getElementById('gridTitle').textContent = label.length ? label.join(' · ') + ' Hotels' : 'All Hotels & Accommodation';
+  renderGrid();
+}
+
+function setPill(el, type) {
+  document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('typeFilter').value = type;
+  applyFilters();
+}
+
+function clearFilters() {
+  ['cityFilter','typeFilter','starFilter'].forEach(function(id){ document.getElementById(id).value = 'all'; });
+  document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelector('.pill').classList.add('active');
+  filtered = HOTELS.slice();
+  document.getElementById('gridTitle').textContent = 'All Hotels & Accommodation';
+  renderGrid();
+}
+
+function openModal(id) {
+  currentHotel = HOTELS.find(function(h){ return h.id === id; });
+  if (!currentHotel) return;
+  // Redirect to booking page with hotel slug
+  window.location.href = 'booking.html?destination=' + encodeURIComponent(id);
+}
+
+renderGrid();
+</script>
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

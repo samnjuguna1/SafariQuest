@@ -1,0 +1,446 @@
+/* ============================================================
+   MPESA MODAL — mpesa-modal.css
+   Matches SafariQuest dark theme. Link after styles.css.
+   ============================================================ */
+
+/* ── OVERLAY ── */
+.mpesa-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mpesa-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── MODAL CARD ── */
+.mpesa-modal {
+  background: #141a14;
+  border: 1px solid rgba(200, 168, 75, 0.25);
+  border-radius: 20px;
+  padding: 0;
+  max-width: 440px;
+  width: 100%;
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(200, 168, 75, 0.1),
+    0 32px 80px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  transform: translateY(24px) scale(0.97);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mpesa-overlay.active .mpesa-modal {
+  transform: translateY(0) scale(1);
+}
+
+/* ── MODAL HEADER ── */
+.mpesa-header {
+  background: linear-gradient(135deg, #0f1a0f 0%, #1a2e1a 100%);
+  border-bottom: 1px solid rgba(200, 168, 75, 0.2);
+  padding: 24px 28px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mpesa-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mpesa-logo-wrap {
+  width: 48px;
+  height: 48px;
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  flex-shrink: 0;
+}
+
+.mpesa-logo-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mpesa-header-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #c8a84b;
+  margin: 0 0 2px;
+  line-height: 1.2;
+}
+
+.mpesa-header-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  color: #6b8f6b;
+  margin: 0;
+}
+
+.mpesa-close-btn {
+  width: 34px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: #999;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.mpesa-close-btn:hover {
+  background: rgba(200, 168, 75, 0.15);
+  color: #c8a84b;
+}
+
+/* ── MODAL BODY ── */
+.mpesa-body {
+  padding: 28px;
+}
+
+/* ── BOOKING INFO BANNER ── */
+.mpesa-booking-banner {
+  background: rgba(42, 158, 92, 0.12);
+  border: 1px solid rgba(42, 158, 92, 0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.mpesa-booking-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.mpesa-booking-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c8a84b;
+  display: block;
+  line-height: 1.3;
+}
+
+.mpesa-booking-amount {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #6b8f6b;
+}
+
+/* ── FORM FIELDS ── */
+.mpesa-field {
+  margin-bottom: 18px;
+}
+
+.mpesa-label {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a9a7a;
+  margin-bottom: 7px;
+}
+
+.mpesa-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.97rem;
+  color: #e8e8e8;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  box-sizing: border-box;
+}
+
+.mpesa-input:focus {
+  border-color: rgba(200, 168, 75, 0.5);
+  background: rgba(200, 168, 75, 0.04);
+}
+
+.mpesa-input[readonly] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.mpesa-hint {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  color: #556655;
+  margin-top: 5px;
+}
+
+/* ── PAY BUTTON ── */
+.mpesa-pay-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 15px;
+  background: linear-gradient(135deg, #c8a84b 0%, #a8882b 100%);
+  border: none;
+  border-radius: 12px;
+  color: #0c0f0c;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: opacity 0.2s, transform 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.mpesa-pay-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.mpesa-pay-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.mpesa-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(12, 15, 12, 0.3);
+  border-top-color: #0c0f0c;
+  border-radius: 50%;
+  animation: mpesaSpin 0.7s linear infinite;
+  display: none;
+}
+
+@keyframes mpesaSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── STEP 2: WAITING ── */
+.mpesa-waiting {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.mpesa-phone-icon {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: 16px;
+  animation: mpesaPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes mpesaPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.mpesa-waiting h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.3rem;
+  color: #e8d8a0;
+  margin: 0 0 10px;
+}
+
+.mpesa-waiting p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #7a9a7a;
+  margin: 0 0 8px;
+  line-height: 1.6;
+}
+
+.mpesa-waiting strong {
+  color: #c8a84b;
+}
+
+.mpesa-progress-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  margin: 20px 0 10px;
+  overflow: hidden;
+}
+
+.mpesa-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2a9e5c, #c8a84b);
+  border-radius: 4px;
+  width: 100%;
+  animation: mpesaDrain 60s linear forwards;
+}
+
+@keyframes mpesaDrain {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.mpesa-countdown {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #556655;
+}
+
+/* ── STEP 3: SUCCESS ── */
+.mpesa-result {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.mpesa-result-icon {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.mpesa-result h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.3rem;
+  color: #e8d8a0;
+  margin: 0 0 10px;
+}
+
+.mpesa-result p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #7a9a7a;
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+.mpesa-receipt-box {
+  background: rgba(42, 158, 92, 0.1);
+  border: 1px solid rgba(42, 158, 92, 0.3);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mpesa-receipt-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b8f6b;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.mpesa-receipt-num {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2a9e5c;
+  letter-spacing: 0.05em;
+}
+
+.mpesa-done-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #2a9e5c 0%, #1e7a46 100%);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.97rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.mpesa-done-btn:hover { opacity: 0.88; }
+
+/* ── STEP 4: FAILED ── */
+.mpesa-fail-reason {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: #e07070;
+  background: rgba(224, 112, 112, 0.1);
+  border: 1px solid rgba(224, 112, 112, 0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.mpesa-retry-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #c8a84b 0%, #a8882b 100%);
+  border: none;
+  border-radius: 12px;
+  color: #0c0f0c;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.97rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-bottom: 10px;
+}
+
+.mpesa-retry-btn:hover { opacity: 0.88; }
+
+.mpesa-cancel-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #7a9a7a;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.mpesa-cancel-btn:hover {
+  border-color: rgba(200, 168, 75, 0.3);
+  color: #c8a84b;
+}
+
+/* ── STEP VISIBILITY ── */
+.mpesa-step { display: none; }
+.mpesa-step.active { display: block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+  .mpesa-body { padding: 20px; }
+  .mpesa-header { padding: 18px 20px 16px; }
+}

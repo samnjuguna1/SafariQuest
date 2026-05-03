@@ -1,0 +1,127 @@
+<!--
+  ══════════════════════════════════════════════════════════════════════════════
+  SafariQuest — tour-detail.html  (EXAMPLE / REFERENCE)
+  Shows exactly how to:
+    1. Gate the "Book Now" button behind requireAuth()
+    2. Capture the user's form selections before login
+    3. Restore those selections after login (readResumedData)
+  ══════════════════════════════════════════════════════════════════════════════
+  Replace the "YOUR CONTENT HERE" sections with your real tour detail markup.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tour — SafariQuest</title>
+
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/js/auth-ui.css" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-nav-active="">
+
+<div id="sq-nav-root"></div>
+
+
+
+  <!-- ── Your existing header / nav ── -->
+  <!-- auth.js will swap login/register buttons for the avatar menu automatically -->
+
+  <!-- ── Tour detail content (your existing markup) ── -->
+  <main class="tour-detail">
+
+    <h1 id="tour-name">Maasai Mara Safari — 3 Days</h1>
+
+    <!-- Booking form — visible to ALL users (no login required to browse) -->
+    <section class="booking-card">
+      <h2>Book This Tour</h2>
+
+      <div class="form-field">
+        <label for="tour-date">Departure Date</label>
+        <input id="tour-date" type="date" />
+      </div>
+
+      <div class="form-field">
+        <label for="tour-travelers">Number of Travellers</label>
+        <select id="tour-travelers">
+          <option value="1">1 Traveller</option>
+          <option value="2">2 Travellers</option>
+          <option value="3">3 Travellers</option>
+          <option value="4">4+ Travellers</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="tour-room">Room Type</label>
+        <select id="tour-room">
+          <option value="standard">Standard</option>
+          <option value="deluxe">Deluxe</option>
+          <option value="suite">Suite</option>
+        </select>
+      </div>
+
+      <!-- This button is visible to everyone; login fires only on click -->
+      <button id="book-now-btn" class="btn-primary">Book Now</button>
+    </section>
+
+  </main>
+
+  <!-- ── Login modal (paste on EVERY page) ── -->
+  <!-- Copy the entire block from login-modal.html here -->
+  <!-- [login-modal.html snippet goes here] -->
+
+  <script src="/js/auth.js"></script>
+  <script>
+    // ── 1. Restore pre-login selections after redirect back ────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      const resumed = window.readResumedData();
+      if (resumed?.data) {
+        const { tourId, date, travelers, room } = resumed.data;
+        if (date)      document.getElementById('tour-date').value      = date;
+        if (travelers) document.getElementById('tour-travelers').value = travelers;
+        if (room)      document.getElementById('tour-room').value      = room;
+
+        // If the user was already at payment step, send them straight there
+        if (resumed.action === 'pay') {
+          goToPayment(resumed.data);
+        }
+      }
+    });
+
+    // ── 2. Gate booking on auth ────────────────────────────────────────────
+    document.getElementById('book-now-btn').addEventListener('click', () => {
+      // Capture current form state
+      const selection = {
+        tourId:    'maasai-mara-3day',      // ideally from a data-* attr or JS var
+        tourName:  document.getElementById('tour-name')?.textContent,
+        date:      document.getElementById('tour-date').value,
+        travelers: document.getElementById('tour-travelers').value,
+        room:      document.getElementById('tour-room').value,
+      };
+
+      // requireAuth will:
+      //   a) run proceedFn immediately if logged in, OR
+      //   b) save intent + show modal / redirect if not logged in
+      window.requireAuth(
+        { action: 'book', data: selection },
+        (user) => {
+          // User IS logged in — proceed to booking confirmation / payment
+          goToPayment(selection);
+        }
+      );
+    });
+
+    function goToPayment(data) {
+      // Build the payment page URL and carry the data along
+      const params = new URLSearchParams({ sq_resume: btoa(JSON.stringify(data)), sq_action: 'pay' });
+      window.location.href = `/payment.html?${params}`;
+    }
+  </script>
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

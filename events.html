@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Events — SafariQuest Kenya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #1a3c2e; --orange: #E8732A; --gold: #C9973A;
+      --light: #f7f5f0; --white: #fff; --text: #333; --muted: #777;
+    }
+    body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--light); }
+
+    /* HERO */
+    .hero { position: relative; height: 320px; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .hero-bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1531058020387-3be344556be6?w=1400&q=85') center/cover no-repeat; filter: brightness(.45); }
+    .hero-content { position: relative; z-index: 2; color: var(--white); padding: 0 20px; }
+    .hero-badge { display: inline-block; background: var(--orange); color: var(--white); padding: 5px 16px; border-radius: 20px; font-size: .8rem; font-weight: 700; letter-spacing: .04em; margin-bottom: 14px; }
+    .hero-title { font-family: 'Playfair Display', serif; font-size: 2.6rem; margin-bottom: 10px; }
+    .hero-sub { font-size: 1rem; opacity: .85; max-width: 520px; }
+
+    /* FILTERS */
+    .filter-bar { max-width: 1200px; margin: 30px auto 0; padding: 0 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .filter-select { padding: 9px 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: .88rem; font-family: inherit; color: var(--text); background: var(--white); cursor: pointer; }
+    .filter-select:focus { outline: none; border-color: var(--orange); }
+    .btn-clear { padding: 9px 18px; background: transparent; border: 2px solid #ccc; border-radius: 10px; font-size: .85rem; cursor: pointer; color: var(--muted); font-family: inherit; }
+    .btn-clear:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* PILLS */
+    .pills { max-width: 1200px; margin: 16px auto 0; padding: 0 24px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill { padding: 7px 18px; border: 2px solid #e0e0e0; border-radius: 20px; font-size: .83rem; cursor: pointer; background: var(--white); font-family: inherit; font-weight: 500; transition: all .2s; }
+    .pill.active, .pill:hover { background: var(--orange); border-color: var(--orange); color: var(--white); }
+
+    /* GRID */
+    .main-content { max-width: 1200px; margin: 32px auto 60px; padding: 0 24px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--green); margin-bottom: 24px; }
+    .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+    .event-card { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.07); transition: transform .25s, box-shadow .25s; display: flex; flex-direction: column; }
+    .event-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,.13); }
+    .event-img { width: 100%; height: 190px; object-fit: cover; }
+    .event-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+    .event-cat { display: inline-block; background: var(--orange)22; color: var(--orange); padding: 3px 10px; border-radius: 20px; font-size: .73rem; font-weight: 700; margin-bottom: 8px; }
+    .event-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--green); margin-bottom: 8px; }
+    .event-desc { font-size: .85rem; color: var(--muted); line-height: 1.55; margin-bottom: 14px; flex: 1; }
+    .event-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .event-meta span { font-size: .78rem; color: #555; background: #f0f0f0; padding: 3px 8px; border-radius: 6px; }
+    .event-footer { display: flex; justify-content: space-between; align-items: center; }
+    .event-price { font-weight: 700; color: var(--green); font-size: .95rem; }
+    .btn-book-event { padding: 8px 18px; background: var(--orange); color: var(--white); border: none; border-radius: 8px; font-size: .83rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .2s; }
+    .btn-book-event:hover { background: #c9621e; }
+
+    /* EMPTY */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty-state .icon { font-size: 3.5rem; margin-bottom: 12px; }
+
+    /* BOOKING MODAL */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+    .modal-backdrop.open { display: flex; }
+    .modal { background: var(--white); border-radius: 20px; max-width: 400px; width: 100%; padding: 28px; animation: slideUp .3s ease; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    .modal h3 { font-family: 'Playfair Display', serif; color: var(--green); margin-bottom: 16px; font-size: 1.3rem; }
+    .modal label { display: block; font-size: .82rem; font-weight: 600; color: #555; margin-bottom: 4px; margin-top: 12px; }
+    .modal input, .modal select { width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 9px; font-size: .9rem; font-family: inherit; }
+    .modal input:focus, .modal select:focus { outline: none; border-color: var(--orange); }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-confirm { flex: 1; padding: 12px; background: var(--orange); color: var(--white); border: none; border-radius: 10px; font-size: .9rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn-cancel  { flex: 1; padding: 12px; background: #f0f0f0; color: #555; border: none; border-radius: 10px; font-size: .9rem; cursor: pointer; font-family: inherit; }
+    .mpesa-box { background: #e8f5e9; border-radius: 10px; padding: 14px; margin-top: 14px; display: none; text-align: center; }
+    .mpesa-box .mpesa-title { font-weight: 700; color: #2e7d32; margin-bottom: 4px; }
+    .mpesa-box .mpesa-sub { font-size: .8rem; color: #555; }
+    .mpesa-box .tx-id { font-size: 1.1rem; font-weight: 800; letter-spacing: 2px; color: #1b5e20; margin-top: 8px; }
+
+    /* FOOTER */
+    @media (max-width: 768px) {
+      .hero-title { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body data-nav-active="events">
+
+<div id="sq-nav-root"></div>
+
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🎉 Kenya Events Calendar</div>
+    <h1 class="hero-title">Discover Events & Festivals</h1>
+    <p class="hero-sub">From world-famous wildlife spectacles to vibrant cultural festivals across Kenya</p>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <select class="filter-select" id="catFilter" onchange="applyFilters()">
+    <option value="all">All Categories</option>
+    <option value="Wildlife">Wildlife</option>
+    <option value="Cultural">Cultural</option>
+    <option value="Sports">Sports</option>
+    <option value="Music">Music & Arts</option>
+    <option value="Food">Food & Drink</option>
+    <option value="Business">Business</option>
+  </select>
+  <select class="filter-select" id="monthFilter" onchange="applyFilters()">
+    <option value="all">All Months</option>
+    <option value="Jan">January</option>
+    <option value="Feb">February</option>
+    <option value="Mar">March</option>
+    <option value="Apr">April</option>
+    <option value="Jun">June</option>
+    <option value="Jul">July</option>
+    <option value="Aug">August</option>
+    <option value="Sep">September</option>
+    <option value="Oct">October</option>
+    <option value="Nov">November</option>
+    <option value="Dec">December</option>
+  </select>
+  <button class="btn-clear" onclick="clearFilters()">Clear Filters</button>
+</div>
+
+<!-- CATEGORY PILLS -->
+<div class="pills" id="pillsRow">
+  <button class="pill active" onclick="setPill(this,'all')">All Events</button>
+  <button class="pill" onclick="setPill(this,'Wildlife')">🦁 Wildlife</button>
+  <button class="pill" onclick="setPill(this,'Cultural')">🥁 Cultural</button>
+  <button class="pill" onclick="setPill(this,'Sports')">🏎️ Sports</button>
+  <button class="pill" onclick="setPill(this,'Music')">🎵 Music & Arts</button>
+  <button class="pill" onclick="setPill(this,'Food')">🍽️ Food & Drink</button>
+  <button class="pill" onclick="setPill(this,'Business')">💼 Business</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <h2 class="section-title" id="gridTitle">All Events</h2>
+  <div class="events-grid" id="eventsGrid">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="modal-backdrop" id="bookingModal">
+  <div class="modal">
+    <h3>🎟️ Reserve Your Spot</h3>
+    <p id="modalEventName" style="color:#E8732A;font-weight:600;margin-bottom:4px;font-size:.9rem"></p>
+    <label>Your Name</label>
+    <input type="text" id="modalName" placeholder="Full name">
+    <label>Email</label>
+    <input type="email" id="modalEmail" placeholder="your@email.com">
+    <label>Number of Tickets</label>
+    <select id="modalTickets">
+      <option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option>
+    </select>
+    <label>Event Date</label>
+    <input type="text" id="modalDate" readonly style="background:#f5f5f5;color:#666">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmBooking()">Confirm & Pay</button>
+    </div>
+    <div class="mpesa-box" id="mpesaBox">
+      <div class="mpesa-title">🟢 M-Pesa Payment Sent</div>
+      <div class="mpesa-sub">Enter your M-Pesa PIN on your phone to complete payment</div>
+      <div class="tx-id" id="mpesaTxId"></div>
+      <div style="margin-top:12px">
+        <a href="dashboard.html" style="display:inline-block;padding:8px 20px;background:#2e7d32;color:#fff;border-radius:8px;text-decoration:none;font-size:.82rem;font-weight:600">View My Bookings →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+
+
+<script src="auth.js"></script>
+<script>
+/* ── Event Data ── */
+var EVENTS = [
+  {
+    id: 'wildebeest-migration',
+    name: 'Great Wildebeest Migration',
+    category: 'Wildlife',
+    month: 'Jul',
+    date: 'July – October 2026',
+    location: 'Maasai Mara, Rift Valley',
+    price: 'KSh 15,000+',
+    description: 'Witness one of the greatest wildlife spectacles on Earth — over 1.5 million wildebeest, zebra, and gazelle crossing the Mara River in their annual migration.',
+    image: 'https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=600&q=80'
+  },
+  {
+    id: 'lamu-cultural-festival',
+    name: 'Lamu Cultural Festival',
+    category: 'Cultural',
+    month: 'Nov',
+    date: 'November 2026',
+    location: 'Lamu Island, Coast',
+    price: 'Free entry',
+    description: 'A celebration of Swahili culture featuring traditional dhow sailing, Taarab music, donkey racing, and the famous henna competition. A UNESCO-recognised living cultural event.',
+    image: 'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=600&q=80'
+  },
+  {
+    id: 'safari-rally',
+    name: 'WRC Safari Rally Kenya',
+    category: 'Sports',
+    month: 'Jun',
+    date: 'June 2026',
+    location: 'Naivasha & Rift Valley',
+    price: 'KSh 2,500',
+    description: 'The legendary Safari Rally returns — the most gruelling round of the FIA World Rally Championship, contested on Kenya's dramatic and challenging terrain.',
+    image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80'
+  },
+  {
+    id: 'nairobi-trade-fair',
+    name: 'Nairobi International Trade Fair',
+    category: 'Business',
+    month: 'Oct',
+    date: 'October 2026',
+    location: 'Jamhuri Park, Nairobi',
+    price: 'KSh 500',
+    description: 'East Africa\'s biggest annual trade exhibition showcasing agriculture, technology, manufacturing, and innovation from across the region.',
+    image: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=80'
+  },
+  {
+    id: 'blankets-wine',
+    name: 'Blankets & Wine',
+    category: 'Music',
+    month: 'Sep',
+    date: 'September 2026',
+    location: 'Nairobi',
+    price: 'KSh 2,000',
+    description: 'Nairobi\'s most beloved outdoor music festival — a monthly family-friendly event featuring Afro-soul, jazz, and R&B artists on the lawn under the Nairobi sun.',
+    image: 'https://images.unsplash.com/photo-1501386761578-eaa54b915db5?w=600&q=80'
+  },
+  {
+    id: 'nairobi-restaurant-week',
+    name: 'Nairobi Restaurant Week',
+    category: 'Food',
+    month: 'Aug',
+    date: 'August 2026',
+    location: 'Nairobi',
+    price: 'KSh 1,500',
+    description: 'Over 50 of Nairobi\'s top restaurants offer special set menus at accessible prices. A fantastic opportunity to explore the city\'s vibrant food scene.',
+    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80'
+  },
+  {
+    id: 'lake-turkana-festival',
+    name: 'Lake Turkana Cultural Festival',
+    category: 'Cultural',
+    month: 'Mar',
+    date: 'March 2026',
+    location: 'Loyangalani, Lake Turkana',
+    price: 'KSh 1,000',
+    description: 'A celebration of the ethnic diversity of northern Kenya — 14 communities gathering for music, dance, and the spectacular landscapes of the Jade Sea.',
+    image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&q=80'
+  },
+  {
+    id: 'mombasa-carnival',
+    name: 'Mombasa Carnival',
+    category: 'Cultural',
+    month: 'Nov',
+    date: 'November 2026',
+    location: 'Mombasa CBD',
+    price: 'Free entry',
+    description: 'A colourful street carnival along Moi Avenue celebrating Mombasa\'s multicultural heritage with elaborate floats, traditional costumes, and live performances.',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80'
+  },
+  {
+    id: 'rhino-charge',
+    name: 'Rhino Charge',
+    category: 'Sports',
+    month: 'Jun',
+    date: 'June 2026',
+    location: 'Kenya Wilderness',
+    price: 'Restricted entry',
+    description: 'An off-road motorsport event held in a secret location each year, raising funds for the Rhino Ark Charitable Trust and Kenya\'s wilderness conservation.',
+    image: 'https://images.unsplash.com/photo-1612099197788-bde7f41d9710?w=600&q=80'
+  },
+  {
+    id: 'nairobi-fashion-week',
+    name: 'Nairobi Fashion Week',
+    category: 'Music',
+    month: 'Oct',
+    date: 'October 2026',
+    location: 'Nairobi',
+    price: 'KSh 1,800',
+    description: 'East Africa\'s premier fashion showcase featuring emerging and established Kenyan designers, celebrating African textile heritage and contemporary design.',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'
+  },
+  {
+    id: 'jamhuri-day',
+    name: 'Jamhuri Day Celebrations',
+    category: 'Cultural',
+    month: 'Dec',
+    date: '12 December 2026',
+    location: 'Kasarani Stadium, Nairobi',
+    price: 'Free entry',
+    description: 'Kenya\'s national day commemorating independence, featuring military parades, cultural performances, and presidential address at Kasarani Stadium.',
+    image: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&q=80'
+  },
+  {
+    id: 'maralal-camel-derby',
+    name: 'Maralal International Camel Derby',
+    category: 'Sports',
+    month: 'Aug',
+    date: 'August 2026',
+    location: 'Maralal, Samburu County',
+    price: 'KSh 1,200',
+    description: 'The world\'s most challenging camel race — amateur and professional riders compete across the semi-arid terrain of Samburu County in this unique annual event.',
+    image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&q=80'
+  }
+];
+
+var filtered = EVENTS.slice();
+var currentEvent = null;
+
+/* ── Render grid ── */
+function renderGrid() {
+  var grid = document.getElementById('eventsGrid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">🎟️</div><p>No events match your filters. Try clearing them.</p></div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(function(ev) {
+    return '<div class="event-card">' +
+      '<img class="event-img" src="' + ev.image + '" alt="' + ev.name + '" loading="lazy">' +
+      '<div class="event-body">' +
+        '<span class="event-cat">' + ev.category + '</span>' +
+        '<div class="event-name">' + ev.name + '</div>' +
+        '<div class="event-desc">' + ev.description + '</div>' +
+        '<div class="event-meta">' +
+          '<span>📅 ' + ev.date + '</span>' +
+          '<span>📍 ' + ev.location + '</span>' +
+        '</div>' +
+        '<div class="event-footer">' +
+          '<span class="event-price">' + ev.price + '</span>' +
+          '<button class="btn-book-event" onclick="openModal(\'' + ev.id + '\')">Book Now</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* ── Filters ── */
+function applyFilters() {
+  var cat   = document.getElementById('catFilter').value;
+  var month = document.getElementById('monthFilter').value;
+  filtered = EVENTS.filter(function(ev) {
+    return (cat   === 'all' || ev.category === cat) &&
+           (month === 'all' || ev.month    === month);
+  });
+  var title = 'All Events';
+  if (cat !== 'all')   title = cat + ' Events';
+  if (month !== 'all') title += (cat !== 'all' ? ' · ' : '') + monthName(month);
+  document.getElementById('gridTitle').textContent = title;
+  renderGrid();
+}
+
+function monthName(m) {
+  var names = {Jan:'January',Feb:'February',Mar:'March',Apr:'April',Jun:'June',Jul:'July',Aug:'August',Sep:'September',Oct:'October',Nov:'November',Dec:'December'};
+  return names[m] || m;
+}
+
+function setPill(el, cat) {
+  document.querySelectorAll('.pill').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('catFilter').value = cat;
+  applyFilters();
+}
+
+function clearFilters() {
+  document.getElementById('catFilter').value   = 'all';
+  document.getElementById('monthFilter').value = 'all';
+  document.querySelectorAll('.pill').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelector('.pill').classList.add('active');
+  filtered = EVENTS.slice();
+  document.getElementById('gridTitle').textContent = 'All Events';
+  renderGrid();
+}
+
+/* ── Booking modal ── */
+function openModal(id) {
+  currentEvent = EVENTS.find(function(ev) { return ev.id === id; });
+  if (!currentEvent) return;
+  document.getElementById('modalEventName').textContent = currentEvent.name;
+  document.getElementById('modalDate').value = currentEvent.date;
+  document.getElementById('mpesaBox').style.display = 'none';
+  document.getElementById('bookingModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('bookingModal').classList.remove('open');
+  currentEvent = null;
+}
+
+function confirmBooking() {
+  var name   = document.getElementById('modalName').value.trim();
+  var email  = document.getElementById('modalEmail').value.trim();
+  var tickets = document.getElementById('modalTickets').value;
+  if (!name || !email) { alert('Please fill in your name and email.'); return; }
+
+  var booking = {
+    id: 'SQ' + Math.floor(100000 + Math.random() * 900000),
+    attraction: currentEvent.name,
+    slug: currentEvent.id,
+    checkIn: currentEvent.date,
+    checkOut: currentEvent.date,
+    guests: tickets + ' ticket(s)',
+    status: 'Confirmed',
+    bookedAt: new Date().toISOString()
+  };
+
+  var existing = [];
+  try { existing = JSON.parse(localStorage.getItem('sq_bookings') || '[]'); } catch(e) {}
+  existing.unshift(booking);
+  localStorage.setItem('sq_bookings', JSON.stringify(existing));
+
+  var txId = 'MP' + booking.id;
+  document.getElementById('mpesaTxId').textContent = txId;
+  document.getElementById('mpesaBox').style.display = 'block';
+  document.querySelector('.modal-actions').style.display = 'none';
+}
+
+/* Close on backdrop click */
+document.getElementById('bookingModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* Navbar scroll */
+window.addEventListener('scroll', function() {
+  document.getElementById('navbar').style.boxShadow =
+    window.scrollY > 10 ? '0 4px 20px rgba(0,0,0,.12)' : '0 2px 12px rgba(0,0,0,.07)';
+});
+
+/* Init */
+renderGrid();
+
+/* Require auth before final booking confirmation */
+const _confirmBookingOriginal = confirmBooking;
+confirmBooking = function () {
+  if (!window.Auth || Auth.isLoggedIn()) {
+    _confirmBookingOriginal();
+    return;
+  }
+  const tickets = document.getElementById('modalTickets')?.value || '1';
+  const payload = {
+    eventId: currentEvent?.id || '',
+    eventName: currentEvent?.name || '',
+    date: currentEvent?.date || '',
+    tickets: tickets
+  };
+  Auth.requireAuth({ action: 'book', data: payload }, () => _confirmBookingOriginal());
+};
+</script>
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

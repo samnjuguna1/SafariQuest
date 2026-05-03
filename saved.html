@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saved Places — SafariQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="auth-ui.css" />
+  <script src="auth.js" defer></script>
+  <script src="page-protection.js" defer></script>
+  <style>
+    :root {
+      --green: #1a4731;
+      --green-mid: #2d6a4f;
+      --gold: #c9932a;
+      --gold-light: #f4c56a;
+      --cream: #fdf8f0;
+      --warm-grey: #f5f0e8;
+      --text: #1c1c1c;
+      --muted: #6b7280;
+      --white: #ffffff;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --radius: 14px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; }
+
+    /* ── HERO ── */
+    .page-hero {
+      background:linear-gradient(135deg, #7b3f00 0%, #a0522d 60%, #8b4513 100%);
+      padding:3.5rem 2rem 3rem; color:var(--white); position:relative; overflow:hidden;
+    }
+    .page-hero::before {
+      content:''; position:absolute; inset:0;
+      background:url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=1400&q=60') center/cover no-repeat;
+      opacity:0.15;
+    }
+    .page-hero-inner { max-width:1100px; margin:0 auto; position:relative; }
+    .page-hero h1 { font-family:'Playfair Display',serif; font-size:2.4rem; margin-bottom:0.5rem; }
+    .page-hero p { color:rgba(255,255,255,0.78); font-size:1rem; }
+
+    .content { max-width:1100px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
+
+    /* ── COLLECTIONS ── */
+    .collections-bar { display:flex; align-items:center; gap:0.8rem; margin-bottom:2rem; flex-wrap:wrap; }
+    .collection-chip {
+      padding:8px 16px; border-radius:20px; border:1.5px solid #e5e7eb;
+      background:var(--white); font-size:0.83rem; font-weight:500; cursor:pointer;
+      color:var(--muted); transition:all 0.2s;
+    }
+    .collection-chip.active { background:var(--green); color:var(--white); border-color:var(--green); }
+    .collection-chip:hover:not(.active) { border-color:var(--green); color:var(--green); }
+    .btn-new-collection {
+      margin-left:auto; padding:8px 16px; border-radius:20px; border:1.5px dashed var(--green);
+      background:transparent; color:var(--green); font-size:0.83rem; font-weight:600;
+      cursor:pointer; transition:all 0.2s;
+    }
+    .btn-new-collection:hover { background:var(--green); color:var(--white); }
+
+    /* ── SECTION HEADER ── */
+    .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.4rem; }
+    .section-header h2 { font-family:'Playfair Display',serif; font-size:1.3rem; }
+    .section-header span { font-size:0.85rem; color:var(--muted); }
+
+    /* ── GRID ── */
+    .saved-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1.4rem; }
+
+    .saved-card {
+      background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow);
+      overflow:hidden; position:relative; transition:transform 0.2s, box-shadow 0.2s;
+      animation:fadeUp 0.4s ease both;
+    }
+    .saved-card:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,0.13); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+    .saved-card-img { width:100%; height:190px; object-fit:cover; display:block; }
+
+    .heart-btn {
+      position:absolute; top:12px; right:12px; width:36px; height:36px;
+      border-radius:50%; background:rgba(255,255,255,0.92); border:none;
+      font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+      box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:transform 0.2s;
+    }
+    .heart-btn:hover { transform:scale(1.15); }
+
+    .type-badge {
+      position:absolute; top:12px; left:12px; padding:4px 10px; border-radius:12px;
+      font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;
+      background:rgba(26,71,49,0.88); color:var(--white);
+    }
+
+    .saved-card-body { padding:1.1rem 1.2rem 1.2rem; }
+    .saved-card-title { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:600; margin-bottom:4px; }
+    .saved-card-loc { font-size:0.82rem; color:var(--muted); margin-bottom:8px; }
+    .saved-card-meta { display:flex; align-items:center; justify-content:space-between; }
+    .saved-card-price { font-size:0.95rem; font-weight:700; color:var(--green); }
+    .saved-card-rating { font-size:0.82rem; color:var(--gold); font-weight:600; }
+
+    .card-actions { display:flex; gap:0.5rem; margin-top:1rem; }
+    .btn-book {
+      flex:1; padding:9px; border-radius:9px; background:var(--green); color:var(--white);
+      font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:600; border:none; cursor:pointer;
+      transition:background 0.2s; text-align:center; text-decoration:none; display:block;
+    }
+    .btn-book:hover { background:var(--green-mid); }
+    .btn-share {
+      padding:9px 12px; border-radius:9px; border:1.5px solid #e5e7eb; background:transparent;
+      cursor:pointer; font-size:0.9rem; transition:all 0.2s;
+    }
+    .btn-share:hover { border-color:var(--green); background:var(--warm-grey); }
+
+    .note-chip {
+      display:inline-block; margin-top:8px; font-size:0.75rem; background:rgba(201,147,42,0.1);
+      color:#92680a; padding:3px 10px; border-radius:10px; font-style:italic;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align:center; padding:4rem 2rem; color:var(--muted); }
+    .empty-state .emoji { font-size:3.5rem; margin-bottom:1rem; display:block; }
+    .empty-state h3 { font-size:1.2rem; color:var(--text); margin-bottom:0.5rem; }
+    .empty-state a { color:var(--green); font-weight:600; text-decoration:none; }
+
+    /* ── NOTE MODAL ── */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--white); border-radius:var(--radius); padding:2rem; width:90%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation:fadeUp 0.3s ease; }
+    .modal h3 { font-family:'Playfair Display',serif; font-size:1.3rem; margin-bottom:1rem; }
+    .modal textarea { width:100%; border:1.5px solid #e5e7eb; border-radius:9px; padding:10px 12px; font-family:'DM Sans',sans-serif; font-size:0.9rem; resize:vertical; min-height:90px; outline:none; transition:border-color 0.2s; }
+    .modal textarea:focus { border-color:var(--green); }
+    .modal-footer { display:flex; gap:0.8rem; margin-top:1rem; }
+    .modal-footer button { flex:1; padding:10px; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; border:none; }
+    .btn-cancel-modal { background:var(--warm-grey); color:var(--text); }
+    .btn-save-modal { background:var(--green); color:var(--white); }
+    .close-modal { float:right; background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--muted); }
+
+    @media(max-width:600px) { .saved-grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body data-nav-active="">
+
+<div id="sq-nav-root"></div>
+
+
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <h1>❤️ Saved Places</h1>
+    <p>Your personal wishlist of Kenya's most magical destinations</p>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- COLLECTIONS -->
+  <div class="collections-bar" id="collectionsBar">
+    <button class="collection-chip active" onclick="filterCollection('all', this)">✨ All Saved</button>
+    <button class="collection-chip" onclick="filterCollection('Attraction', this)">🦁 Attractions</button>
+    <button class="collection-chip" onclick="filterCollection('Hotel', this)">🏨 Hotels</button>
+    <button class="collection-chip" onclick="filterCollection('Restaurant', this)">🍽️ Restaurants</button>
+    <button class="collection-chip" onclick="filterCollection('Event', this)">🎉 Events</button>
+    <button class="btn-new-collection" onclick="shareWishlist()">↗ Share Wishlist</button>
+  </div>
+
+  <div class="section-header">
+    <h2>Your Wishlist</h2>
+    <span id="savedCount">0 saved places</span>
+  </div>
+
+  <div class="saved-grid" id="savedGrid"></div>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="modal-overlay" id="noteModal">
+  <div class="modal">
+    <button class="close-modal" onclick="closeNoteModal()">✕</button>
+    <h3>📝 Add a Note</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:0.8rem;">Why do you want to visit this place?</p>
+    <textarea id="noteInput" placeholder="e.g. Perfect for our anniversary trip in December..."></textarea>
+    <div class="modal-footer">
+      <button class="btn-cancel-modal" onclick="closeNoteModal()">Cancel</button>
+      <button class="btn-save-modal" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+
+
+<script>
+  let savedItems = [];
+  let currentCollection = 'all';
+  let noteTargetId = null;
+
+  function showLoading() {
+    document.getElementById('savedGrid').innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">
+        <div style="font-size:2rem;margin-bottom:1rem">⏳</div>
+        <p>Loading your saved places…</p>
+      </div>`;
+  }
+
+  async function init() {
+    showLoading();
+    // Load from Supabase
+    if (window.SQ && window.SQ.isLoggedIn()) {
+      try {
+        const remote = await window.SQ.listUserSavedDestinations(50);
+        if (remote && remote.length > 0) {
+          savedItems = remote.map(r => ({
+            id:       r.id,
+            type:     r.category || r.type || 'Attraction',
+            title:    r.attraction_name || r.title || 'Saved Place',
+            location: r.attraction_location || r.location || 'Kenya',
+            price:    r.price || 'See details',
+            rating:   r.rating ? r.rating + ' ★' : '—',
+            note:     r.note || '',
+            img:      r.image_url || r.img || 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=500&q=75',
+            slug:     r.attraction_slug || r.id
+          }));
+          renderGrid();
+          return;
+        }
+      } catch (e) {
+        console.warn('Could not load saved from Supabase:', e);
+      }
+    }
+    // Empty state — no fallback hardcoded data
+    savedItems = [];
+    renderGrid();
+  }
+
+  function persist() {
+    // No-op: persistence is handled by Supabase
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('savedGrid');
+    let list = currentCollection === 'all' ? savedItems : savedItems.filter(s => s.type === currentCollection);
+    document.getElementById('savedCount').textContent = `${list.length} saved place${list.length !== 1 ? 's' : ''}`;
+
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <span class="emoji">❤️</span>
+        <h3>No ${currentCollection === 'all' ? '' : currentCollection.toLowerCase() + 's'} saved yet</h3>
+        <p>Browse <a href="destinations.html">destinations</a> and tap the heart icon to save places you love</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = list.map((s, i) => `
+      <div class="saved-card" style="animation-delay:${i * 0.07}s" id="card-${s.id}">
+        <img class="saved-card-img" src="${s.img}" alt="${s.title}" loading="lazy" />
+        <span class="type-badge">${s.type}</span>
+        <button class="heart-btn" onclick="removeItem('${s.id}')" title="Remove from saved">❤️</button>
+        <div class="saved-card-body">
+          <div class="saved-card-title">${s.title}</div>
+          <div class="saved-card-loc">📍 ${s.location}</div>
+          ${s.note ? `<div class="note-chip">📝 ${s.note}</div>` : ''}
+          <div class="saved-card-meta">
+            <span class="saved-card-price">${s.price}</span>
+            <span class="saved-card-rating">${s.rating}</span>
+          </div>
+          <div class="card-actions">
+            <a href="destinations.html" class="btn-book">Book Now</a>
+            <button class="btn-share" onclick="openNoteModal('${s.id}')" title="Add note">📝</button>
+            <button class="btn-share" onclick="shareItem('${s.title}')" title="Share">↗</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterCollection(type, btn) {
+    currentCollection = type;
+    document.querySelectorAll('.collection-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid();
+  }
+
+  async function removeItem(id) {
+    if (!confirm('Remove this place from your saved list?')) return;
+    const card = document.getElementById('card-' + id);
+    if (card) { card.style.opacity = '0'; card.style.transform = 'scale(0.9)'; card.style.transition = '0.3s'; }
+    // Try to remove from Supabase
+    if (window.SQ && window.SQ.isLoggedIn()) {
+      try {
+        const item = savedItems.find(s => s.id === id);
+        if (item && item.slug) {
+          await window.SQ.deleteUserSavedBySlug(item.slug);
+        } else {
+          await window.SQ.deleteUserSavedDestination(id);
+        }
+      } catch (e) {
+        console.warn('Could not remove from Supabase:', e);
+      }
+    }
+    setTimeout(() => {
+      savedItems = savedItems.filter(s => s.id !== id);
+      persist();
+      renderGrid();
+    }, 300);
+  }
+
+  function openNoteModal(id) {
+    noteTargetId = id;
+    const item = savedItems.find(s => s.id === id);
+    document.getElementById('noteInput').value = item?.note || '';
+    document.getElementById('noteModal').classList.add('open');
+  }
+  function closeNoteModal() { document.getElementById('noteModal').classList.remove('open'); noteTargetId = null; }
+  function saveNote() {
+    const note = document.getElementById('noteInput').value.trim();
+    savedItems = savedItems.map(s => s.id === noteTargetId ? { ...s, note } : s);
+    persist();
+    renderGrid();
+    closeNoteModal();
+  }
+
+  function shareItem(title) {
+    if (navigator.share) {
+      navigator.share({ title: `${title} — SafariQuest`, url: window.location.href });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  }
+
+  function shareWishlist() {
+    const titles = savedItems.map(s => `• ${s.title} (${s.location})`).join('\n');
+    const text = `My SafariQuest Wishlist 🌍\n${titles}\n\nDiscover magical Kenya at SafariQuest!`;
+    if (navigator.share) {
+      navigator.share({ title: 'My SafariQuest Wishlist', text });
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('Wishlist copied to clipboard!');
+    }
+  }
+
+  document.getElementById('noteModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('noteModal')) closeNoteModal();
+  });
+
+  // Wait for auth.js (defer) to finish before loading data
+  document.addEventListener('DOMContentLoaded', function() { init(); });
+</script>
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

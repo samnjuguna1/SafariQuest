@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafariQuest</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="page-home" data-nav-active="home">
+
+  <div id="sq-nav-root"></div>
+
+  <!-- ═══════════════════════════════════════
+     HERO — IMAGE SLIDESHOW
+════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-slides">
+      <div class="hero-slide active"
+        style="background-image: url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1600&q=80')"></div>
+      <div class="hero-slide"
+        style="background-image: url('https://images.unsplash.com/photo-1547970810-dc1eac37d174?w=1600&q=80')"></div>
+      <div class="hero-slide"
+        style="background-image: url('https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=1600&q=80')"></div>
+      <div class="hero-slide"
+        style="background-image: url('https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1600&q=80')"></div>
+    </div>
+
+    <div class="hero-overlay"></div>
+
+    <button class="slide-arrow slide-prev" aria-label="Previous slide">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+    </button>
+    <button class="slide-arrow slide-next" aria-label="Next slide">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    </button>
+
+    <div class="slide-dots" id="slideDots"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge">🌍 Kenya's #1 Travel Portal</div>
+      <h1>Discover the Magic<br>of <em>Kenya</em></h1>
+      <p>Explore attractions, book stays, find events &mdash; all in one place</p>
+      <div class="hero-cta-row">
+        <a href="booking.html" class="hero-cta-btn hero-cta-primary">Start booking</a>
+        <a href="booking.html?destination=maasai-mara" class="hero-cta-btn hero-cta-secondary">Safari from Mara</a>
+      </div>
+      <div class="search-box">
+        <div class="search-field-wrap">
+          <div class="search-field" id="searchFieldWhere">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+            </svg>
+            <input type="text" id="searchWhere" placeholder="Where to?" autocomplete="off" />
+          </div>
+          <div class="search-suggestions" id="searchSuggestions"></div>
+        </div>
+        <div class="search-field">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <input type="date" />
+        </div>
+        <div class="search-field">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <select>
+            <option>1 Guest</option>
+            <option>2 Guests</option>
+            <option>3 Guests</option>
+            <option>4+ Guests</option>
+          </select>
+        </div>
+        <button class="btn-search" id="btnSearch">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          Search
+        </button>
+      </div>
+
+      <!-- Quick stat strip -->
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>200+</strong><span>Destinations</span></div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat"><strong>50K+</strong><span>Happy Travellers</span></div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat"><strong>4.9★</strong><span>Avg. Rating</span></div>
+      </div>
+    </div>
+
+    <div class="chevron-down">
+      <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     POPULAR DESTINATIONS
+════════════════════════════════════════ -->
+  <section id="destinations">
+    <div class="section-eyebrow">✈️ Top Picks</div>
+    <h2 class="section-title">Popular Destinations</h2>
+    <div class="section-divider divider-orange"></div>
+    <div class="destinations-grid" id="destGrid"></div>
+    <div class="dest-cta">
+      <a href="destinations.html" class="dest-btn-view-all">View All Destinations →</a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     WHY TRAVEL WITH US
+════════════════════════════════════════ -->
+  <section id="why">
+    <div class="section-eyebrow">💡 Our Promise</div>
+    <h2 class="section-title">Why Travel With Us</h2>
+    <div class="section-divider divider-green"></div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon-wrap">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+        <h3>Verified Destinations</h3>
+        <p>All our destinations and accommodations are carefully verified for quality and authenticity.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        </div>
+        <h3>Best Price Guarantee</h3>
+        <p>We guarantee the lowest prices. If you find a better deal, we'll match it.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-wrap">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z" />
+            <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+          </svg>
+        </div>
+        <h3>24/7 Customer Support</h3>
+        <p>Our dedicated support team is available round the clock to assist you.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     UPCOMING EVENTS & FESTIVALS
+════════════════════════════════════════ -->
+  <section id="events">
+    <div class="section-eyebrow">🎉 What's On</div>
+    <h2 class="section-title">Upcoming Events &amp; Festivals</h2>
+    <div class="section-divider divider-orange"></div>
+    <div class="events-grid" id="eventsGrid"></div>
+    <div class="events-cta">
+      <a href="events.html" class="btn-view-all">View All Events →</a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     TESTIMONIALS — fetched from Supabase
+════════════════════════════════════════ -->
+  <section id="testimonials">
+    <div class="section-eyebrow">💬 Reviews</div>
+    <h2 class="section-title">What Travellers Say</h2>
+    <div class="section-divider divider-orange"></div>
+
+    <!-- Cards are injected here by the script below -->
+    <div class="testi-grid" id="testiGrid">
+      <p style="text-align:center;color:#aaa;grid-column:1/-1;">Loading reviews…</p>
+    </div>
+  </section>
+
+  <div id="sq-footer-root"></div>
+
+  <script src="site-layout.js"></script>
+  <script src="attractions-data.js"></script>
+  <script src="auth.js"></script>
+  <script src="nav-auth.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="script.js"></script>
+
+  <!-- ═══════════════════════════════════════
+     REVIEWS — Supabase fetch
+════════════════════════════════════════ -->
+  <script>
+    (async function loadReviews() {
+      const SUPABASE_URL  = 'https://cbyipmrozqsntojiartw.supabase.co';
+      const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNieWlwbXJvenFzbnRvamlhcnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTkxNTQsImV4cCI6MjA4ODk3NTE1NH0.31TAhmUCV_Uh0W8FGnR2_TLCZDU4YBM1U5LMSMc5JZs';
+
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      const grid     = document.getElementById('testiGrid');
+
+      // Build star HTML — filled stars only (matches your original style)
+      function stars(rating) {
+        return '&#9733;'.repeat(Math.max(0, Math.min(5, rating)));
+      }
+
+      // Build a card that matches your existing .testi-card markup exactly
+      function buildCard({ reviewer_name, location, review_text, rating }) {
+        return `
+          <div class="testi-card">
+            <div class="testi-quote-icon">❝</div>
+            <p class="testi-quote">"${review_text}"</p>
+            <div class="testi-stars">${stars(rating)}</div>
+            <div class="testi-author">
+              <div class="avatar">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+              <div class="author-info">
+                <strong>${reviewer_name}</strong>
+                ${location ? `<span>${location}</span>` : ''}
+              </div>
+            </div>
+          </div>`;
+      }
+
+      try {
+        const { data: reviews, error } = await supabase
+          .from('reviews')
+          .select('reviewer_name, location, review_text, rating')
+          .eq('is_featured', true)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!reviews || reviews.length === 0) {
+          grid.innerHTML = '<p style="text-align:center;color:#aaa;grid-column:1/-1;">No reviews yet.</p>';
+          return;
+        }
+
+        grid.innerHTML = reviews.map(buildCard).join('');
+
+      } catch (err) {
+        console.error('Reviews fetch error:', err.message);
+        // Silently fall back — grid stays empty rather than showing a broken UI
+        grid.innerHTML = '';
+      }
+    })();
+  </script>
+
+</body>
+
+</html>

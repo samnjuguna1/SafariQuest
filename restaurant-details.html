@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restaurant — SafariQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="restaurant-details.css"/>
+</head>
+<body data-nav-active="restaurants">
+
+<div id="sq-nav-root"></div>
+
+
+
+<section class="hero" id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> › <a href="restaurants.html">Restaurants</a> › <span id="breadcrumbName">Loading…</span>
+    </div>
+    <div class="hero-meta">
+      <span class="hero-badge" id="heroCuisine">Cuisine</span>
+      <span class="hero-city" id="heroCity">📍 City</span>
+    </div>
+    <h1 id="heroTitle">Loading Restaurant…</h1>
+    <div class="hero-info-row">
+      <span class="price-display" id="heroPriceRange">—</span>
+      <span class="separator">·</span>
+      <span class="hours-display" id="heroHours">—</span>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-primary" id="reserveBtn">🍽️ Reserve a Table</button>
+      <button class="btn-secondary" id="galleryBtn">📸 View Photos</button>
+      <button class="btn-menu" id="menuBtn">📋 View Menu &amp; Services</button>
+    </div>
+  </div>
+</section>
+<div class="info-strip" id="infoStrip">
+  <div class="info-strip-container">
+    <div class="info-item"><span class="info-icon">🍴</span><span class="info-label">Cuisine</span><span class="info-value" id="stripCuisine">—</span></div>
+    <div class="info-item"><span class="info-icon">💰</span><span class="info-label">Price Range</span><span class="info-value" id="stripPrice">—</span></div>
+    <div class="info-item"><span class="info-icon">📍</span><span class="info-label">Location</span><span class="info-value" id="stripLocation">—</span></div>
+    <div class="info-item"><span class="info-icon">🕐</span><span class="info-label">Hours</span><span class="info-value" id="stripHours">—</span></div>
+  </div>
+</div>
+<div class="content-wrap" id="contentWrap">
+  <main class="main-col">
+    <section class="section gallery-section">
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </section>
+    <section class="section">
+      <h2 class="section-title">About This Restaurant</h2>
+      <p class="overview-text" id="overviewText">Loading…</p>
+      <div class="highlights-grid" id="highlightsGrid"></div>
+    </section>
+    <section class="section" id="experienceSection">
+      <h2 class="section-title">What to Expect</h2>
+      <div class="experience-grid" id="experienceGrid"></div>
+    </section>
+    <section class="section" id="menuSection">
+      <div class="menu-header">
+        <h2 class="section-title">Menu &amp; Prices</h2>
+        <div class="menu-tabs" id="menuTabs"></div>
+      </div>
+      <div class="menu-body" id="menuBody"></div>
+      <div class="menu-cta-banner">
+        <div class="menu-cta-text">
+          <span class="menu-cta-icon">📋</span>
+          <div>
+            <strong>View the full menu &amp; place an order</strong>
+            <p>Browse all dishes, drinks, rooms and services — and order directly from your table.</p>
+          </div>
+        </div>
+        <button class="btn-menu-cta" id="menuBannerBtn">View Menu &amp; Services →</button>
+      </div>
+      <div class="menu-note">
+        <span>💡</span> Prices are indicative and may vary. Contact the restaurant for the latest menu.
+      </div>
+    </section>
+    <section class="section">
+      <h2 class="section-title">Find Us</h2>
+      <div class="map-wrap">
+        <iframe id="mapFrame" src="https://www.google.com/maps/embed/v1/search?q=Nairobi+Kenya&key=AIzaSyD-placeholder" width="100%" height="360" style="border:0;" allowfullscreen loading="lazy"></iframe>
+        <div class="map-overlay-card">
+          <div class="map-card-icon">📍</div>
+          <div class="map-card-info">
+            <strong id="mapCardName">Restaurant</strong>
+            <span id="mapCardLocation">Location, Kenya</span>
+          </div>
+          <a class="map-open-link" id="mapOpenLink" href="#" target="_blank">Open in Maps ↗</a>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <h2 class="section-title">Traveller Reviews</h2>
+      <div class="reviews-empty">
+        <div class="reviews-empty-icon">✍️</div>
+        <h3>No reviews yet</h3>
+        <p>Be the first to share your dining experience at this restaurant.</p>
+        <button class="btn-write-review" onclick="document.getElementById('reserveBtn').scrollIntoView({behavior:'smooth'})">Write a Review</button>
+      </div>
+    </section>
+  </main>
+  <aside class="booking-sidebar" id="bookingSidebar">
+    <div class="booking-card">
+      <div class="booking-header">
+        <div class="booking-price-ksh" id="sidebarPriceKsh">—</div>
+        <div class="booking-price-label">per person (avg.)</div>
+      </div>
+
+      <!-- ══ CART PANEL ══ -->
+      <div class="cart-panel" id="cartPanel">
+        <div class="cart-panel-header">
+          <div class="cart-panel-title">
+            <span class="cart-icon">🛒</span>
+            <span id="cartCount">Your order</span>
+          </div>
+          <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+        </div>
+
+        <!-- Empty state -->
+        <div class="cart-empty" id="cartEmpty">
+          <div class="cart-empty-icon">🍽️</div>
+          <p>No items yet — add dishes from the menu below</p>
+        </div>
+
+        <!-- Item list -->
+        <div class="cart-items" id="cartItems" style="display:none"></div>
+
+        <!-- Footer: total + place order -->
+        <div class="cart-footer" id="cartFooter" style="display:none">
+          <div class="cart-total-row">
+            <span>Order Total</span>
+            <span class="cart-total" id="cartTotal">KSh 0</span>
+          </div>
+          <button class="btn-place-order" id="placeOrderBtn">🛒 Place Order</button>
+          <p class="cart-disclaimer">Order confirmed when restaurant accepts</p>
+        </div>
+      </div>
+
+      <div class="booking-divider"></div>
+
+      <div class="booking-info-box">
+        <div class="info-row"><span class="info-row-label">Cuisine</span><span class="info-row-val" id="sidebarCuisine">—</span></div>
+        <div class="info-row"><span class="info-row-label">Price Range</span><span class="info-row-val" id="sidebarPriceRange">—</span></div>
+        <div class="info-row"><span class="info-row-label">Open Hours</span><span class="info-row-val" id="sidebarHours">—</span></div>
+        <div class="info-row"><span class="info-row-label">Location</span><span class="info-row-val" id="sidebarLocation">—</span></div>
+      </div>
+      <div class="booking-form">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="resDate" class="form-input"/>
+        </div>
+        <div class="form-row-two">
+          <div class="form-group">
+            <label>Time</label>
+            <select id="resTime" class="form-input">
+              <option>12:00 PM</option><option>12:30 PM</option><option>1:00 PM</option>
+              <option>1:30 PM</option><option>7:00 PM</option><option>7:30 PM</option>
+              <option>8:00 PM</option><option>8:30 PM</option><option>9:00 PM</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Guests</label>
+            <div class="counter-wrap">
+              <button class="cnt-btn" onclick="changeGuests(-1)">−</button>
+              <span id="guestCount">2</span>
+              <button class="cnt-btn" onclick="changeGuests(1)">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Special Requests</label>
+          <textarea class="form-input" id="specialReq" rows="2" placeholder="Allergies, occasion, seating preference…"></textarea>
+        </div>
+        <button class="btn-reserve" id="reserveSubmitBtn" onclick="submitReservation()">🍽️ Reserve a Table</button>
+      </div>
+      <div class="trust-badges">
+        <span>✅ Free cancellation</span>
+        <span>✅ No booking fees</span>
+        <span>✅ Instant confirmation</span>
+      </div>
+      <button class="btn-menu-sidebar" id="menuSidebarBtn">📋 View Full Menu &amp; Order</button>
+      <div class="side-actions">
+        <button class="btn-wishlist" id="wishlistBtn" onclick="toggleWishlist()">🤍 Save Restaurant</button>
+        <button class="btn-share" onclick="shareRestaurant()">↗ Share</button>
+      </div>
+    </div>
+
+  </aside>
+</div>
+<section class="similar-section">
+  <div class="similar-container">
+    <h2 class="section-title">Similar Restaurants</h2>
+    <div class="similar-grid" id="similarGrid"></div>
+  </div>
+</section>
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <button class="lb-prev" onclick="event.stopPropagation();moveLightbox(-1)">‹</button>
+  <button class="lb-next" onclick="event.stopPropagation();moveLightbox(1)">›</button>
+  <img id="lbImg" src="" alt=""/>
+  <div class="lb-dots" id="lbDots"></div>
+</div>
+
+
+<!-- ── SCRIPTS ── -->
+<script src="auth.js"></script>
+<script src="supabase-config.js"></script>
+<script src="supabase-client.js"></script>
+<script src="restaurant-details.js"></script>
+
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

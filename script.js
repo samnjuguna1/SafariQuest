@@ -1,0 +1,426 @@
+/* ============================================================
+   SAFARIQUEST — script.js
+   ============================================================ */
+
+/* ─────────────────────────────────────────
+   DATA: DESTINATIONS
+───────────────────────────────────────── */
+const destinations = [
+  {
+    name:   'Maasai Mara',
+    tag:    'Safari Tours',
+    rating: 4.8,
+    stars:  5,
+    slug:   'maasai-mara',
+    img:    'https://images.unsplash.com/photo-1547970810-dc1eac37d174?w=600&q=80'
+  },
+  {
+    name:   'Diani Beach',
+    tag:    'Beach Paradise',
+    rating: 4.6,
+    stars:  4,
+    slug:   'diani-beach',
+    img:    'https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=600&q=80'
+  },
+  {
+    name:   'Mount Kenya',
+    tag:    'Mountain Adventure',
+    rating: 4.9,
+    stars:  5,
+    slug:   'mount-kenya',
+    img:    'https://images.unsplash.com/photo-1606826995389-47c33af60af9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8TW91bnQlMjBLZW55YXxlbnwwfHwwfHx8MA%3D%3D'
+  },
+  {
+    name:   'Lake Nakuru',
+    tag:    'Flamingo Paradise',
+    rating: 4.7,
+    stars:  4,
+    slug:   'lake-nakuru',
+    img:    'https://plus.unsplash.com/premium_photo-1661846340419-89bf27138124?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bGFrZSUyMG5ha3VydXxlbnwwfHwwfHx8MA%3D%3D'
+  },
+  {
+    name:   'Amboseli National Park',
+    tag:    'Elephant Safari',
+    rating: 4.8,
+    stars:  5,
+    slug:   'amboseli',
+    img:    'https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=600&q=80'
+  },
+  {
+    name:   'Samburu National Reserve',
+    tag:    'Rare Wildlife',
+    rating: 4.7,
+    stars:  4,
+    slug:   'samburu',
+    img:    'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&q=80'
+  }
+];
+
+/* ─────────────────────────────────────────
+   DATA: EVENTS — now fetched from Supabase
+───────────────────────────────────────── */
+
+/* ─────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────── */
+function renderStars(count, total = 5) {
+  return Array.from({ length: total }, (_, i) =>
+    `<span style="color:${i < count ? '#F5A623' : '#ddd'}">&#9733;</span>`
+  ).join('');
+}
+
+function calendarIcon() {
+  return `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <rect x="3" y="4" width="18" height="18" rx="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8"  y1="2" x2="8"  y2="6"/>
+    <line x1="3"  y1="10" x2="21" y2="10"/>
+  </svg>`;
+}
+
+function pinIcon() {
+  return `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+  </svg>`;
+}
+
+/* ─────────────────────────────────────────
+   RENDER: DESTINATION CARDS
+───────────────────────────────────────── */
+function buildDestCard(dest, grid) {
+  const slug  = dest.slug || dest.id || '';
+  const name  = dest.name || dest.title || 'Destination';
+  const tag   = dest.category || dest.tag || 'Safari';
+  const img   = dest.image_hero || dest.img || 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&q=80&auto=format';
+  const stars = dest.stars || Math.round(dest.rating || 4.5);
+  const rating = dest.rating || dest.stars || 4.5;
+
+  const card = document.createElement('div');
+  card.className = 'dest-card';
+  card.style.cursor = 'pointer';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-label', 'View ' + name);
+
+  card.innerHTML = `
+    <div class="dest-img-wrap">
+      <img src="${img}" alt="${name}" loading="lazy"
+           onerror="this.src='https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&q=80&auto=format'" />
+      <div class="dest-overlay">
+        <h3>${name}</h3>
+        <span>${tag}</span>
+      </div>
+    </div>
+    <div class="dest-footer">
+      <span class="stars">${renderStars(stars)}</span>
+      <span class="rating">${Number(rating).toFixed(1)}</span>
+    </div>
+  `;
+
+  const navigate = () => { window.location.href = 'attraction-details.html?id=' + slug; };
+  card.addEventListener('click', navigate);
+  card.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(); }
+  });
+  grid.appendChild(card);
+}
+
+async function renderDestinations() {
+  const grid = document.getElementById('destGrid');
+  if (!grid) return;
+
+  /* Show skeletons while loading */
+  grid.innerHTML = Array(6).fill(
+    '<div class="dest-card" style="opacity:0.4;pointer-events:none;"><div class="dest-img-wrap" style="background:#e0e0e0;height:200px;border-radius:8px;"></div></div>'
+  ).join('');
+
+  let data = [];
+  try {
+    if (window.db && typeof window.db.getAttractions === 'function') {
+      data = await window.db.getAttractions({ limit: 6, order: 'rating.desc' });
+    }
+  } catch (e) {
+    console.warn('[script.js] Supabase destinations failed, using fallback:', e.message);
+  }
+
+  grid.innerHTML = '';
+
+  /* Fall back to hardcoded if Supabase returned nothing */
+  if (!data || data.length === 0) {
+    destinations.forEach(dest => buildDestCard(dest, grid));
+    return;
+  }
+
+  data.slice(0, 6).forEach(dest => buildDestCard(dest, grid));
+}
+
+/* ─────────────────────────────────────────
+   SEARCH WITH SUPABASE SUGGESTIONS
+───────────────────────────────────────── */
+
+/* Cache so we don't re-fetch on every keystroke */
+let _attractionsCache = null;
+
+async function fetchAttractions() {
+  if (_attractionsCache) return _attractionsCache;
+  try {
+    _attractionsCache = await db.getAttractions();
+    return _attractionsCache;
+  } catch {
+    /* Fall back to local destinations array so search still works offline */
+    _attractionsCache = destinations.map(d => ({
+      slug: d.slug, name: d.name,
+      region: '', category: d.tag,
+      image_hero: d.img
+    }));
+    return _attractionsCache;
+  }
+}
+
+function initSearch() {
+  const input       = document.getElementById('searchWhere');
+  const dropdown    = document.getElementById('searchSuggestions');
+  const searchBtn   = document.getElementById('btnSearch');
+  if (!input || !dropdown) return;
+
+  let debounceTimer = null;
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const q = input.value.trim();
+    if (q.length < 1) { dropdown.innerHTML = ''; return; }
+    debounceTimer = setTimeout(() => showSuggestions(q), 200);
+  });
+
+  async function showSuggestions(q) {
+    const items = await fetchAttractions();
+    const ql = q.toLowerCase();
+    const matches = items.filter(a =>
+      (a.name     || '').toLowerCase().includes(ql) ||
+      (a.region   || '').toLowerCase().includes(ql) ||
+      (a.category || '').toLowerCase().includes(ql)
+    ).slice(0, 6);
+
+    if (!matches.length) {
+      dropdown.innerHTML = `<div class="suggestion-no-results">No destinations found for "<strong>${q}</strong>"</div>`;
+      return;
+    }
+
+    dropdown.innerHTML = matches.map(a => `
+      <div class="suggestion-item" data-slug="${a.slug}" role="button" tabindex="0">
+        <img class="suggestion-img"
+             src="${a.image_hero || 'https://images.unsplash.com/photo-1547970810-dc1eac37d174?w=100&q=60'}"
+             alt="${a.name}"
+             onerror="this.src='https://images.unsplash.com/photo-1547970810-dc1eac37d174?w=100&q=60'"/>
+        <div class="suggestion-info">
+          <div class="suggestion-name">${a.name}</div>
+          <div class="suggestion-tag">${a.category || a.region || 'Destination'}</div>
+        </div>
+        <span class="suggestion-arrow">→</span>
+      </div>
+    `).join('');
+
+    /* Click/keyboard on a suggestion */
+    dropdown.querySelectorAll('.suggestion-item').forEach(el => {
+      const go = () => {
+        window.location.href = 'attraction-details.html?id=' + el.dataset.slug;
+      };
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    });
+  }
+
+  /* Search button — navigate to first match or destinations page */
+  if (searchBtn) {
+    searchBtn.addEventListener('click', async () => {
+      const q = input.value.trim();
+      if (!q) { window.location.href = 'destinations.html'; return; }
+      const items = await fetchAttractions();
+      const match = items.find(a =>
+        (a.name || '').toLowerCase().includes(q.toLowerCase())
+      );
+      if (match) {
+        window.location.href = 'attraction-details.html?id=' + match.slug;
+      } else {
+        window.location.href = `destinations.html?search=${encodeURIComponent(q)}`;
+      }
+    });
+  }
+
+  /* Enter key in input */
+  input.addEventListener('keydown', async e => {
+    if (e.key === 'Enter') searchBtn && searchBtn.click();
+  });
+
+  /* Close dropdown when clicking outside */
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-field-wrap')) {
+      dropdown.innerHTML = '';
+    }
+  });
+}
+
+/* ─────────────────────────────────────────
+   RENDER: EVENT CARDS — fetched from Supabase
+───────────────────────────────────────── */
+async function renderEvents() {
+  const grid = document.getElementById('eventsGrid');
+  if (!grid) return;
+
+  /* Show loading skeleton */
+  grid.innerHTML = Array(4).fill(
+    '<div class="event-card" style="opacity:0.4;pointer-events:none;"><div class="event-img-wrap" style="background:#e0e0e0;height:200px;border-radius:8px;"></div></div>'
+  ).join('');
+
+  let data = [];
+  try {
+    if (window.getEvents) {
+      data = await window.getEvents(4);
+    }
+  } catch (e) {
+    console.warn('[script.js] Supabase events failed:', e.message);
+  }
+
+  /* If no events from Supabase, show empty state */
+  if (!data || data.length === 0) {
+    grid.innerHTML = '<p style="text-align:center;color:#aaa;grid-column:1/-1;">No upcoming events at the moment.</p>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  data.forEach(event => {
+    const title    = event.title || event.name || 'Event';
+    const date     = event.date  || event.event_date || '';
+    const location = event.location || event.city || '';
+    const desc     = event.description || event.desc || '';
+    const img      = event.image_hero || event.image || event.img ||
+                     'https://images.unsplash.com/photo-1541532713592-79a0317b272b?w=500&q=80&auto=format';
+    const slug     = event.slug || event.id || '';
+
+    const card = document.createElement('div');
+    card.className = 'event-card';
+    card.innerHTML = `
+      <div class="event-img-wrap">
+        <img class="event-img" src="${img}" alt="${title}" loading="lazy"
+             onerror="this.src='https://images.unsplash.com/photo-1541532713592-79a0317b272b?w=500&q=80&auto=format'" />
+        <div class="event-date-badge">${date}</div>
+      </div>
+      <div class="event-body">
+        <h3>${title}</h3>
+        <div class="event-meta">${calendarIcon()} ${date}</div>
+        <div class="event-meta">${pinIcon()} ${location}</div>
+        <p>${desc}</p>
+        <a href="${slug ? 'events.html?id=' + slug : 'events.html'}" class="learn-more-link">Learn More &#8594;</a>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/* ─────────────────────────────────────────
+   HERO SLIDESHOW
+───────────────────────────────────────── */
+const SLIDE_INTERVAL = 5000;
+
+function initSlideshow() {
+  const slides   = document.querySelectorAll('.hero-slide');
+  const dotsWrap = document.getElementById('slideDots');
+  const prevBtn  = document.querySelector('.slide-prev');
+  const nextBtn  = document.querySelector('.slide-next');
+
+  if (!slides.length || !dotsWrap || !prevBtn || !nextBtn) return;
+
+  let current = 0;
+  let timer   = null;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    dot.addEventListener('click', () => { stopTimer(); goTo(i); startTimer(); });
+    dotsWrap.appendChild(dot);
+  });
+
+  const allDots = () => dotsWrap.querySelectorAll('.slide-dot');
+
+  function goTo(index) {
+    slides[current].classList.remove('active');
+    allDots()[current].classList.remove('active');
+    current = (index + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    allDots()[current].classList.add('active');
+  }
+
+  function startTimer() { timer = setInterval(() => goTo(current + 1), SLIDE_INTERVAL); }
+  function stopTimer()  { clearInterval(timer); }
+
+  prevBtn.addEventListener('click', () => { stopTimer(); goTo(current - 1); startTimer(); });
+  nextBtn.addEventListener('click', () => { stopTimer(); goTo(current + 1); startTimer(); });
+
+  const hero = document.getElementById('hero');
+  if (hero) {
+    hero.addEventListener('mouseenter', stopTimer);
+    hero.addEventListener('mouseleave', startTimer);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  { stopTimer(); goTo(current - 1); startTimer(); }
+    if (e.key === 'ArrowRight') { stopTimer(); goTo(current + 1); startTimer(); }
+  });
+
+  startTimer();
+}
+
+/* ─────────────────────────────────────────
+   SMOOTH SCROLL
+───────────────────────────────────────── */
+function initSmoothScroll() {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+}
+
+/* ─────────────────────────────────────────
+   SCROLL REVEAL (fade-in on scroll)
+───────────────────────────────────────── */
+function initScrollReveal() {
+  const targets = document.querySelectorAll(
+    '.dest-card, .why-card, .event-card, .testi-card'
+  );
+  if (!('IntersectionObserver' in window)) return;
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  targets.forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = `opacity 0.5s ease ${i * 0.07}s, transform 0.5s ease ${i * 0.07}s`;
+    obs.observe(el);
+  });
+}
+
+/* ─────────────────────────────────────────
+   INIT
+───────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', async () => {
+  initSlideshow();
+  await renderDestinations();
+  await renderEvents();
+  initSmoothScroll();
+  initScrollReveal();
+  initSearch();
+});

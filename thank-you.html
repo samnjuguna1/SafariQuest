@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank You — SafariQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --green: #1a4731; --gold: #c9932a; --cream: #fdf8f0; --text: #1c1c1c; --muted: #6b7280; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: var(--green); padding: 1rem 1.5rem; }
+    header a { color: #fff; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+    main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1.25rem; }
+    .card { background: #fff; border-radius: 16px; padding: 2.5rem 2rem; max-width: 480px; width: 100%; box-shadow: 0 8px 40px rgba(0,0,0,0.08); text-align: center; }
+    .icon { font-size: 3.5rem; line-height: 1; margin-bottom: 1rem; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 1.85rem; color: var(--green); margin-bottom: 0.75rem; }
+    p { color: var(--muted); line-height: 1.6; margin-bottom: 1.25rem; font-size: 0.98rem; }
+    .meta { font-size: 0.88rem; color: var(--text); background: #f5f0e8; border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; text-align: left; }
+    .meta strong { color: var(--green); }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    .btn { display: inline-block; padding: 12px 22px; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 0.92rem; }
+    .btn-primary { background: var(--gold); color: #fff; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-outline { border: 2px solid var(--green); color: var(--green); }
+    .btn-outline:hover { background: rgba(26,71,49,0.06); }
+  </style>
+</head>
+<body data-nav-active="">
+
+<div id="sq-nav-root"></div>
+
+
+  <header><a href="index.html">← Back to SafariQuest</a></header>
+  <main>
+    <div class="card">
+      <div class="icon" aria-hidden="true">✓</div>
+      <h1>Payment received</h1>
+      <p>Thank you for booking with SafariQuest. Your M-Pesa payment was confirmed and your trip details are saved under your account.</p>
+      <div class="meta" id="summary"></div>
+      <p style="font-size:0.85rem">A confirmation message may also be sent to your email once your project’s email integration (for example a Supabase Edge Function) is connected.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="bookings.html">View my bookings</a>
+        <a class="btn btn-outline" href="index.html">Home</a>
+      </div>
+    </div>
+  </main>
+  <script>
+    (function () {
+      const p = new URLSearchParams(window.location.search);
+      const id = p.get('id') || '—';
+      const dest = p.get('dest') || 'Your destination';
+      const amt = p.get('amount') || '';
+      document.getElementById('summary').innerHTML =
+        '<div><strong>Booking ID</strong><br>' + id + '</div><br>' +
+        '<div><strong>Destination</strong><br>' + decodeURIComponent(dest) + '</div>' +
+        (amt ? '<br><div><strong>Total</strong><br>KES ' + Number(amt).toLocaleString() + '</div>' : '');
+    })();
+  </script>
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

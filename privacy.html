@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — SafariQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand-dark: #0d1f2d;
+      --brand-accent: #c8972a;
+      --brand-gold: #e8b84b;
+      --text-primary: #f0ece4;
+      --text-muted: #94a3b8;
+      --surface: #132230;
+      --surface-2: #1c3347;
+      --border: rgba(200,151,42,0.18);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sora', sans-serif; background: var(--brand-dark); color: var(--text-primary); min-height: 100vh; }
+
+    .hero {
+      background: linear-gradient(135deg, #0d1a2d 0%, #0d2b25 100%);
+      border-bottom: 1px solid var(--border); padding: 52px 5% 44px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '🔒'; position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+      font-size: 8rem; opacity: 0.05;
+    }
+    .hero-eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--brand-accent); margin-bottom: 12px; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.6rem; margin-bottom: 12px; }
+    .hero-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 16px; }
+    .hero-meta span { font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+
+    .layout { display: grid; grid-template-columns: 240px 1fr; gap: 40px; padding: 48px 5%; max-width: 1100px; margin: 0 auto; }
+    @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } .toc { display: none; } }
+
+    .toc { position: sticky; top: 90px; height: fit-content; }
+    .toc-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 14px; }
+    .toc-list { list-style: none; }
+    .toc-list li a {
+      display: block; padding: 7px 12px; font-size: 0.8rem; color: var(--text-muted);
+      text-decoration: none; border-left: 2px solid var(--border); transition: all 0.2s;
+    }
+    .toc-list li a:hover, .toc-list li a.active { color: var(--brand-gold); border-left-color: var(--brand-accent); background: rgba(200,151,42,0.05); }
+    .toc-divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+    .content { max-width: 720px; }
+    .section { margin-bottom: 48px; scroll-margin-top: 90px; }
+    .section-number { font-size: 0.7rem; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 6px; }
+    .section h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .section h3 { font-size: 1rem; font-weight: 600; margin: 20px 0 8px; color: var(--brand-gold); }
+    .section p { font-size: 0.88rem; line-height: 1.85; color: #c8d4dc; margin-bottom: 12px; }
+    .section ul, .section ol { padding-left: 20px; margin-bottom: 12px; }
+    .section li { font-size: 0.88rem; line-height: 1.85; color: #c8d4dc; margin-bottom: 6px; }
+    .highlight-box {
+      background: rgba(200,151,42,0.06); border: 1px solid rgba(200,151,42,0.2);
+      border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.85rem;
+      line-height: 1.7; color: var(--text-muted);
+    }
+    .highlight-box strong { color: var(--brand-gold); }
+    .info-box {
+      background: rgba(21,101,192,0.07); border: 1px solid rgba(21,101,192,0.25);
+      border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.85rem;
+      line-height: 1.7; color: #b3d4ef;
+    }
+    .info-box strong { color: #90caf9; }
+
+    /* Data table */
+    .data-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.83rem; }
+    .data-table th { background: var(--surface-2); padding: 10px 16px; text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); border: 1px solid var(--border); }
+    .data-table td { padding: 10px 16px; border: 1px solid var(--border); color: #c8d4dc; vertical-align: top; line-height: 1.6; }
+    .data-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+    /* Rights grid */
+    .rights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+    .right-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .right-card .right-icon { font-size: 1.2rem; margin-bottom: 8px; }
+    .right-card .right-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; }
+    .right-card .right-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+    @media (max-width: 500px) { .rights-grid { grid-template-columns: 1fr; } }
+
+    /* Cookie table */
+    .cookie-pill { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.68rem; font-weight: 600; margin-right: 6px; }
+    .pill-necessary { background: rgba(46,125,50,0.15); color: #81c784; }
+    .pill-functional { background: rgba(21,101,192,0.15); color: #90caf9; }
+    .pill-analytics { background: rgba(200,151,42,0.15); color: var(--brand-gold); }
+    .pill-marketing { background: rgba(198,40,40,0.15); color: #ef9a9a; }
+
+  </style>
+</head>
+<body data-nav-active="">
+
+<div id="sq-nav-root"></div>
+
+
+
+
+
+<div class="hero">
+  <div class="hero-eyebrow">Legal</div>
+  <h1>Privacy Policy</h1>
+  <div class="hero-meta">
+    <span>📅 Effective: 1 January 2026</span>
+    <span>🕒 Last Updated: 16 April 2026</span>
+    <span>📖 ~10 min read</span>
+    <span>🏛️ Complies with Kenya DPA 2019</span>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Contents</div>
+    <ul class="toc-list">
+      <li><a href="#overview" id="toc-overview">1. Overview</a></li>
+      <li><a href="#collection" id="toc-collection">2. Data We Collect</a></li>
+      <li><a href="#use" id="toc-use">3. How We Use Data</a></li>
+      <li><a href="#sharing" id="toc-sharing">4. Data Sharing</a></li>
+      <li><a href="#cookies" id="toc-cookies">5. Cookies</a></li>
+      <li><a href="#retention" id="toc-retention">6. Data Retention</a></li>
+      <li><a href="#security" id="toc-security">7. Security</a></li>
+      <li><a href="#rights" id="toc-rights">8. Your Rights</a></li>
+      <li><a href="#children" id="toc-children">9. Children's Privacy</a></li>
+      <li><a href="#transfers" id="toc-transfers">10. International Transfers</a></li>
+      <li><a href="#updates" id="toc-updates">11. Policy Updates</a></li>
+      <li><a href="#contact" id="toc-contact">12. Contact Us</a></li>
+    </ul>
+    <div class="toc-divider"></div>
+    <a href="terms-of-service.html" style="display:block;font-size:0.78rem;color:var(--brand-accent);text-decoration:none;padding:6px 12px;">→ Terms of Service</a>
+  </aside>
+
+  <!-- Content -->
+  <main class="content">
+    <div class="highlight-box">
+      <strong>Plain-English Summary:</strong> SafariQuest collects data you provide (like your name and email) and usage data (like pages visited) to provide and improve our service. We do not sell your personal data. You have rights to access, correct, or delete your data. We comply with Kenya's Data Protection Act 2019.
+    </div>
+
+    <div class="section" id="overview">
+      <div class="section-number">Section 01</div>
+      <h2>Overview</h2>
+      <p>SafariQuest ("we", "our", "us") is committed to protecting the privacy of all users who access our travel discovery platform. This Privacy Policy explains how we collect, use, store, and share your personal information when you use our services.</p>
+      <p>SafariQuest is operated from Nairobi, Kenya. We process personal data in accordance with the <strong>Kenya Data Protection Act, 2019</strong> and any other applicable data protection laws.</p>
+      <p>By using SafariQuest, you consent to the practices described in this policy. If you do not agree, please discontinue use of the Platform.</p>
+    </div>
+
+    <div class="section" id="collection">
+      <div class="section-number">Section 02</div>
+      <h2>Data We Collect</h2>
+      <h3>Information You Provide</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Category</th><th>Examples</th><th>When Collected</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Identity Data</td><td>Name, date of birth, gender</td><td>Registration</td></tr>
+          <tr><td>Contact Data</td><td>Email address, phone number</td><td>Registration / contact form</td></tr>
+          <tr><td>Profile Data</td><td>Bio, travel preferences, photo</td><td>Profile setup</td></tr>
+          <tr><td>Content Data</td><td>Reviews, ratings, comments</td><td>User activity</td></tr>
+          <tr><td>Communication Data</td><td>Support messages, enquiries</td><td>Contact form / support</td></tr>
+        </tbody>
+      </table>
+      <h3>Automatically Collected Data</h3>
+      <ul>
+        <li><strong>Usage Data:</strong> Pages visited, time spent, links clicked, search queries</li>
+        <li><strong>Device Data:</strong> IP address, browser type, operating system, device identifiers</li>
+        <li><strong>Location Data:</strong> Country-level location inferred from IP address</li>
+        <li><strong>Cookie Data:</strong> See Section 5 for full cookie details</li>
+      </ul>
+      <h3>Data from Third Parties</h3>
+      <p>If you choose to log in via Google or Facebook, we receive basic profile information (name, email, profile photo) from those providers, subject to your settings with them.</p>
+    </div>
+
+    <div class="section" id="use">
+      <div class="section-number">Section 03</div>
+      <h2>How We Use Your Data</h2>
+      <p>We use your personal data for the following lawful purposes:</p>
+      <ul>
+        <li><strong>Service Delivery:</strong> To create and manage your account, display personalised content, and operate the Platform</li>
+        <li><strong>Communications:</strong> To respond to enquiries, send booking confirmations, and important service notices</li>
+        <li><strong>Improvement:</strong> To analyse usage patterns and improve our platform's features and performance</li>
+        <li><strong>Safety & Security:</strong> To detect, prevent, and address fraud, abuse, or security incidents</li>
+        <li><strong>Marketing:</strong> To send newsletters or travel deals, only with your explicit consent, which you may withdraw at any time</li>
+        <li><strong>Legal Compliance:</strong> To meet our obligations under Kenyan law and respond to legal requests</li>
+      </ul>
+      <div class="info-box">
+        <strong>Lawful Basis:</strong> We process your data based on: (a) your consent, (b) performance of a contract with you, (c) compliance with a legal obligation, or (d) our legitimate interests, where they do not override your rights.
+      </div>
+    </div>
+
+    <div class="section" id="sharing">
+      <div class="section-number">Section 04</div>
+      <h2>Data Sharing & Disclosure</h2>
+      <p>We do <strong>not sell</strong> your personal data to third parties. We may share data in limited circumstances:</p>
+      <ul>
+        <li><strong>Service Providers:</strong> We use trusted third-party providers for hosting, analytics, and email delivery. They process data only on our instructions.</li>
+        <li><strong>Third-Party Listings:</strong> If you book or enquire through a listed hotel, restaurant, or tour operator, they will receive the information needed to fulfill that service.</li>
+        <li><strong>Legal Requirements:</strong> We may disclose data if required by Kenyan law, court order, or government authority.</li>
+        <li><strong>Business Transfers:</strong> In the event of a merger or acquisition, your data may be transferred as part of that transaction, with notice to you.</li>
+        <li><strong>With Your Consent:</strong> We may share data in other ways when you have given explicit consent.</li>
+      </ul>
+    </div>
+
+    <div class="section" id="cookies">
+      <div class="section-number">Section 05</div>
+      <h2>Cookies & Tracking</h2>
+      <p>We use cookies and similar technologies to improve your experience on SafariQuest. Here's what we use:</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Type</th><th>Purpose</th><th>Opt-out?</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="cookie-pill pill-necessary">Necessary</span></td>
+            <td>Session management, security, core functionality. Required for the site to work.</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td><span class="cookie-pill pill-functional">Functional</span></td>
+            <td>Remember your preferences (language, currency, saved destinations).</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td><span class="cookie-pill pill-analytics">Analytics</span></td>
+            <td>Understand how visitors use our site (page views, bounce rate). Data is anonymised.</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td><span class="cookie-pill pill-marketing">Marketing</span></td>
+            <td>Serve relevant travel ads on partner platforms. Only with your consent.</td>
+            <td>Yes</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>You can manage your cookie preferences through your browser settings or our cookie consent banner. Note that disabling certain cookies may impact your experience.</p>
+    </div>
+
+    <div class="section" id="retention">
+      <div class="section-number">Section 06</div>
+      <h2>Data Retention</h2>
+      <p>We retain your personal data only for as long as necessary to fulfill the purposes described in this policy:</p>
+      <ul>
+        <li><strong>Account Data:</strong> Retained while your account is active, plus 30 days after deletion request</li>
+        <li><strong>Reviews & Content:</strong> May be retained in anonymised form for platform integrity</li>
+        <li><strong>Usage Logs:</strong> Up to 12 months</li>
+        <li><strong>Financial Records:</strong> As required by Kenyan tax law (typically 7 years)</li>
+      </ul>
+      <p>When data is no longer needed, we securely delete or anonymise it.</p>
+    </div>
+
+    <div class="section" id="security">
+      <div class="section-number">Section 07</div>
+      <h2>Data Security</h2>
+      <p>We implement appropriate technical and organisational measures to protect your personal data, including:</p>
+      <ul>
+        <li>HTTPS encryption for all data in transit</li>
+        <li>Hashed and salted password storage</li>
+        <li>Access controls limiting who can view your data</li>
+        <li>Regular security reviews and vulnerability assessments</li>
+        <li>Staff training on data handling best practices</li>
+      </ul>
+      <p>No system is perfectly secure. In the unlikely event of a data breach affecting your rights, we will notify you and the relevant authority as required by the Kenya Data Protection Act 2019.</p>
+    </div>
+
+    <div class="section" id="rights">
+      <div class="section-number">Section 08</div>
+      <h2>Your Privacy Rights</h2>
+      <p>Under the Kenya Data Protection Act 2019, you have the following rights regarding your personal data:</p>
+      <div class="rights-grid">
+        <div class="right-card">
+          <div class="right-icon">👁️</div>
+          <div class="right-title">Right to Access</div>
+          <div class="right-desc">Request a copy of the personal data we hold about you.</div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">✏️</div>
+          <div class="right-title">Right to Rectification</div>
+          <div class="right-desc">Ask us to correct inaccurate or incomplete data.</div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">🗑️</div>
+          <div class="right-title">Right to Erasure</div>
+          <div class="right-desc">Request deletion of your personal data ("right to be forgotten").</div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">🚫</div>
+          <div class="right-title">Right to Restrict</div>
+          <div class="right-desc">Request that we limit how we process your data in certain circumstances.</div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">📦</div>
+          <div class="right-title">Data Portability</div>
+          <div class="right-desc">Receive your data in a structured, machine-readable format.</div>
+        </div>
+        <div class="right-card">
+          <div class="right-icon">✋</div>
+          <div class="right-title">Right to Object</div>
+          <div class="right-desc">Object to processing of your data, including for direct marketing.</div>
+        </div>
+      </div>
+      <p>To exercise any of these rights, contact us at <strong>privacy@safariquest.com</strong>. We will respond within 30 days. You may also lodge a complaint with the <strong>Office of the Data Protection Commissioner of Kenya</strong>.</p>
+    </div>
+
+    <div class="section" id="children">
+      <div class="section-number">Section 09</div>
+      <h2>Children's Privacy</h2>
+      <p>SafariQuest is not directed at children under 18 years of age. We do not knowingly collect personal data from minors. If we become aware that we have collected personal data from a child without verified parental consent, we will delete it promptly.</p>
+      <p>If you believe a child has provided us with personal data, please contact us at <strong>privacy@safariquest.com</strong>.</p>
+    </div>
+
+    <div class="section" id="transfers">
+      <div class="section-number">Section 10</div>
+      <h2>International Data Transfers</h2>
+      <p>SafariQuest primarily operates from Kenya. Some of our service providers (e.g., cloud hosting) may process data in other countries. When we transfer your data internationally, we ensure appropriate safeguards are in place, such as standard contractual clauses, consistent with the Kenya Data Protection Act 2019.</p>
+    </div>
+
+    <div class="section" id="updates">
+      <div class="section-number">Section 11</div>
+      <h2>Policy Updates</h2>
+      <p>We may update this Privacy Policy periodically. The "Last Updated" date at the top indicates when changes were made. For material changes, we will notify registered users by email at least 14 days in advance.</p>
+      <p>We encourage you to review this policy regularly. Continued use of SafariQuest after changes constitutes acceptance of the revised policy.</p>
+    </div>
+
+    <div class="section" id="contact">
+      <div class="section-number">Section 12</div>
+      <h2>Contact & Data Controller</h2>
+      <p>SafariQuest is the data controller for personal data processed under this policy.</p>
+      <ul>
+        <li><strong>Privacy Enquiries:</strong> privacy@safariquest.com</li>
+        <li><strong>General:</strong> info@safariquest.com</li>
+        <li><strong>Phone:</strong> +254 798 595 394</li>
+        <li><strong>Address:</strong> Nairobi, Kenya</li>
+        <li><strong>DPA Complaints:</strong> <a href="https://www.odpc.go.ke" style="color:var(--brand-gold);">Office of the Data Protection Commissioner of Kenya</a></li>
+      </ul>
+    </div>
+  </main>
+</div>
+
+
+
+<script>
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('.toc-list a').forEach(a => a.classList.remove('active'));
+        const link = document.querySelector('#toc-' + e.target.id);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+</script>
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <title>SafariQuest Kenya — Discover Kenya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="destinations.css">
+  <script src="auth.js"></script>
+</head>
+<body data-nav-active="destinations">
+
+<div id="sq-nav-root"></div>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🇰🇪 &nbsp;Kenya's #1 Safari Platform</div>
+    <h1>Discover the Magic of <span>Kenya</span></h1>
+    <p>From the sweeping Masai Mara plains to the snow-capped peaks of Mount Kenya — explore handpicked safari experiences in the heart of East Africa.</p>
+    <div class="hero-actions">
+      <button class="btn-hero btn-hero-primary">Explore Destinations</button>
+      <button class="btn-hero btn-hero-secondary">Watch Stories ▶</button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Destinations</div></div>
+    <div class="stat"><div class="stat-num">4.9★</div><div class="stat-label">Avg Rating</div></div>
+    <div class="stat"><div class="stat-num">8k+</div><div class="stat-label">Travelers</div></div>
+  </div>
+</section>
+
+<!-- ── EXPLORE BY TYPE ── -->
+<section class="types-section" id="types">
+  <div class="types-header">
+    <div class="section-label">Browse</div>
+    <h2 class="section-title">Explore by Type</h2>
+    <p class="section-sub">Choose the adventure that speaks to your soul</p>
+  </div>
+
+  <div class="type-image-grid" style="grid-template-rows: 260px 260px;">
+
+    <!-- 1. Big Five — row 1, col 1 (normal height) -->
+    <button class="type-img-btn active" onclick="window.location.href='category.html?type=big-five'">
+      <div class="type-img-bg" style="background-image:url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="type-img-overlay"></div>
+      <div class="type-img-content">
+        <span class="type-img-icon">🦁</span>
+        <span class="type-img-label">Big Five Safari</span>
+        <span class="type-img-count">8 destinations</span>
+      </div>
+    </button>
+
+    <!-- 2. Bird Watching — row 1, col 2 -->
+    <button class="type-img-btn" onclick="window.location.href='category.html?type=birds'">
+      <div class="type-img-bg" style="background-image:url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="type-img-overlay"></div>
+      <div class="type-img-content">
+        <span class="type-img-icon">🦅</span>
+        <span class="type-img-label">Bird Watching</span>
+        <span class="type-img-count">10 destinations</span>
+      </div>
+    </button>
+
+    <!-- 3. Mountain Treks — row 1, col 3 -->
+    <button class="type-img-btn" onclick="window.location.href='category.html?type=mountain'">
+      <div class="type-img-bg" style="background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="type-img-overlay"></div>
+      <div class="type-img-content">
+        <span class="type-img-icon">⛰️</span>
+        <span class="type-img-label">Mountain Treks</span>
+        <span class="type-img-count">4 destinations</span>
+      </div>
+    </button>
+
+    <!-- 4. Adventure Sports — row 2, col 1 -->
+    <button class="type-img-btn" onclick="window.location.href='category.html?sport=adventure'">
+      <div class="type-img-bg" style="background-image:url('https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="type-img-overlay"></div>
+      <div class="type-img-content">
+        <span class="type-img-icon">🪂</span>
+        <span class="type-img-label">Adventure Sports</span>
+        <span class="type-img-count">7 destinations</span>
+      </div>
+    </button>
+
+    <!-- 5. Beach Escapes — row 2, col 2 -->
+    <button class="type-img-btn" onclick="window.location.href='category.html?type=beach'">
+      <div class="type-img-bg" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="type-img-overlay"></div>
+      <div class="type-img-content">
+        <span class="type-img-icon">🏖️</span>
+        <span class="type-img-label">Beach Escapes</span>
+        <span class="type-img-count">6 destinations</span>
+      </div>
+    </button>
+
+    <!-- 6. Cultural Tours — row 2, col 3 -->
+    <button class="type-img-btn" onclick="window.location.href='category.html?type=cultural'">
+      <div class="type-img-bg" style="background-image:url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="type-img-overlay"></div>
+      <div class="type-img-content">
+        <span class="type-img-icon">🎭</span>
+        <span class="type-img-label">Cultural Tours</span>
+        <span class="type-img-count">8 destinations</span>
+      </div>
+    </button>
+
+  </div>
+</section>
+
+<!-- ── FEATURED DESTINATIONS ── -->
+<section class="destinations-section" id="destinations">
+  <div class="fade-in">
+    <div class="section-label">Curated Picks</div>
+    <h2 class="section-title">Featured Destinations</h2>
+    <p class="section-sub">Discover Kenya's most iconic safari destinations and adventure hotspots</p>
+  </div>
+
+  <div class="destinations-grid fade-in" id="dest-grid">
+
+    <div class="dest-card" onclick="window.location.href='attraction-details.html?id=maasai-mara'">
+      <div class="dest-img-wrap">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div>
+        <span class="difficulty-badge diff-moderate">Moderate</span>
+      </div>
+      <div class="dest-body">
+        <div class="dest-header">
+          <div class="dest-name">Masai Mara National Reserve</div>
+          <div class="dest-rating">⭐ 4.9</div>
+        </div>
+        <div class="dest-desc">Home to the famous wildebeest migration and the Big Five in breathtaking savanna landscapes.</div>
+        <div class="dest-meta">
+          <div class="dest-meta-item">📍 Narok County</div>
+          <div class="dest-meta-item">🕐 Best: July – October</div>
+        </div>
+        <div class="dest-tags"><span class="tag">Lions</span><span class="tag">Cheetahs</span><span class="tag tag-more">+4 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=maasai-mara" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" onclick="window.location.href='attraction-details.html?id=amboseli'">
+      <div class="dest-img-wrap">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1535941339077-2dd1c7963098?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div>
+        <span class="difficulty-badge diff-easy">Easy</span>
+      </div>
+      <div class="dest-body">
+        <div class="dest-header">
+          <div class="dest-name">Amboseli National Park</div>
+          <div class="dest-rating">⭐ 4.8</div>
+        </div>
+        <div class="dest-desc">Iconic views of Kilimanjaro backdrop with massive elephant herds roaming freely.</div>
+        <div class="dest-meta">
+          <div class="dest-meta-item">📍 Kajiado County</div>
+          <div class="dest-meta-item">🕐 Best: June – October</div>
+        </div>
+        <div class="dest-tags"><span class="tag">Elephants</span><span class="tag">Wildebeest</span><span class="tag tag-more">+3 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=amboseli" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" onclick="window.location.href='attraction-details.html?id=lake-nakuru'">
+      <div class="dest-img-wrap">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1564760290292-23341e4df6ec?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div>
+        <span class="difficulty-badge diff-easy">Easy</span>
+      </div>
+      <div class="dest-body">
+        <div class="dest-header">
+          <div class="dest-name">Lake Nakuru National Park</div>
+          <div class="dest-rating">⭐ 4.7</div>
+        </div>
+        <div class="dest-desc">A pink-fringed soda lake famous for millions of flamingos and black rhino sanctuary.</div>
+        <div class="dest-meta">
+          <div class="dest-meta-item">📍 Nakuru County</div>
+          <div class="dest-meta-item">🕐 Best: June – September</div>
+        </div>
+        <div class="dest-tags"><span class="tag">Flamingos</span><span class="tag">Rhinos</span><span class="tag tag-more">+2 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=lake-nakuru" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" onclick="window.location.href='attraction-details.html?id=tsavo'">
+      <div class="dest-img-wrap">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1598886290734-c4dee49e29cc?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div>
+        <span class="difficulty-badge diff-moderate">Moderate</span>
+      </div>
+      <div class="dest-body">
+        <div class="dest-header">
+          <div class="dest-name">Tsavo National Park</div>
+          <div class="dest-rating">⭐ 4.7</div>
+        </div>
+        <div class="dest-desc">Kenya's largest park — red-dusted elephants, lava flows, and vast untamed wilderness.</div>
+        <div class="dest-meta">
+          <div class="dest-meta-item">📍 Coast & Taita-Taveta</div>
+          <div class="dest-meta-item">🕐 Best: June – October</div>
+        </div>
+        <div class="dest-tags"><span class="tag">Elephants</span><span class="tag">Lions</span><span class="tag tag-more">+3 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=tsavo" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" id="extra-dest-1" style="display:none;" onclick="window.location.href='attraction-details.html?id=mount-kenya'">
+      <div class="dest-img-wrap">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div>
+        <span class="difficulty-badge diff-challenging">Challenging</span>
+      </div>
+      <div class="dest-body">
+        <div class="dest-header">
+          <div class="dest-name">Mount Kenya National Park</div>
+          <div class="dest-rating">⭐ 4.8</div>
+        </div>
+        <div class="dest-desc">Africa's second highest peak — a UNESCO World Heritage site with glaciers and diverse wildlife.</div>
+        <div class="dest-meta">
+          <div class="dest-meta-item">📍 Central Kenya</div>
+          <div class="dest-meta-item">🕐 Best: January – February</div>
+        </div>
+        <div class="dest-tags"><span class="tag">Trekking</span><span class="tag">Buffalo</span><span class="tag tag-more">+2 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=mount-kenya" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" id="extra-dest-2" style="display:none;" onclick="window.location.href='attraction-details.html?id=samburu'">
+      <div class="dest-img-wrap">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div>
+        <span class="difficulty-badge diff-moderate">Moderate</span>
+      </div>
+      <div class="dest-body">
+        <div class="dest-header">
+          <div class="dest-name">Samburu National Reserve</div>
+          <div class="dest-rating">⭐ 4.7</div>
+        </div>
+        <div class="dest-desc">Remote northern reserve home to rare "Special Five" species found only in arid Kenya.</div>
+        <div class="dest-meta">
+          <div class="dest-meta-item">📍 Samburu County</div>
+          <div class="dest-meta-item">🕐 Best: July – September</div>
+        </div>
+        <div class="dest-tags"><span class="tag">Grevy's Zebra</span><span class="tag">Gerenuk</span><span class="tag tag-more">+3 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=samburu" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" id="extra-dest-3" style="display:none;" onclick="window.location.href='attraction-details.html?id=diani-beach'">
+      <div class="dest-img-wrap">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div>
+        <span class="difficulty-badge diff-easy">Easy</span>
+      </div>
+      <div class="dest-body">
+        <div class="dest-header">
+          <div class="dest-name">Diani Beach</div>
+          <div class="dest-rating">⭐ 4.8</div>
+        </div>
+        <div class="dest-desc">Kenya's most celebrated beach — powdery white sands, coral reefs, and azure Indian Ocean waters.</div>
+        <div class="dest-meta">
+          <div class="dest-meta-item">📍 Kwale County</div>
+          <div class="dest-meta-item">🕐 Best: January – March</div>
+        </div>
+        <div class="dest-tags"><span class="tag">Snorkeling</span><span class="tag">Dolphins</span><span class="tag tag-more">+2 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=diani-beach" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" id="extra-dest-4" style="display:none;" onclick="window.location.href='attraction-details.html?id=hells-gate'">
+      <div class="dest-img-wrap">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div>
+        <span class="difficulty-badge diff-easy">Easy</span>
+      </div>
+      <div class="dest-body">
+        <div class="dest-header">
+          <div class="dest-name">Hell's Gate National Park</div>
+          <div class="dest-rating">⭐ 4.6</div>
+        </div>
+        <div class="dest-desc">Unique walking and cycling safari through dramatic gorges, geysers, and towering cliffs.</div>
+        <div class="dest-meta">
+          <div class="dest-meta-item">📍 Nakuru County</div>
+          <div class="dest-meta-item">🕐 Best: June – October</div>
+        </div>
+        <div class="dest-tags"><span class="tag">Cycling</span><span class="tag">Rock Climbing</span><span class="tag tag-more">+2 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=hells-gate" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="load-more-wrap">
+    <button class="btn-load-more" onclick="loadMore()">Load More Destinations</button>
+  </div>
+</section>
+
+<!-- ── BROWSE ALL EXPERIENCE TYPES ── -->
+<section class="experience-section" id="experience">
+  <div class="fade-in">
+    <div class="section-label">All Experiences</div>
+    <h2 class="section-title">Browse All Experience Types</h2>
+    <p class="section-sub">Find the perfect Kenyan adventure tailored to your passion</p>
+  </div>
+
+  <div class="exp-grid fade-in">
+
+    <div class="exp-card active" onclick="window.location.href='category.html?type=big-five'" style="cursor:pointer;">
+      <div class="exp-card-img" style="background-image:url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="exp-card-body">
+        <div class="exp-icon">🦁</div>
+        <div class="exp-name">Big Five Safari</div>
+        <div class="exp-desc">Track lion, leopard, elephant, buffalo & rhino across Kenya's world-class game reserves.</div>
+        <div class="exp-footer"><span class="exp-count">8 destinations</span><span class="exp-arrow">→</span></div>
+      </div>
+    </div>
+
+    <div class="exp-card" onclick="window.location.href='category.html?type=birds'" style="cursor:pointer;">
+      <div class="exp-card-img" style="background-image:url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="exp-card-body">
+        <div class="exp-icon">🦅</div>
+        <div class="exp-name">Bird Watching</div>
+        <div class="exp-desc">Discover 1,100+ bird species — from flamingos at Nakuru to eagles over the Rift Valley.</div>
+        <div class="exp-footer"><span class="exp-count">10 destinations</span><span class="exp-arrow">→</span></div>
+      </div>
+    </div>
+
+    <div class="exp-card" onclick="window.location.href='category.html?type=mountain'" style="cursor:pointer;">
+      <div class="exp-card-img" style="background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80')"></div>
+      <div class="exp-card-body">
+        <div class="exp-icon">⛰️</div>
+        <div class="exp-name">Mountain Treks</div>
+        <div class="exp-desc">Conquer Mount Kenya, Africa's second highest peak, through lush rainforest and glacial zones.</div>
+        <div class="exp-footer"><span class="exp-count">4 destinations</span><span class="exp-arrow">→</span></div>
+      </div>
+    </div>
+
+    <div class="exp-card" onclick="window.location.href='category.html?type=beach'" style="cursor:pointer;">
+      <div class="exp-card-img" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="exp-card-body">
+        <div class="exp-icon">🏖️</div>
+        <div class="exp-name">Beach Escapes</div>
+        <div class="exp-desc">Unwind on Kenya's stunning Indian Ocean coast — Diani, Watamu, Malindi, and beyond.</div>
+        <div class="exp-footer"><span class="exp-count">6 destinations</span><span class="exp-arrow">→</span></div>
+      </div>
+    </div>
+
+    <div class="exp-card" onclick="window.location.href='category.html?type=cultural'" style="cursor:pointer;">
+      <div class="exp-card-img" style="background-image:url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="exp-card-body">
+        <div class="exp-icon">🎭</div>
+        <div class="exp-name">Cultural Tours</div>
+        <div class="exp-desc">Visit Maasai villages, Swahili coastal towns, and Nairobi's vibrant arts and heritage scene.</div>
+        <div class="exp-footer"><span class="exp-count">8 destinations</span><span class="exp-arrow">→</span></div>
+      </div>
+    </div>
+
+    <div class="exp-card" onclick="window.location.href='category.html?sport=adventure'" style="cursor:pointer;">
+      <div class="exp-card-img" style="background-image:url('https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="exp-card-body">
+        <div class="exp-icon">🪂</div>
+        <div class="exp-name">Adventure Sports</div>
+        <div class="exp-desc">White water rafting on the Tana River, rock climbing at Hell's Gate, and hot air balloon safaris.</div>
+        <div class="exp-footer"><span class="exp-count">7 destinations</span><span class="exp-arrow">→</span></div>
+      </div>
+    </div>
+
+    <!-- Sports exp-card REMOVED — Sports is already in the type-image-grid above -->
+
+  </div>
+</section>
+
+<!-- ── TRAVELER FAVORITES ── -->
+<section class="favorites-section" id="favorites">
+  <div class="fade-in">
+    <div class="section-label">Community Picks</div>
+    <h2 class="section-title">Traveler Favorites</h2>
+    <p class="section-sub">The most loved and highly-rated Kenyan safari experiences from our community</p>
+  </div>
+
+  <div class="destinations-grid fade-in">
+
+    <div class="dest-card" onclick="window.location.href='attraction-details.html?id=maasai-mara'">
+      <div class="dest-img-wrap"><div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div><span class="difficulty-badge diff-moderate">Moderate</span></div>
+      <div class="dest-body">
+        <div class="dest-header"><div class="dest-name" style="color:var(--orange)">Masai Mara National Reserve</div><div class="dest-rating">⭐ 4.9</div></div>
+        <div class="dest-desc">Home to the famous wildebeest migration and the Big Five in breathtaking savanna landscapes.</div>
+        <div class="dest-meta"><div class="dest-meta-item">📍 Narok County</div><div class="dest-meta-item">🕐 Best: July – October</div></div>
+        <div class="dest-tags"><span class="tag">Lions</span><span class="tag">Cheetahs</span><span class="tag tag-more">+4 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=maasai-mara" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" onclick="window.location.href='attraction-details.html?id=amboseli'">
+      <div class="dest-img-wrap"><div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1535941339077-2dd1c7963098?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div><span class="difficulty-badge diff-easy">Easy</span></div>
+      <div class="dest-body">
+        <div class="dest-header"><div class="dest-name">Amboseli National Park</div><div class="dest-rating">⭐ 4.8</div></div>
+        <div class="dest-desc">Iconic views of Kilimanjaro backdrop with massive elephant herds roaming freely.</div>
+        <div class="dest-meta"><div class="dest-meta-item">📍 Kajiado County</div><div class="dest-meta-item">🕐 Best: June – October</div></div>
+        <div class="dest-tags"><span class="tag">Elephants</span><span class="tag">Kilimanjaro Views</span><span class="tag tag-more">+2 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=amboseli" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" onclick="window.location.href='attraction-details.html?id=diani-beach'">
+      <div class="dest-img-wrap"><div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div><span class="difficulty-badge diff-easy">Easy</span></div>
+      <div class="dest-body">
+        <div class="dest-header"><div class="dest-name">Diani Beach</div><div class="dest-rating">⭐ 4.8</div></div>
+        <div class="dest-desc">Kenya's most celebrated beach — powdery white sands, coral reefs, and azure Indian Ocean waters.</div>
+        <div class="dest-meta"><div class="dest-meta-item">📍 Kwale County</div><div class="dest-meta-item">🕐 Best: January – March</div></div>
+        <div class="dest-tags"><span class="tag">Snorkeling</span><span class="tag">Dolphins</span><span class="tag tag-more">+2 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=diani-beach" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+    <div class="dest-card" onclick="window.location.href='attraction-details.html?id=lake-nakuru'">
+      <div class="dest-img-wrap"><div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1564760290292-23341e4df6ec?auto=format&fit=crop&w=800&q=80'); background-size:cover; background-position:center;"></div><span class="difficulty-badge diff-easy">Easy</span></div>
+      <div class="dest-body">
+        <div class="dest-header"><div class="dest-name">Lake Nakuru National Park</div><div class="dest-rating">⭐ 4.7</div></div>
+        <div class="dest-desc">A pink-fringed soda lake famous for millions of flamingos and black rhino sanctuary.</div>
+        <div class="dest-meta"><div class="dest-meta-item">📍 Nakuru County</div><div class="dest-meta-item">🕐 Best: June – September</div></div>
+        <div class="dest-tags"><span class="tag">Flamingos</span><span class="tag">Rhinos</span><span class="tag tag-more">+2 more</span></div>
+        <div class="dest-footer"><a href="attraction-details.html?id=lake-nakuru" class="explore-link" onclick="event.stopPropagation()">⚡ Explore →</a></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── EXPLORE BY REGION ── -->
+<section class="regions-section" id="regions">
+  <div class="fade-in">
+    <div class="section-label">Regions</div>
+    <h2 class="section-title">Explore by Region</h2>
+    <p class="section-sub">Discover the unique landscapes and highlights of each Kenyan region</p>
+  </div>
+  <div class="regions-scroll-wrap fade-in">
+    <div class="regions-scroll">
+
+      <div class="region-card">
+        <div class="region-img-wrap">
+          <div class="dest-img img-riftvalley" style="height:180px;"></div>
+          <div class="region-img-overlay" style="background:linear-gradient(to top,rgba(100,40,10,0.85),transparent)"><div class="region-title-bar">📍 Rift Valley</div></div>
+        </div>
+        <div class="region-body">
+          <p class="region-desc">Dramatic escarpments, soda lakes, and geothermal wonders through Kenya's heartland.</p>
+          <div class="region-section-label">Counties</div>
+          <div class="region-pills"><span class="region-pill">Nakuru</span><span class="region-pill">Narok</span><span class="region-pill">Kajiado</span></div>
+          <div class="region-section-label">Highlights</div>
+          <div class="region-pills"><span class="highlight-pill">⚡ Masai Mara</span><span class="highlight-pill">⚡ Lake Nakuru</span><span class="highlight-pill">⚡ Hell's Gate</span></div>
+        </div>
+      </div>
+
+      <div class="region-card region-card--featured">
+        <div class="region-img-wrap">
+          <div class="dest-img img-coast" style="height:180px;"></div>
+          <div class="region-img-overlay" style="background:linear-gradient(to top,rgba(0,60,100,0.85),transparent)"><div class="region-title-bar" style="color:var(--orange)">📍 Kenyan Coast</div></div>
+        </div>
+        <div class="region-body">
+          <p class="region-desc">Ancient Swahili heritage, pristine Indian Ocean beaches, and vibrant marine ecosystems.</p>
+          <div class="region-section-label">Counties</div>
+          <div class="region-pills"><span class="region-pill">Mombasa</span><span class="region-pill">Kwale</span><span class="region-pill">Kilifi</span><span class="region-pill">Lamu</span></div>
+          <div class="region-section-label">Highlights</div>
+          <div class="region-pills"><span class="highlight-pill">⚡ Diani Beach</span><span class="highlight-pill">⚡ Watamu</span><span class="highlight-pill">⚡ Lamu Old Town</span></div>
+        </div>
+      </div>
+
+      <div class="region-card">
+        <div class="region-img-wrap">
+          <div class="dest-img img-central" style="height:180px;"></div>
+          <div class="region-img-overlay" style="background:linear-gradient(to top,rgba(20,70,20,0.85),transparent)"><div class="region-title-bar">📍 Central Kenya</div></div>
+        </div>
+        <div class="region-body">
+          <p class="region-desc">Lush highlands, coffee and tea plantations, and the majestic Mount Kenya massif.</p>
+          <div class="region-section-label">Counties</div>
+          <div class="region-pills"><span class="region-pill">Nyeri</span><span class="region-pill">Kirinyaga</span><span class="region-pill">Murang'a</span></div>
+          <div class="region-section-label">Highlights</div>
+          <div class="region-pills"><span class="highlight-pill">⚡ Mt. Kenya</span><span class="highlight-pill">⚡ Aberdare NP</span><span class="highlight-pill">⚡ Ol Pejeta</span></div>
+        </div>
+      </div>
+
+      <div class="region-card">
+        <div class="region-img-wrap">
+          <div class="dest-img img-north" style="height:180px;"></div>
+          <div class="region-img-overlay" style="background:linear-gradient(to top,rgba(140,60,10,0.85),transparent)"><div class="region-title-bar">📍 Northern Kenya</div></div>
+        </div>
+        <div class="region-body">
+          <p class="region-desc">Remote arid frontier with rare wildlife, jade-green Turkana, and ancient cultures.</p>
+          <div class="region-section-label">Counties</div>
+          <div class="region-pills"><span class="region-pill">Samburu</span><span class="region-pill">Marsabit</span><span class="region-pill">Turkana</span></div>
+          <div class="region-section-label">Highlights</div>
+          <div class="region-pills"><span class="highlight-pill">⚡ Samburu Reserve</span><span class="highlight-pill">⚡ Lake Turkana</span><span class="highlight-pill">⚡ Shaba Reserve</span></div>
+        </div>
+      </div>
+
+      <div class="region-card">
+        <div class="region-img-wrap">
+          <div class="dest-img img-nyanza" style="height:180px;"></div>
+          <div class="region-img-overlay" style="background:linear-gradient(to top,rgba(0,60,100,0.85),transparent)"><div class="region-title-bar">📍 Nyanza</div></div>
+        </div>
+        <div class="region-body">
+          <p class="region-desc">The cradle of Kenya's Luo culture, bordering the vast freshwater of Lake Victoria.</p>
+          <div class="region-section-label">Counties</div>
+          <div class="region-pills"><span class="region-pill">Kisumu</span><span class="region-pill">Homa Bay</span><span class="region-pill">Siaya</span><span class="region-pill">Migori</span></div>
+          <div class="region-section-label">Highlights</div>
+          <div class="region-pills"><span class="highlight-pill">⚡ Lake Victoria</span><span class="highlight-pill">⚡ Ruma NP</span><span class="highlight-pill">⚡ Kisumu Museum</span></div>
+        </div>
+      </div>
+
+      <div class="region-card">
+        <div class="region-img-wrap">
+          <div class="dest-img img-western" style="height:180px;"></div>
+          <div class="region-img-overlay" style="background:linear-gradient(to top,rgba(20,80,20,0.85),transparent)"><div class="region-title-bar">📍 Western Kenya</div></div>
+        </div>
+        <div class="region-body">
+          <p class="region-desc">Lush rainforests, Kakamega forest reserve, and the rolling Nandi Hills tea country.</p>
+          <div class="region-section-label">Counties</div>
+          <div class="region-pills"><span class="region-pill">Kakamega</span><span class="region-pill">Bungoma</span><span class="region-pill">Vihiga</span></div>
+          <div class="region-section-label">Highlights</div>
+          <div class="region-pills"><span class="highlight-pill">⚡ Kakamega Forest</span><span class="highlight-pill">⚡ Nandi Hills</span><span class="highlight-pill">⚡ Webuye Falls</span></div>
+        </div>
+      </div>
+
+      <div class="region-card">
+        <div class="region-img-wrap">
+          <div class="dest-img img-nairobi" style="height:180px;"></div>
+          <div class="region-img-overlay" style="background:linear-gradient(to top,rgba(20,20,60,0.85),transparent)"><div class="region-title-bar">📍 Nairobi</div></div>
+        </div>
+        <div class="region-body">
+          <p class="region-desc">Africa's safari capital — where urban energy meets the wild at Nairobi National Park.</p>
+          <div class="region-section-label">Counties</div>
+          <div class="region-pills"><span class="region-pill">Nairobi City</span><span class="region-pill">Kiambu</span></div>
+          <div class="region-section-label">Highlights</div>
+          <div class="region-pills"><span class="highlight-pill">⚡ Nairobi NP</span><span class="highlight-pill">⚡ Giraffe Centre</span><span class="highlight-pill">⚡ David Sheldrick</span></div>
+        </div>
+      </div>
+
+      <div class="region-card">
+        <div class="region-img-wrap">
+          <div class="dest-img img-eastern" style="height:180px;"></div>
+          <div class="region-img-overlay" style="background:linear-gradient(to top,rgba(120,50,10,0.85),transparent)"><div class="region-title-bar">📍 Eastern Kenya</div></div>
+        </div>
+        <div class="region-body">
+          <p class="region-desc">Semi-arid savanna, Tsavo wilderness, and the ancient Kamba culture of Kenya's east.</p>
+          <div class="region-section-label">Counties</div>
+          <div class="region-pills"><span class="region-pill">Machakos</span><span class="region-pill">Kitui</span><span class="region-pill">Makueni</span></div>
+          <div class="region-section-label">Highlights</div>
+          <div class="region-pills"><span class="highlight-pill">⚡ Tsavo East</span><span class="highlight-pill">⚡ Ol Donyo Sabuk</span><span class="highlight-pill">⚡ Amboseli</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── DESTINATION GUIDE ── -->
+<section class="guide-section" id="guides">
+  <div class="fade-in">
+    <div class="section-label">Resources</div>
+    <h2 class="section-title">Kenya Destination Guide</h2>
+    <p class="section-sub">Everything you need to plan your perfect Kenyan adventure</p>
+  </div>
+  <div class="guide-grid fade-in">
+    <div class="guide-card" onclick="window.location.href='category.html?type=big-five'" style="cursor:pointer;"><div class="guide-card-name">Big Five Safari</div><div class="guide-card-count">8 destinations</div></div>
+    <div class="guide-card" onclick="window.location.href='category.html?type=birds'" style="cursor:pointer;"><div class="guide-card-name">Bird Watching</div><div class="guide-card-count">10 destinations</div></div>
+    <div class="guide-card" onclick="window.location.href='category.html?type=mountain'" style="cursor:pointer;"><div class="guide-card-name">Mountain Treks</div><div class="guide-card-count">4 destinations</div></div>
+    <div class="guide-card" onclick="window.location.href='category.html?type=beach'" style="cursor:pointer;"><div class="guide-card-name">Beach Escapes</div><div class="guide-card-count">6 destinations</div></div>
+    <div class="guide-card" onclick="window.location.href='category.html?type=cultural'" style="cursor:pointer;"><div class="guide-card-name">Cultural Tours</div><div class="guide-card-count">8 destinations</div></div>
+    <div class="guide-card" onclick="window.location.href='category.html?sport=adventure'" style="cursor:pointer;"><div class="guide-card-name">Adventure Sports</div><div class="guide-card-count">7 destinations</div></div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div class="cta-badge">⚡ Limited Time Offer</div>
+  <h2>Ready to Explore Kenya?</h2>
+  <p>Join thousands of travelers who've discovered their perfect Kenyan safari. Get exclusive deals and travel tips delivered to your inbox.</p>
+  <div class="cta-form">
+    <input type="email" class="cta-input" placeholder="Enter your email">
+    <button class="btn-fill" onclick="window.location.href='register.html'">Sign Up Free</button>
+  </div>
+  <div class="signup-prompt">
+    Already have an account? <a href="login.html" class="signup-link">Sign in here</a>
+  </div>
+  <p class="cta-note">No spam. Just amazing Kenyan safari experiences and travel tips.</p>
+</section>
+
+<div id="sq-footer-root"></div>
+
+<button class="scroll-top" id="scrollTop">↑</button>
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+<script src="supabase-config.js"></script>
+<script src="destinations.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!--
+  ══════════════════════════════════════════════════════════════════════════════
+  SafariQuest — payment.html  (EXAMPLE / REFERENCE)
+  Shows how to:
+    1. Guard the payment page — unauthenticated users can't access it at all.
+    2. Restore all booking data if they were redirected through login mid-flow.
+  ══════════════════════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment — SafariQuest</title>
+
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/js/auth-ui.css" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-nav-active="">
+
+<div id="sq-nav-root"></div>
+
+
+
+  <!-- Your nav / header here -->
+
+  <main class="payment-page" id="payment-content" style="display:none;">
+    <h1>Complete Your Booking</h1>
+
+    <!-- Booking summary (populated from JS) -->
+    <section class="booking-summary" id="booking-summary">
+      <h2>Booking Summary</h2>
+      <p><strong>Tour:</strong>      <span id="sum-tour"></span></p>
+      <p><strong>Date:</strong>      <span id="sum-date"></span></p>
+      <p><strong>Travellers:</strong><span id="sum-travelers"></span></p>
+      <p><strong>Room:</strong>      <span id="sum-room"></span></p>
+    </section>
+
+    <!-- Payment form -->
+    <section class="payment-form">
+      <h2>Payment Details</h2>
+      <div class="form-field">
+        <label for="card-name">Name on Card</label>
+        <input id="card-name" type="text" placeholder="John Doe" autocomplete="cc-name" />
+      </div>
+      <div class="form-field">
+        <label for="card-number">Card Number</label>
+        <input id="card-number" type="text" placeholder="4242 4242 4242 4242" autocomplete="cc-number" />
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="card-expiry">Expiry</label>
+          <input id="card-expiry" type="text" placeholder="MM / YY" autocomplete="cc-exp" />
+        </div>
+        <div class="form-field">
+          <label for="card-cvv">CVV</label>
+          <input id="card-cvv" type="text" placeholder="123" autocomplete="cc-csc" />
+        </div>
+      </div>
+      <button id="pay-btn" class="btn-primary">Pay Now</button>
+    </section>
+  </main>
+
+  <!-- Shown while auth check runs -->
+  <div id="payment-loading" style="text-align:center;padding:60px;">
+    <p>Verifying your session…</p>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const loader  = document.getElementById('payment-loading');
+      const content = document.getElementById('payment-content');
+
+      // ── 1. Hard auth guard: payment page REQUIRES login ────────────────
+      let user = window.SQ.getUser();
+      if (!user) user = await window.SQ.fetchUser();
+
+      if (!user) {
+        // Save current URL as the return destination
+        window.PendingIntent.save({
+          returnUrl: window.location.href,
+          action: 'pay',
+          data: getDataFromUrl(),   // preserve URL params if any
+        });
+        window.location.href = '/login.html';
+        return;
+      }
+
+      loader.style.display  = 'none';
+      content.style.display = 'block';
+
+      // ── 2. Restore booking data from URL (post-login redirect) ─────────
+      const resumed = window.readResumedData();
+      const bookingData = resumed?.data || getDataFromUrl();
+
+      if (bookingData) {
+        populateSummary(bookingData);
+      }
+    });
+
+    function populateSummary(data) {
+      setText('sum-tour',      data.tourName   || data.tourId || '—');
+      setText('sum-date',      data.date        || '—');
+      setText('sum-travelers', data.travelers   || '—');
+      setText('sum-room',      data.room        || '—');
+    }
+
+    function setText(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+
+    /**
+     * If payment.html was linked with sq_resume params but readResumedData()
+     * already cleaned the URL, this fallback still works on the first load
+     * before auth.js strips the params.
+     */
+    function getDataFromUrl() {
+      const p = new URLSearchParams(window.location.search);
+      const raw = p.get('sq_resume');
+      if (!raw) return null;
+      try { return JSON.parse(atob(raw)); } catch { return null; }
+    }
+
+    // ── 3. Pay button (add your payment gateway here) ───────────────────
+    document.getElementById('pay-btn')?.addEventListener('click', () => {
+      alert('Integrate your payment gateway here (e.g., Stripe, M-Pesa, Flutterwave).');
+    });
+  </script>
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

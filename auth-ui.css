@@ -1,0 +1,312 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SafariQuest — Auth UI Styles
+   Profile dropdown, modals, and authentication UI components
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --sq-green: #1a4731;
+  --sq-green-mid: #2d6a4f;
+  --sq-gold: #c9932a;
+  --sq-gold-light: #f4c56a;
+  --sq-white: #ffffff;
+  --sq-text: #1c1c1c;
+  --sq-muted: #6b7280;
+  --sq-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --sq-radius: 12px;
+}
+
+/* ── PROFILE AVATAR MENU ── */
+.sq-avatar-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.sq-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 24px;
+  padding: 4px 12px 4px 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: rgba(255,255,255,0.9);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.sq-avatar-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.5);
+}
+
+.sq-avatar-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--sq-gold);
+  color: var(--sq-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sq-avatar-initials {
+  background: var(--sq-gold);
+}
+
+.sq-avatar-name {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .sq-avatar-name {
+    display: block;
+  }
+}
+
+.sq-chevron {
+  transition: transform 0.2s;
+}
+
+.sq-avatar-btn[aria-expanded="true"] .sq-chevron {
+  transform: rotate(180deg);
+}
+
+.sq-avatar-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--sq-white);
+  border-radius: var(--sq-radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  min-width: 200px;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.2s;
+  z-index: 1000;
+}
+
+.sq-avatar-dropdown.sq-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.sq-avatar-dropdown li {
+  margin: 0;
+}
+
+.sq-avatar-dropdown a,
+.sq-avatar-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  text-decoration: none;
+  color: var(--sq-text);
+  font-size: 0.88rem;
+  font-weight: 500;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.sq-avatar-dropdown a:hover,
+.sq-avatar-dropdown button:hover {
+  background: rgba(26,71,49,0.05);
+  color: var(--sq-green);
+}
+
+.sq-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 8px 0;
+}
+
+/* ── LOGIN MODAL ── */
+.sq-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+.sq-modal-overlay.sq-modal-open {
+  display: flex;
+}
+
+.sq-modal {
+  background: var(--sq-white);
+  border-radius: var(--sq-radius);
+  padding: 2rem;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: sq-fadeUp 0.3s ease;
+}
+
+@keyframes sq-fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sq-modal h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--sq-text);
+}
+
+.sq-modal p {
+  color: var(--sq-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.sq-modal-close {
+  float: right;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--sq-muted);
+  line-height: 1;
+  padding: 0;
+}
+
+.sq-modal-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.sq-btn {
+  flex: 1;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.sq-btn-primary {
+  background: var(--sq-green);
+  color: var(--sq-white);
+}
+
+.sq-btn-primary:hover {
+  background: var(--sq-green-mid);
+}
+
+.sq-btn-secondary {
+  background: #f3f4f6;
+  color: var(--sq-text);
+}
+
+.sq-btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+/* ── TOAST NOTIFICATIONS ── */
+.sq-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--sq-green);
+  color: var(--sq-white);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 10000;
+  max-width: 400px;
+}
+
+.sq-toast.sq-show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.sq-toast.sq-error {
+  background: #dc2626;
+}
+
+.sq-toast.sq-success {
+  background: #16a34a;
+}
+
+.sq-toast.sq-warning {
+  background: #d97706;
+}
+
+/* ── NAV-SPECIFIC OVERRIDES (green navbar pages) ── */
+nav .sq-avatar-menu,
+#navbar .sq-avatar-menu {
+  display: inline-flex;
+  align-items: center;
+}
+
+nav .sq-avatar-dropdown,
+#navbar .sq-avatar-dropdown {
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 220px;
+}
+
+/* When inside .nav-actions (index.html style) */
+.nav-actions .sq-avatar-menu {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* When inside .nav-auth (bookings/saved/reviews style) */
+.nav-auth .sq-avatar-menu {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Dropdown user info row */
+.sq-avatar-dropdown li:first-child {
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--sq-text);
+}
+
+/* Logout button in dropdown — red tint on hover */
+.sq-avatar-dropdown #sq-logout-btn:hover {
+  background: rgba(220, 38, 38, 0.06);
+  color: #dc2626;
+}

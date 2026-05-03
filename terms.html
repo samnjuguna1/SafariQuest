@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — SafariQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand-dark: #0d1f2d;
+      --brand-accent: #c8972a;
+      --brand-gold: #e8b84b;
+      --text-primary: #f0ece4;
+      --text-muted: #94a3b8;
+      --surface: #132230;
+      --surface-2: #1c3347;
+      --border: rgba(200,151,42,0.18);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sora', sans-serif; background: var(--brand-dark); color: var(--text-primary); min-height: 100vh; }
+
+    .hero {
+      background: linear-gradient(135deg, var(--surface) 0%, #0d2b1a 100%);
+      border-bottom: 1px solid var(--border); padding: 52px 5% 44px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '⚖️'; position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+      font-size: 8rem; opacity: 0.05;
+    }
+    .hero-eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--brand-accent); margin-bottom: 12px; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.6rem; margin-bottom: 12px; }
+    .hero-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 16px; }
+    .hero-meta span { font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+
+    .layout { display: grid; grid-template-columns: 240px 1fr; gap: 40px; padding: 48px 5%; max-width: 1100px; margin: 0 auto; }
+    @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } .toc { display: none; } }
+
+    /* TOC */
+    .toc { position: sticky; top: 90px; height: fit-content; }
+    .toc-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 14px; }
+    .toc-list { list-style: none; }
+    .toc-list li a {
+      display: block; padding: 7px 12px; font-size: 0.8rem; color: var(--text-muted);
+      text-decoration: none; border-left: 2px solid var(--border); transition: all 0.2s;
+    }
+    .toc-list li a:hover, .toc-list li a.active { color: var(--brand-gold); border-left-color: var(--brand-accent); background: rgba(200,151,42,0.05); }
+    .toc-divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+    /* Content */
+    .content { max-width: 720px; }
+    .section { margin-bottom: 48px; scroll-margin-top: 90px; }
+    .section-number { font-size: 0.7rem; color: var(--brand-accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 6px; }
+    .section h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .section h3 { font-size: 1rem; font-weight: 600; margin: 20px 0 8px; color: var(--brand-gold); }
+    .section p { font-size: 0.88rem; line-height: 1.85; color: #c8d4dc; margin-bottom: 12px; }
+    .section ul, .section ol { padding-left: 20px; margin-bottom: 12px; }
+    .section li { font-size: 0.88rem; line-height: 1.85; color: #c8d4dc; margin-bottom: 6px; }
+    .highlight-box {
+      background: rgba(200,151,42,0.06); border: 1px solid rgba(200,151,42,0.2);
+      border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.85rem;
+      line-height: 1.7; color: var(--text-muted);
+    }
+    .highlight-box strong { color: var(--brand-gold); }
+    .warn-box {
+      background: rgba(198,40,40,0.06); border: 1px solid rgba(198,40,40,0.2);
+      border-radius: 10px; padding: 16px 20px; margin: 16px 0; font-size: 0.85rem;
+      line-height: 1.7; color: #efb5b5;
+    }
+
+    /* Accept bar */
+    .accept-bar {
+      position: sticky; bottom: 0; background: var(--surface);
+      border-top: 1px solid var(--border); padding: 16px 5%;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .accept-bar p { font-size: 0.82rem; color: var(--text-muted); }
+    .accept-bar a { color: var(--brand-gold); text-decoration: none; }
+    .accept-btn { background: linear-gradient(135deg, var(--brand-accent), var(--brand-gold)); color: #fff; border: none; padding: 11px 28px; border-radius: 10px; font-size: 0.88rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity 0.2s; white-space: nowrap; }
+    .accept-btn:hover { opacity: 0.9; }
+
+  </style>
+</head>
+<body data-nav-active="">
+
+<div id="sq-nav-root"></div>
+
+
+
+
+
+<div class="hero">
+  <div class="hero-eyebrow">Legal</div>
+  <h1>Terms of Service</h1>
+  <div class="hero-meta">
+    <span>📅 Effective: 1 January 2026</span>
+    <span>🕒 Last Updated: 16 April 2026</span>
+    <span>📖 ~8 min read</span>
+    <span>🌍 Applies to: All Users</span>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Contents</div>
+    <ul class="toc-list">
+      <li><a href="#acceptance" id="toc-acceptance">1. Acceptance</a></li>
+      <li><a href="#services" id="toc-services">2. Services</a></li>
+      <li><a href="#accounts" id="toc-accounts">3. User Accounts</a></li>
+      <li><a href="#conduct" id="toc-conduct">4. User Conduct</a></li>
+      <li><a href="#content" id="toc-content">5. Content Policy</a></li>
+      <li><a href="#intellectual" id="toc-intellectual">6. Intellectual Property</a></li>
+      <li><a href="#bookings" id="toc-bookings">7. Bookings & Payments</a></li>
+      <li><a href="#liability" id="toc-liability">8. Liability & Disclaimers</a></li>
+      <li><a href="#termination" id="toc-termination">9. Termination</a></li>
+      <li><a href="#governing" id="toc-governing">10. Governing Law</a></li>
+      <li><a href="#changes" id="toc-changes">11. Changes to Terms</a></li>
+      <li><a href="#contact" id="toc-contact">12. Contact</a></li>
+    </ul>
+    <div class="toc-divider"></div>
+    <a href="privacy-policy.html" style="display:block;font-size:0.78rem;color:var(--brand-accent);text-decoration:none;padding:6px 12px;">→ Privacy Policy</a>
+  </aside>
+
+  <!-- Content -->
+  <main class="content">
+    <div class="highlight-box">
+      <strong>Plain-English Summary:</strong> By using SafariQuest, you agree to these terms. We provide a platform to discover and book Kenyan travel experiences. You must be 18+ to register, use the platform lawfully, and respect other users. We're not liable for third-party service providers. Kenyan law governs this agreement.
+    </div>
+
+    <div class="section" id="acceptance">
+      <div class="section-number">Section 01</div>
+      <h2>Acceptance of Terms</h2>
+      <p>By accessing or using SafariQuest ("we", "our", "us", or "the Platform"), whether through our website at <strong>njugush2063.github.io/myProject</strong> or any related mobile application, you agree to be legally bound by these Terms of Service ("Terms"). Please read them carefully.</p>
+      <p>If you do not agree to these Terms in their entirety, you must not use our Platform. Your continued use of SafariQuest after any modification to these Terms constitutes acceptance of those changes.</p>
+      <p>You must be at least <strong>18 years of age</strong>, or the age of majority in your jurisdiction (whichever is higher), to create an account or use certain features of the Platform.</p>
+    </div>
+
+    <div class="section" id="services">
+      <div class="section-number">Section 02</div>
+      <h2>Description of Services</h2>
+      <p>SafariQuest is a digital travel discovery platform focused on Kenya, providing the following services:</p>
+      <ul>
+        <li>Curated destination guides and listings across Kenya</li>
+        <li>Hotel and accommodation discovery and booking referrals</li>
+        <li>Restaurant listings and recommendations</li>
+        <li>Event listings including cultural festivals and wildlife experiences</li>
+        <li>User reviews, ratings, and community-generated content</li>
+        <li>Trip planning tools and itinerary inspiration</li>
+      </ul>
+      <p>We reserve the right to modify, suspend, or discontinue any aspect of our services at any time, with or without notice. We will not be liable to you or any third party for such changes.</p>
+    </div>
+
+    <div class="section" id="accounts">
+      <div class="section-number">Section 03</div>
+      <h2>User Accounts</h2>
+      <h3>Registration</h3>
+      <p>To access certain features, you must create an account by providing accurate, current, and complete information. You agree to update your information to keep it accurate and current.</p>
+      <h3>Account Security</h3>
+      <p>You are solely responsible for maintaining the confidentiality of your login credentials. You agree to notify us immediately at <strong>info@safariquest.com</strong> of any unauthorized access to your account. We are not liable for any loss resulting from unauthorized use of your account.</p>
+      <h3>Account Types</h3>
+      <ul>
+        <li><strong>Standard User:</strong> Can browse, save, and review destinations.</li>
+        <li><strong>Editor:</strong> May submit and edit destination listings.</li>
+        <li><strong>Admin:</strong> Has moderation privileges over user content.</li>
+        <li><strong>Super Admin:</strong> Full platform management access (restricted to authorized personnel).</li>
+      </ul>
+      <p>Admin access is granted solely at the discretion of SafariQuest management and may be revoked at any time.</p>
+    </div>
+
+    <div class="section" id="conduct">
+      <div class="section-number">Section 04</div>
+      <h2>User Conduct</h2>
+      <p>By using SafariQuest, you agree not to:</p>
+      <ul>
+        <li>Post false, misleading, or fraudulent content</li>
+        <li>Harass, threaten, or abuse other users</li>
+        <li>Use the platform for spam, phishing, or unsolicited commercial messages</li>
+        <li>Scrape, crawl, or otherwise extract data from the platform without written permission</li>
+        <li>Attempt to gain unauthorized access to any part of the platform or its infrastructure</li>
+        <li>Impersonate any person or entity, including SafariQuest staff</li>
+        <li>Violate any applicable Kenyan or international law</li>
+        <li>Circumvent any content filtering or security measures</li>
+      </ul>
+      <div class="warn-box">
+        ⚠️ Violations may result in immediate suspension or permanent termination of your account, and may be reported to relevant authorities where required by law.
+      </div>
+    </div>
+
+    <div class="section" id="content">
+      <div class="section-number">Section 05</div>
+      <h2>Content Policy</h2>
+      <h3>User-Generated Content</h3>
+      <p>By submitting reviews, photos, comments, or any other content ("User Content") to SafariQuest, you grant us a non-exclusive, royalty-free, worldwide license to use, reproduce, modify, display, and distribute that content in connection with operating our platform.</p>
+      <h3>Content Standards</h3>
+      <p>All User Content must be honest, relevant, and respectful. You must not submit content that is:</p>
+      <ul>
+        <li>Defamatory, obscene, or discriminatory</li>
+        <li>In violation of any third party's intellectual property rights</li>
+        <li>Sponsored or incentivized without clear disclosure</li>
+        <li>Unrelated to the travel experience being reviewed</li>
+      </ul>
+      <h3>Content Moderation</h3>
+      <p>We reserve the right to remove any User Content that violates these standards, at our sole discretion and without prior notice.</p>
+    </div>
+
+    <div class="section" id="intellectual">
+      <div class="section-number">Section 06</div>
+      <h2>Intellectual Property</h2>
+      <p>All content on SafariQuest that is not User Content — including the SafariQuest name, logo, design, text, images, and code — is the intellectual property of SafariQuest and is protected under Kenyan and international copyright law.</p>
+      <p>You may not reproduce, distribute, or create derivative works from our content without prior written permission. Personal, non-commercial use of the platform and its publicly available content is permitted.</p>
+    </div>
+
+    <div class="section" id="bookings">
+      <div class="section-number">Section 07</div>
+      <h2>Bookings & Payments</h2>
+      <p>SafariQuest acts as a discovery and referral platform. When you proceed to book accommodation, activities, or other services through links on our platform, you are transacting directly with the third-party provider, not with SafariQuest.</p>
+      <p>We do not collect payment for third-party services. All payment terms, cancellation policies, and refund rights are governed by the agreement between you and the service provider.</p>
+      <div class="highlight-box">
+        <strong>Note:</strong> SafariQuest is not responsible for the actions, omissions, or performance of any third-party travel service provider listed or linked on our platform.
+      </div>
+    </div>
+
+    <div class="section" id="liability">
+      <div class="section-number">Section 08</div>
+      <h2>Limitation of Liability & Disclaimers</h2>
+      <p>The Platform is provided on an "as is" and "as available" basis without warranties of any kind, express or implied, including but not limited to merchantability, fitness for a particular purpose, or non-infringement.</p>
+      <p>To the fullest extent permitted by applicable Kenyan law, SafariQuest and its officers, directors, employees, and agents shall not be liable for:</p>
+      <ul>
+        <li>Any indirect, incidental, or consequential damages arising from your use of the platform</li>
+        <li>Inaccurate, outdated, or incomplete information in listings</li>
+        <li>Losses resulting from third-party service failures</li>
+        <li>Unauthorized access to or alteration of your transmissions or data</li>
+      </ul>
+    </div>
+
+    <div class="section" id="termination">
+      <div class="section-number">Section 09</div>
+      <h2>Account Termination</h2>
+      <p>You may deactivate your account at any time via your profile settings. We may suspend or terminate your account for material breach of these Terms, without prior notice.</p>
+      <p>Upon termination, your right to use the Platform ceases immediately. Provisions relating to intellectual property, limitation of liability, and governing law survive termination.</p>
+    </div>
+
+    <div class="section" id="governing">
+      <div class="section-number">Section 10</div>
+      <h2>Governing Law & Dispute Resolution</h2>
+      <p>These Terms are governed by and construed in accordance with the laws of the Republic of Kenya, without regard to its conflict of law provisions.</p>
+      <p>Any disputes arising from these Terms or your use of SafariQuest shall first be attempted to be resolved through good-faith negotiation. If unresolved within 30 days, disputes shall be submitted to the jurisdiction of the courts of Nairobi, Kenya.</p>
+    </div>
+
+    <div class="section" id="changes">
+      <div class="section-number">Section 11</div>
+      <h2>Changes to These Terms</h2>
+      <p>We may update these Terms from time to time. When we do, we will revise the "Last Updated" date at the top of this page. For significant changes, we will notify registered users via email at least 14 days before the changes take effect.</p>
+      <p>Your continued use of the Platform after changes become effective constitutes acceptance of the revised Terms.</p>
+    </div>
+
+    <div class="section" id="contact">
+      <div class="section-number">Section 12</div>
+      <h2>Contact Us</h2>
+      <p>If you have questions or concerns about these Terms, please contact us:</p>
+      <ul>
+        <li><strong>Email:</strong> legal@safariquest.com</li>
+        <li><strong>General Enquiries:</strong> info@safariquest.com</li>
+        <li><strong>Phone:</strong> +254 798 595 394</li>
+        <li><strong>Address:</strong> Nairobi, Kenya</li>
+      </ul>
+    </div>
+  </main>
+</div>
+
+<div class="accept-bar">
+  <p>By using SafariQuest, you agree to these Terms. View our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+  <button class="accept-btn" onclick="this.textContent='✓ Accepted'; this.style.opacity='0.7'; this.disabled=true;">I Agree to These Terms</button>
+</div>
+
+
+
+<script>
+  // Highlight active TOC item on scroll
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('.toc-list a').forEach(a => a.classList.remove('active'));
+        const link = document.querySelector('#toc-' + e.target.id);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+</script>
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

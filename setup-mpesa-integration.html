@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M-Pesa Integration Setup</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+      font-size: 2rem;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+    .section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+    .section h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+    .status.checking { background: #fff3cd; color: #856404; }
+    .status.success { background: #d4edda; color: #155724; }
+    .status.error { background: #f8d7da; color: #721c24; }
+    .status.info { background: #d1ecf1; color: #0c5460; }
+    .icon { font-size: 1.2rem; }
+    input, button {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+      font-size: 0.95rem;
+      font-family: inherit;
+      margin-bottom: 0.75rem;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #5568d3;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .code {
+      background: #2d3748;
+      color: #68d391;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin: 0.5rem 0;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .step-num {
+      background: #667eea;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-content h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    .step-content p {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .links a {
+      flex: 1;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #667eea;
+      font-weight: 600;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .links a:hover {
+      background: #e9ecef;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 M-Pesa Integration Setup</h1>
+    <p class="subtitle">Quick setup wizard for restaurant order M-Pesa integration</p>
+
+    <!-- Step 1: Backend URL -->
+    <div class="section">
+      <h2>Step 1: Configure M-Pesa Backend URL</h2>
+      <div id="backendStatus" class="status checking">
+        <span class="icon">⏳</span>
+        <span>Checking configuration...</span>
+      </div>
+      <input 
+        type="text" 
+        id="backendUrl" 
+        placeholder="http://localhost:3000"
+        value="http://localhost:3000"
+      />
+      <button onclick="saveBackendUrl()">Save Backend URL</button>
+      <button onclick="testBackend()">Test Connection</button>
+    </div>
+
+    <!-- Step 2: Supabase -->
+    <div class="section">
+      <h2>Step 2: Verify Supabase Connection</h2>
+      <div id="supabaseStatus" class="status checking">
+        <span class="icon">⏳</span>
+        <span>Checking Supabase...</span>
+      </div>
+      <button onclick="testSupabase()">Test Supabase</button>
+      <button onclick="checkOrdersTable()">Check Orders Table</button>
+    </div>
+
+    <!-- Step 3: Test Order -->
+    <div class="section">
+      <h2>Step 3: Test Order Flow</h2>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Navigate to Restaurant</h3>
+          <p>Go to restaurant services page and add items to cart</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Fill Order Details</h3>
+          <p>Enter table number and customer name</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Select M-Pesa</h3>
+          <p>Choose M-Pesa payment method and enter phone number</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Confirm Order</h3>
+          <p>Click "Confirm order" and check for success messages</p>
+        </div>
+      </div>
+      <button onclick="goToBookings()">Go to Bookings Page</button>
+    </div>
+
+    <!-- Quick Commands -->
+    <div class="section">
+      <h2>Quick Commands (Copy & Paste in Console)</h2>
+      <p style="margin-bottom: 1rem; color: #666;">Press F12 to open console, then paste these:</p>
+      
+      <strong>Set Backend URL:</strong>
+      <div class="code">localStorage.setItem('sq_mpesa_backend_url', 'http://localhost:3000');</div>
+      
+      <strong>Test Backend:</strong>
+      <div class="code">fetch('http://localhost:3000/health').then(r=>r.json()).then(console.log);</div>
+      
+      <strong>Test Supabase:</strong>
+      <div class="code">fetch('https://cbyipmrozqsntojiartw.supabase.co/rest/v1/orders?limit=1',{headers:{'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNieWlwbXJvenFzbnRvamlhcnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTkxNTQsImV4cCI6MjA4ODk3NTE1NH0.31TAhmUCV_Uh0W8FGnR2_TLCZDU4YBM1U5LMSMc5JZs'}}).then(r=>r.json()).then(console.log);</div>
+    </div>
+
+    <!-- Links -->
+    <div class="links">
+      <a href="TROUBLESHOOTING-FAILED-TO-FETCH.md" target="_blank">📖 Troubleshooting Guide</a>
+      <a href="QUICK-START-GUIDE.md" target="_blank">🚀 Quick Start</a>
+      <a href="RESTAURANT-ORDER-MPESA-README.md" target="_blank">📚 Full Documentation</a>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://cbyipmrozqsntojiartw.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNieWlwbXJvenFzbnRvamlhcnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTkxNTQsImV4cCI6MjA4ODk3NTE1NH0.31TAhmUCV_Uh0W8FGnR2_TLCZDU4YBM1U5LMSMc5JZs';
+
+    function setStatus(elementId, type, message) {
+      const el = document.getElementById(elementId);
+      el.className = `status ${type}`;
+      const icons = { checking: '⏳', success: '✅', error: '❌', info: 'ℹ️' };
+      el.innerHTML = `<span class="icon">${icons[type]}</span><span>${message}</span>`;
+    }
+
+    function saveBackendUrl() {
+      const url = document.getElementById('backendUrl').value.trim();
+      if (!url) {
+        setStatus('backendStatus', 'error', 'Please enter a backend URL');
+        return;
+      }
+      localStorage.setItem('sq_mpesa_backend_url', url);
+      setStatus('backendStatus', 'success', `Backend URL saved: ${url}`);
+    }
+
+    async function testBackend() {
+      const url = localStorage.getItem('sq_mpesa_backend_url') || document.getElementById('backendUrl').value.trim();
+      if (!url) {
+        setStatus('backendStatus', 'error', 'Please save backend URL first');
+        return;
+      }
+
+      setStatus('backendStatus', 'checking', 'Testing connection...');
+      
+      try {
+        const response = await fetch(`${url}/health`);
+        const data = await response.json();
+        setStatus('backendStatus', 'success', `Backend is running! Status: ${data.status}`);
+      } catch (error) {
+        setStatus('backendStatus', 'error', `Cannot connect to backend. Make sure server is running on ${url}`);
+        console.error('Backend test error:', error);
+      }
+    }
+
+    async function testSupabase() {
+      setStatus('supabaseStatus', 'checking', 'Testing Supabase connection...');
+      
+      try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        });
+        
+        if (response.ok) {
+          setStatus('supabaseStatus', 'success', 'Supabase connection successful!');
+        } else {
+          setStatus('supabaseStatus', 'error', 'Supabase connection failed. Check credentials.');
+        }
+      } catch (error) {
+        setStatus('supabaseStatus', 'error', 'Cannot connect to Supabase. Check network.');
+        console.error('Supabase test error:', error);
+      }
+    }
+
+    async function checkOrdersTable() {
+      setStatus('supabaseStatus', 'checking', 'Checking orders table...');
+      
+      try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?limit=1`, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setStatus('supabaseStatus', 'success', `Orders table exists! Found ${data.length} order(s).`);
+        } else if (response.status === 404) {
+          setStatus('supabaseStatus', 'error', 'Orders table not found. Run supabase-orders-table.sql migration.');
+        } else {
+          setStatus('supabaseStatus', 'error', `Error: ${response.statusText}`);
+        }
+      } catch (error) {
+        setStatus('supabaseStatus', 'error', 'Cannot check orders table.');
+        console.error('Orders table check error:', error);
+      }
+    }
+
+    function goToBookings() {
+      window.location.href = 'bookings.html?checkout=restaurant';
+    }
+
+    // Auto-check on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUrl = localStorage.getItem('sq_mpesa_backend_url');
+      if (savedUrl) {
+        document.getElementById('backendUrl').value = savedUrl;
+        setStatus('backendStatus', 'info', `Current backend URL: ${savedUrl}`);
+      } else {
+        setStatus('backendStatus', 'info', 'No backend URL configured yet');
+      }
+      
+      // Auto-test connections
+      setTimeout(() => {
+        if (savedUrl) testBackend();
+        testSupabase();
+      }, 500);
+    });
+  </script>
+</body>
+</html>

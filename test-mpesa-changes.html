@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test M-Pesa Changes - SafariQuest</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f7fafc;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #1a202c;
+    }
+    .subtitle {
+      color: #718096;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #2d3748;
+    }
+    .test-item {
+      padding: 15px;
+      border-left: 4px solid #cbd5e0;
+      margin-bottom: 15px;
+      background: #f7fafc;
+      border-radius: 4px;
+    }
+    .test-item.pass {
+      border-left-color: #48bb78;
+      background: #f0fff4;
+    }
+    .test-item.fail {
+      border-left-color: #f56565;
+      background: #fff5f5;
+    }
+    .test-item.pending {
+      border-left-color: #ed8936;
+      background: #fffaf0;
+    }
+    .test-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .test-desc {
+      font-size: 14px;
+      color: #4a5568;
+      margin-bottom: 10px;
+    }
+    .test-result {
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      background: white;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+    button {
+      background: #4299e1;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background: #3182ce;
+    }
+    .btn-secondary {
+      background: #718096;
+    }
+    .btn-secondary:hover {
+      background: #4a5568;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-pass { background: #c6f6d5; color: #22543d; }
+    .status-fail { background: #fed7d7; color: #742a2a; }
+    .status-pending { background: #feebc8; color: #7c2d12; }
+    .code-block {
+      background: #2d3748;
+      color: #68d391;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 M-Pesa Changes Test Suite</h1>
+    <p class="subtitle">Verify that all M-Pesa payment improvements are working correctly</p>
+
+    <div class="card">
+      <h2>Quick Actions</h2>
+      <button onclick="runAllTests()">▶️ Run All Tests</button>
+      <button onclick="checkFiles()" class="btn-secondary">📁 Check Files</button>
+      <button onclick="clearCache()" class="btn-secondary">🗑️ Clear Cache</button>
+      <button onclick="location.reload()">🔄 Refresh Page</button>
+    </div>
+
+    <div class="card">
+      <h2>File Integrity Tests</h2>
+      <div id="fileTests"></div>
+    </div>
+
+    <div class="card">
+      <h2>Function Tests</h2>
+      <div id="functionTests"></div>
+    </div>
+
+    <div class="card">
+      <h2>Browser Cache Status</h2>
+      <div id="cacheTests"></div>
+    </div>
+
+    <div class="card">
+      <h2>Manual Testing Checklist</h2>
+      <div class="test-item pending">
+        <div class="test-title">
+          <span>📋</span>
+          <span>Destinations Booking (booking.html)</span>
+        </div>
+        <div class="test-desc">
+          1. Go to booking.html<br>
+          2. Fill in trip details<br>
+          3. Continue to payment step<br>
+          4. Check phone input has placeholder: "0712 345 678 or 0112 345 678"<br>
+          5. Check help text: "Enter your Safaricom M-Pesa number. You'll receive a prompt to enter your PIN."<br>
+          6. Button should say "Confirm and Pay"
+        </div>
+      </div>
+
+      <div class="test-item pending">
+        <div class="test-title">
+          <span>🏨</span>
+          <span>Hotels Booking (hotels.html → booking.html)</span>
+        </div>
+        <div class="test-desc">
+          1. Go to hotels.html<br>
+          2. Click "Book Now" on any hotel<br>
+          3. Should redirect to booking.html<br>
+          4. Same tests as destinations above
+        </div>
+      </div>
+
+      <div class="test-item pending">
+        <div class="test-title">
+          <span>🏕️</span>
+          <span>Accommodation Booking (accommodation.html)</span>
+        </div>
+        <div class="test-desc">
+          1. Go to accommodation.html?id=maasai-mara<br>
+          2. Click "Pay with M-Pesa" on any card<br>
+          3. Modal should open<br>
+          4. Check phone input placeholder: "0712 345 678 or 0112 345 678"<br>
+          5. Check help text: "Enter your Safaricom M-Pesa number. You'll receive a prompt to enter your PIN."
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>How to Fix Issues</h2>
+      <div class="code-block">
+# If tests fail, try these steps:
+
+1. Hard Refresh Browser:
+   - Windows/Linux: Ctrl + Shift + R
+   - Mac: Cmd + Shift + R
+
+2. Clear Browser Cache:
+   - Chrome: F12 → Network tab → Disable cache checkbox
+   - Or use the "Clear Cache" button above
+
+3. Check Console for Errors:
+   - Press F12
+   - Go to Console tab
+   - Look for red error messages
+
+4. Verify Files Are Updated:
+   - Check booking-flow.js has validatePhone() function
+   - Check mpesa.js has updated toast messages
+   - Check HTML files have new placeholders
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function createTestItem(title, desc, status, result) {
+      return `
+        <div class="test-item ${status}">
+          <div class="test-title">
+            <span>${status === 'pass' ? '✅' : status === 'fail' ? '❌' : '⏳'}</span>
+            <span>${title}</span>
+            <span class="status-badge status-${status}">${status.toUpperCase()}</span>
+          </div>
+          <div class="test-desc">${desc}</div>
+          ${result ? `<div class="test-result">${result}</div>` : ''}
+        </div>
+      `;
+    }
+
+    async function checkFiles() {
+      const fileTests = document.getElementById('fileTests');
+      fileTests.innerHTML = '<p>Checking files...</p>';
+
+      const tests = [];
+
+      // Test 1: Check if booking-flow.js has validatePhone
+      try {
+        const response = await fetch('booking-flow.js');
+        const content = await response.text();
+        const hasValidatePhone = content.includes('function validatePhone');
+        const hasNormalizePhone = content.includes('function normalizePhone');
+        const hasNewMessage = content.includes('Your order has been received');
+        
+        tests.push(createTestItem(
+          'booking-flow.js Updates',
+          'Check if validatePhone, normalizePhone functions and new messages exist',
+          hasValidatePhone && hasNormalizePhone && hasNewMessage ? 'pass' : 'fail',
+          `validatePhone: ${hasValidatePhone ? '✓' : '✗'}\nnormalizePhone: ${hasNormalizePhone ? '✓' : '✗'}\nNew message: ${hasNewMessage ? '✓' : '✗'}`
+        ));
+      } catch (e) {
+        tests.push(createTestItem(
+          'booking-flow.js Updates',
+          'Failed to load file',
+          'fail',
+          e.message
+        ));
+      }
+
+      // Test 2: Check if mpesa.js has new messages
+      try {
+        const response = await fetch('mpesa.js');
+        const content = await response.text();
+        const hasOrderReceived = content.includes('Your order has been received');
+        const hasPinPrompt = content.includes('Please check your phone and enter your M-Pesa PIN');
+        
+        tests.push(createTestItem(
+          'mpesa.js Updates',
+          'Check if new toast messages exist',
+          hasOrderReceived && hasPinPrompt ? 'pass' : 'fail',
+          `Order received message: ${hasOrderReceived ? '✓' : '✗'}\nPIN prompt message: ${hasPinPrompt ? '✓' : '✗'}`
+        ));
+      } catch (e) {
+        tests.push(createTestItem(
+          'mpesa.js Updates',
+          'Failed to load file',
+          'fail',
+          e.message
+        ));
+      }
+
+      // Test 3: Check booking.html
+      try {
+        const response = await fetch('booking.html');
+        const content = await response.text();
+        const hasNewPlaceholder = content.includes('0712 345 678 or 0112 345 678');
+        const hasHelpText = content.includes("You'll receive a prompt to enter your PIN");
+        
+        tests.push(createTestItem(
+          'booking.html Updates',
+          'Check if new placeholder and help text exist',
+          hasNewPlaceholder && hasHelpText ? 'pass' : 'fail',
+          `New placeholder: ${hasNewPlaceholder ? '✓' : '✗'}\nHelp text: ${hasHelpText ? '✓' : '✗'}`
+        ));
+      } catch (e) {
+        tests.push(createTestItem(
+          'booking.html Updates',
+          'Failed to load file',
+          'fail',
+          e.message
+        ));
+      }
+
+      // Test 4: Check accommodation.html
+      try {
+        const response = await fetch('accommodation.html');
+        const content = await response.text();
+        const hasNewPlaceholder = content.includes('0712 345 678 or 0112 345 678');
+        const hasHelpText = content.includes("You'll receive a prompt to enter your PIN");
+        
+        tests.push(createTestItem(
+          'accommodation.html Updates',
+          'Check if new placeholder and help text exist',
+          hasNewPlaceholder && hasHelpText ? 'pass' : 'fail',
+          `New placeholder: ${hasNewPlaceholder ? '✓' : '✗'}\nHelp text: ${hasHelpText ? '✓' : '✗'}`
+        ));
+      } catch (e) {
+        tests.push(createTestItem(
+          'accommodation.html Updates',
+          'Failed to load file',
+          'fail',
+          e.message
+        ));
+      }
+
+      fileTests.innerHTML = tests.join('');
+    }
+
+    function checkFunctions() {
+      const functionTests = document.getElementById('functionTests');
+      const tests = [];
+
+      // These functions won't be available until the pages load them
+      tests.push(createTestItem(
+        'Function Availability',
+        'Functions are loaded when you visit the actual booking pages',
+        'pending',
+        'Visit booking.html or accommodation.html to test functions'
+      ));
+
+      functionTests.innerHTML = tests.join('');
+    }
+
+    function checkCache() {
+      const cacheTests = document.getElementById('cacheTests');
+      const tests = [];
+
+      // Check if service worker is registered
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          if (registrations.length > 0) {
+            tests.push(createTestItem(
+              'Service Worker',
+              'Service worker detected - may cache files',
+              'pending',
+              `${registrations.length} service worker(s) registered. Consider unregistering for testing.`
+            ));
+          } else {
+            tests.push(createTestItem(
+              'Service Worker',
+              'No service worker detected',
+              'pass',
+              'No service workers caching files'
+            ));
+          }
+          cacheTests.innerHTML = tests.join('');
+        });
+      } else {
+        tests.push(createTestItem(
+          'Service Worker',
+          'Service workers not supported',
+          'pass',
+          'Browser does not support service workers'
+        ));
+        cacheTests.innerHTML = tests.join('');
+      }
+    }
+
+    function clearCache() {
+      if (confirm('This will reload the page. Continue?')) {
+        // Clear cache and reload
+        if ('caches' in window) {
+          caches.keys().then(names => {
+            names.forEach(name => caches.delete(name));
+          });
+        }
+        location.reload(true);
+      }
+    }
+
+    async function runAllTests() {
+      await checkFiles();
+      checkFunctions();
+      checkCache();
+    }
+
+    // Run tests on load
+    runAllTests();
+  </script>
+</body>
+</html>

@@ -1,0 +1,656 @@
+/* ============================================================
+   ACCOMMODATION — accommodation.css
+   Extends styles.css. Do not use standalone.
+   ============================================================ */
+
+/* ── HERO ── */
+.accom-hero {
+  position: relative;
+  min-height: 52vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background-color: #1a1a2e;
+}
+.accom-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  transform: scale(1.04);
+  transition: transform 8s ease-out;
+}
+.accom-hero-bg.loaded { transform: scale(1); }
+.accom-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(165deg,
+    rgba(0,0,0,.2) 0%,
+    rgba(0,0,0,.08) 30%,
+    rgba(0,0,0,.78) 100%);
+}
+.accom-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 48px 48px 56px;
+  max-width: 900px;
+  width: 100%;
+}
+.accom-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .82rem;
+  color: rgba(255,255,255,.7);
+  margin-bottom: 20px;
+}
+.accom-breadcrumb a { color: rgba(255,255,255,.7); text-decoration: none; transition: color .2s; }
+.accom-breadcrumb a:hover { color: #F47940; }
+.accom-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(232,130,12,.25);
+  border: 1px solid rgba(232,130,12,.5);
+  color: #F5A623;
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  margin-bottom: 18px;
+}
+.accom-hero-content h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.08;
+  margin-bottom: 14px;
+  text-shadow: 0 2px 20px rgba(0,0,0,.4);
+}
+.accom-hero-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,.8);
+  margin-bottom: 28px;
+  max-width: 520px;
+  line-height: 1.6;
+}
+.accom-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.35);
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: .9rem;
+  font-weight: 600;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+  transition: background .2s;
+}
+.accom-back-btn:hover { background: rgba(255,255,255,.28); }
+
+/* ── ENTRY FEES SECTION ── */
+.accom-fees-section {
+  background: #fff;
+  border-bottom: 1.5px solid #e8e4dc;
+  padding: 52px 48px;
+}
+.accom-fees-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+.fees-label {
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #E8820C;
+  margin-bottom: 6px;
+}
+.fees-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1A1A2E;
+  margin-bottom: 6px;
+}
+.fees-sub {
+  font-size: .92rem;
+  color: #777;
+  margin-bottom: 28px;
+  max-width: 520px;
+  line-height: 1.6;
+}
+.fees-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.fee-card {
+  background: #faf9f6;
+  border: 1.5px solid #e8e4dc;
+  border-radius: 16px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: box-shadow .2s, transform .2s;
+}
+.fee-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+}
+.fee-card.free-entry { border-color: #4CAF50; }
+.fee-card-visitor {
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: #888;
+}
+.fee-card-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: #E8820C;
+  line-height: 1;
+}
+.fee-card-amount.free { color: #2e9e5c; }
+.fee-card-amount span {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .78rem;
+  font-weight: 500;
+  color: #aaa;
+}
+.fee-card-usd { font-size: .74rem; color: #bbb; }
+.fee-card-note { font-size: .74rem; color: #888; line-height: 1.5; margin-top: 2px; }
+.fees-note {
+  font-size: .8rem;
+  color: #888;
+  background: #faf9f6;
+  border: 1px solid #e8e4dc;
+  border-left: 3px solid #E8820C;
+  border-radius: 8px;
+  padding: 12px 16px;
+  line-height: 1.6;
+  max-width: 640px;
+}
+.fee-skel {
+  height: 120px;
+  border-radius: 16px;
+  background: #ede9e4;
+  animation: skeletonPulse 1.6s ease-in-out infinite;
+}
+
+/* ── SERVICES SECTION ── */
+.accom-services-section {
+  background: #faf9f6;
+  border-bottom: 1.5px solid #e8e4dc;
+  padding: 52px 48px;
+}
+.accom-services-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+.svc-card {
+  background: #fff;
+  border: 1.5px solid #e8e4dc;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: box-shadow .2s, transform .2s;
+}
+.svc-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.07);
+}
+.svc-icon { font-size: 1.55rem; line-height: 1; flex-shrink: 0; }
+.svc-info { flex: 1; min-width: 0; }
+.svc-name { font-weight: 700; font-size: .9rem; color: #1A1A2E; margin-bottom: 3px; }
+.svc-desc { font-size: .76rem; color: #888; line-height: 1.5; margin-bottom: 6px; }
+.svc-fee { font-family: 'Playfair Display', serif; font-size: .95rem; font-weight: 800; color: #E8820C; }
+.svc-fee.free { color: #2e9e5c; }
+
+/* ── PRICE BRACKET TABS ── */
+.bracket-bar {
+  background: #fff;
+  border-bottom: 1.5px solid #e8e4dc;
+  padding: 0 48px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.bracket-bar::-webkit-scrollbar { display: none; }
+.bracket-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 16px 0;
+  min-width: max-content;
+}
+.btab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 22px;
+  min-width: 100px;
+  background: #faf9f6;
+  border: 1.5px solid #e8e4dc;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .2s;
+}
+.btab:hover { border-color: #E8820C; background: #fff8f3; }
+.btab.active {
+  background: #E8820C;
+  border-color: #E8820C;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(232,130,12,.3);
+}
+.btab-icon { font-size: 1.2rem; line-height: 1; }
+.btab-name { font-size: .8rem; font-weight: 700; color: #333; }
+.btab.active .btab-name { color: #fff; }
+.btab-range { font-size: .65rem; color: #aaa; }
+.btab.active .btab-range { color: rgba(255,255,255,.8); }
+
+/* ── FILTERS BAR ── */
+.accom-filter-bar {
+  background: #fff;
+  border-bottom: 1.5px solid #e8e4dc;
+  box-shadow: 0 4px 16px rgba(0,0,0,.05);
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-height: 60px;
+}
+.filter-label {
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #666;
+  flex-shrink: 0;
+}
+.filter-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  padding: 6px 16px;
+  border-radius: 50px;
+  border: 1.5px solid #e8e4dc;
+  background: #fff;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.chip:hover { border-color: #E8820C; color: #E8820C; }
+.chip.active { background: #E8820C; border-color: #E8820C; color: #fff; }
+.filter-count {
+  margin-left: auto;
+  font-size: .82rem;
+  color: #999;
+  flex-shrink: 0;
+}
+
+/* ── PAGE LAYOUT ── */
+.accom-layout {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 48px;
+  background: #faf9f6;
+}
+
+/* ── SECTION HEADER ── */
+.accom-section-header { margin-bottom: 32px; }
+.accom-section-label {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #E8820C;
+  margin-bottom: 6px;
+}
+.accom-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1A1A2E;
+}
+
+/* ── HOTEL CARDS GRID ── */
+.accom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 28px;
+  margin-bottom: 56px;
+}
+.accom-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1.5px solid #e8e4dc;
+  box-shadow: 0 4px 24px rgba(0,0,0,.07);
+  transition: transform .28s, box-shadow .28s;
+  display: flex;
+  flex-direction: column;
+}
+.accom-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(0,0,0,.13);
+}
+
+/* Card image */
+.accom-img {
+  position: relative;
+  height: 220px;
+  background-size: cover;
+  background-position: center;
+  background-color: #2a2a3a;
+  flex-shrink: 0;
+}
+.accom-img-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(0,0,0,.6);
+  color: #fff;
+  border-radius: 50px;
+  padding: 5px 14px;
+  font-size: .75rem;
+  font-weight: 700;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.2);
+}
+.accom-bracket-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  border-radius: 50px;
+  padding: 5px 14px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .03em;
+}
+.accom-bracket-badge.budget    { background: #2e9e5c; color: #fff; }
+.accom-bracket-badge.mid_range { background: #3B82F6; color: #fff; }
+.accom-bracket-badge.upscale   { background: #E8820C; color: #fff; }
+.accom-bracket-badge.luxury    { background: #7C3AED; color: #fff; }
+
+.accom-featured-badge {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  background: #E8820C;
+  color: #fff;
+  border-radius: 50px;
+  padding: 5px 14px;
+  font-size: .73rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+.accom-stars {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  display: flex;
+  gap: 2px;
+}
+.accom-star { color: #FFD700; font-size: .9rem; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+
+/* Card body */
+.accom-body {
+  padding: 22px 22px 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.accom-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1A1A2E;
+  margin-bottom: 4px;
+}
+.accom-location {
+  font-size: .82rem;
+  color: #888;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.accom-distance {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .74rem;
+  font-weight: 600;
+  color: #2e9e5c;
+  background: rgba(46,158,92,.08);
+  border: 1px solid rgba(46,158,92,.2);
+  border-radius: 6px;
+  padding: 3px 10px;
+  margin-bottom: 12px;
+}
+.accom-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.amenity-tag {
+  background: #f5f3f0;
+  border: 1px solid #e8e4dc;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: .75rem;
+  font-weight: 600;
+  color: #555;
+}
+.accom-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #f0ede8;
+  gap: 12px;
+}
+.accom-price-from {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #999;
+  margin-bottom: 2px;
+}
+.accom-price-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #E8820C;
+  line-height: 1;
+}
+.accom-price-night { font-size: .72rem; color: #aaa; margin-top: 2px; }
+.accom-book-btn {
+  padding: 11px 20px;
+  background: #E8820C;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background .15s, transform .1s;
+  white-space: nowrap;
+}
+.accom-book-btn:hover { background: #D4750A; }
+.accom-book-btn:active { transform: scale(.97); }
+
+/* ── SKELETON ── */
+.accom-skeleton {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1.5px solid #e8e4dc;
+  animation: skeletonPulse 1.6s ease-in-out infinite;
+}
+.skeleton-img  { height: 220px; background: #ede9e4; }
+.skeleton-body { padding: 22px; }
+.skeleton-line { height: 14px; background: #ede9e4; border-radius: 7px; margin-bottom: 12px; }
+.skeleton-line.short { width: 55%; }
+.skeleton-line.med   { width: 75%; }
+@keyframes skeletonPulse { 0%,100% { opacity:1; } 50% { opacity:.55; } }
+
+/* ── EMPTY STATE ── */
+.accom-empty {
+  text-align: center;
+  padding: 72px 24px;
+  grid-column: 1 / -1;
+}
+.accom-empty-icon { font-size: 3.5rem; margin-bottom: 16px; }
+.accom-empty h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #1A1A2E; margin-bottom: 10px; }
+.accom-empty p { color: #888; font-size: .95rem; }
+
+/* ── CTA BANNER ── */
+.accom-cta {
+  background: linear-gradient(135deg, #1A1A2E 0%, #2a3655 60%, #3a4a2e 100%);
+  border-radius: 24px;
+  padding: 48px;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.accom-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(232,130,12,.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+.accom-cta h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; margin-bottom: 12px; position: relative; }
+.accom-cta p  { color: rgba(255,255,255,.75); font-size: .95rem; margin-bottom: 28px; max-width: 480px; margin-left: auto; margin-right: auto; position: relative; }
+.accom-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #E8820C;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+  transition: background .15s, transform .1s;
+  position: relative;
+}
+.accom-cta-btn:hover { background: #D4750A; }
+
+/* ── SCROLL-TO-TOP & TOAST ── */
+#accomScrollTop {
+  position: fixed;
+  bottom: 32px; right: 32px;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: #E8820C;
+  border: none; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 500;
+  box-shadow: 0 4px 16px rgba(232,130,12,.4);
+  opacity: 0; visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity .25s, transform .25s, visibility .25s;
+}
+#accomScrollTop.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+#accomScrollTop:hover { background: #D4750A; }
+
+.toast {
+  position: fixed;
+  bottom: 90px; right: 32px;
+  background: #1A1A2E;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: .9rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 8px 28px rgba(0,0,0,.22);
+  z-index: 600;
+  opacity: 0; visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity .25s, transform .25s, visibility .25s;
+  max-width: 300px;
+}
+.toast.show    { opacity: 1; visibility: visible; transform: translateY(0); }
+.toast.success { background: #16a87e; }
+.toast.info    { background: #3B82F6; }
+
+/* ── BREADCRUMB OVERRIDES ── */
+.accom-hero .accom-breadcrumb,
+.accom-hero-content nav.accom-breadcrumb {
+  background: transparent !important;
+  position: relative !important;
+  top: auto !important; left: auto !important;
+  height: auto !important; padding: 0 !important;
+  display: flex !important; align-items: center !important;
+  gap: 6px !important; box-shadow: none !important;
+  backdrop-filter: none !important;
+  justify-content: flex-start !important;
+  flex-direction: row !important;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1000px) {
+  .accom-layout          { padding: 32px; }
+  .accom-filter-bar      { padding: 0 32px; }
+  .accom-fees-section,
+  .accom-services-section { padding: 40px 32px; }
+  .bracket-bar           { padding: 0 32px; }
+}
+@media (max-width: 768px) {
+  .accom-hero-content          { padding: 28px 20px 40px; }
+  .accom-filter-bar            { padding: 10px 16px; gap: 8px; }
+  .accom-layout                { padding: 24px 16px; }
+  .accom-fees-section,
+  .accom-services-section      { padding: 32px 16px; }
+  .bracket-bar                 { padding: 0 16px; }
+  .accom-grid                  { grid-template-columns: 1fr; }
+  .fees-grid                   { grid-template-columns: 1fr 1fr; }
+  .services-grid               { grid-template-columns: 1fr; }
+  .accom-cta                   { padding: 36px 24px; }
+  .accom-cta h2                { font-size: 1.5rem; }
+  #accomScrollTop              { bottom: 20px; right: 20px; }
+  .toast                       { right: 16px; bottom: 80px; }
+}
+@media (max-width: 420px) {
+  .fees-grid { grid-template-columns: 1fr; }
+}

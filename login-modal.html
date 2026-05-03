@@ -1,0 +1,105 @@
+<!--
+  ══════════════════════════════════════════════════════════════════════════════
+  SafariQuest — login-modal.html  (SNIPPET — paste just before </body>)
+  ══════════════════════════════════════════════════════════════════════════════
+  Paste this block at the very bottom of EVERY page, just before </body>.
+  It is hidden by default; auth.js / requireAuth() will open it when needed.
+-->
+
+<div id="sq-login-modal" role="dialog" aria-modal="true" aria-labelledby="sq-modal-title">
+  <!-- Backdrop (clicking it closes the modal) -->
+  <div class="sq-modal-backdrop" data-close></div>
+
+  <div class="sq-modal-card">
+    <button class="sq-modal-close" data-close aria-label="Close">✕</button>
+
+    <span class="sq-modal-icon">🔐</span>
+    <h2 id="sq-modal-title">Log in to continue</h2>
+    <p id="sq-modal-subtitle">You need an account to book or make a payment. It only takes a second!</p>
+
+    <div class="sq-field">
+      <label for="sq-modal-email">Email address</label>
+      <input id="sq-modal-email" type="email" placeholder="you@example.com" autocomplete="email" />
+    </div>
+    <div class="sq-field">
+      <label for="sq-modal-password">Password</label>
+      <input id="sq-modal-password" type="password" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+
+    <button class="sq-modal-submit" id="sq-modal-submit-btn">Log In &amp; Continue →</button>
+
+    <div class="sq-modal-error" id="sq-modal-error"></div>
+
+    <p class="sq-modal-footer">
+      Don't have an account?
+      <a href="/register.html" id="sq-modal-register-link">Sign up free</a>
+    </p>
+  </div>
+</div>
+
+<script>
+/* ── Inline modal controller ─────────────────────────────────────────────── */
+(function () {
+  const modal   = document.getElementById('sq-login-modal');
+  const emailEl = document.getElementById('sq-modal-email');
+  const passEl  = document.getElementById('sq-modal-password');
+  const btn     = document.getElementById('sq-modal-submit-btn');
+  const errEl   = document.getElementById('sq-modal-error');
+  const regLink = document.getElementById('sq-modal-register-link');
+
+  function showError(msg) {
+    errEl.textContent = msg;
+    errEl.classList.add('sq-visible');
+  }
+  function clearError() {
+    errEl.textContent = '';
+    errEl.classList.remove('sq-visible');
+  }
+
+  // Close via backdrop or × button
+  modal.querySelectorAll('[data-close]').forEach(el => {
+    el.addEventListener('click', () => modal.classList.remove('sq-modal-open'));
+  });
+
+  // Keyboard: Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') modal.classList.remove('sq-modal-open');
+  });
+
+  // Register link → save intent then go to register page
+  regLink.addEventListener('click', e => {
+    e.preventDefault();
+    modal.classList.remove('sq-modal-open');
+    // intent already saved; register page should call resumePendingIntent() after sign-up
+    window.location.href = '/register.html';
+  });
+
+  // Submit
+  btn.addEventListener('click', async () => {
+    clearError();
+    const email    = emailEl.value.trim();
+    const password = passEl.value;
+    if (!email || !password) { showError('Please enter your email and password.'); return; }
+
+    btn.disabled    = true;
+    btn.textContent = 'Logging in…';
+
+    try {
+      await window.SQ.signInWithEmail(email, password);
+      modal.classList.remove('sq-modal-open');
+      // Fetch full user object, then resume intent
+      await window.SQ.fetchUser();
+      await window.resumePendingIntent();
+    } catch (err) {
+      showError(err.message || 'Login failed. Please try again.');
+      btn.disabled    = false;
+      btn.textContent = 'Log In & Continue →';
+    }
+  });
+
+  // Allow Enter key
+  [emailEl, passEl].forEach(el => {
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
+  });
+})();
+</script>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accommodation — SafariQuest Kenya</title>
+  <meta name="description" content="Find the best lodges, camps, and hotels near Kenya's top destinations. Book your accommodation with SafariQuest Kenya.">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="accommodation.css">
+  <link rel="stylesheet" href="mpesa-modal.css">
+</head>
+
+<body data-nav-active="destinations">
+
+  <div id="sq-nav-root"></div>
+
+  <!-- ── HERO ── -->
+  <section class="accom-hero">
+    <div class="accom-hero-bg" id="accomHeroBg"></div>
+    <div class="accom-hero-overlay"></div>
+    <div class="accom-hero-content">
+      <!-- Breadcrumb -->
+      <nav class="accom-breadcrumb">
+        <a href="index.html">Home</a>
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <a href="destinations.html">Destinations</a>
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <a href="#" id="breadcrumb-dest">Loading…</a>
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        <span>Accommodation</span>
+      </nav>
+
+      <div class="accom-hero-badge">🏨 Where to Stay</div>
+      <h1 id="accom-hero-title">Accommodation</h1>
+      <p class="accom-hero-sub" id="accom-hero-sub">Discover handpicked lodges, tented camps, and hotels near this destination.</p>
+
+      <a href="#" class="accom-back-btn" id="backBtn">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Destination
+      </a>
+    </div>
+  </section>
+
+  <!-- ── FILTER BAR ── -->
+  <div class="accom-filter-bar">
+    <span class="filter-label">Type:</span>
+    <div class="filter-chips">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="lodge">Lodge</button>
+      <button class="chip" data-filter="tented camp">Tented Camp</button>
+      <button class="chip" data-filter="hotel">Hotel</button>
+      <button class="chip" data-filter="bnb">BnB</button>
+      <button class="chip" data-filter="guesthouse">Guesthouse</button>
+      <button class="chip" data-filter="budget">Budget</button>
+      <button class="chip" data-filter="luxury">Luxury</button>
+    </div>
+    <span class="filter-count" id="filter-count"></span>
+  </div>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="accom-layout">
+
+    <div class="accom-section-header">
+      <div class="accom-section-label">Places to Stay</div>
+      <h2 class="accom-section-title" id="accom-section-title">Loading accommodation…</h2>
+    </div>
+
+    <!-- Cards grid — populated by JS -->
+    <div class="accom-grid" id="accom-grid">
+      <div class="accom-skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line med"></div><div class="skeleton-line short"></div><div class="skeleton-line med"></div></div></div>
+      <div class="accom-skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line med"></div><div class="skeleton-line short"></div><div class="skeleton-line med"></div></div></div>
+      <div class="accom-skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line med"></div><div class="skeleton-line short"></div><div class="skeleton-line med"></div></div></div>
+    </div>
+
+    <!-- CTA Banner -->
+    <div class="accom-cta">
+      <h2>Can't find what you're looking for?</h2>
+      <p>Our local travel experts can arrange bespoke accommodation packages tailored to your needs and budget.</p>
+      <a href="contact.html" class="accom-cta-btn">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Talk to an Expert
+      </a>
+    </div>
+
+  </div><!-- end accom-layout -->
+
+  <div id="sq-footer-root"></div>
+
+  <!-- ── SCROLL TO TOP ── -->
+  <button id="accomScrollTop" aria-label="Scroll to top">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <!-- ── TOAST ── -->
+  <div class="toast" id="toast"></div>
+
+  <!-- M-Pesa Payment Modal -->
+  <div id="mpesa-overlay" class="mpesa-overlay" role="dialog" aria-modal="true" aria-label="M-Pesa Payment">
+    <div class="mpesa-modal">
+      <div class="mpesa-header">
+        <div class="mpesa-header-left">
+          <div class="mpesa-logo-wrap">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/320px-M-PESA_LOGO-01.svg.png" alt="M-Pesa" />
+          </div>
+          <div>
+            <p class="mpesa-header-title">Pay with M-Pesa</p>
+            <p class="mpesa-header-sub">Secure mobile payment</p>
+          </div>
+        </div>
+        <button class="mpesa-close-btn" onclick="closeMpesaModal()" aria-label="Close">✕</button>
+      </div>
+      <div class="mpesa-body">
+        <div id="mpesa-step-1" class="mpesa-step active">
+          <div class="mpesa-booking-banner">
+            <span class="mpesa-booking-icon">🏨</span>
+            <div>
+              <span class="mpesa-booking-name" id="mpesa-booking-name">Your booking</span>
+              <span class="mpesa-booking-amount" id="mpesa-booking-amount">KSh 0 / night</span>
+            </div>
+          </div>
+          <div class="mpesa-field">
+            <label class="mpesa-label" for="mpesa-phone">M-Pesa Phone Number</label>
+            <input id="mpesa-phone" class="mpesa-input" type="tel" placeholder="0712 345 678 or 0112 345 678" maxlength="13" inputmode="numeric" />
+            <span class="mpesa-hint">Enter your Safaricom M-Pesa number. You'll receive a prompt to enter your PIN.</span>
+          </div>
+          <div class="mpesa-field">
+            <label class="mpesa-label" for="mpesa-amount">Amount (KSh)</label>
+            <input id="mpesa-amount" class="mpesa-input" type="number" readonly />
+            <span class="mpesa-hint">Amount to be charged to your M-Pesa account</span>
+          </div>
+          <button id="mpesa-pay-btn" class="mpesa-pay-btn" onclick="submitMpesaPayment()">
+            <span id="mpesa-btn-text">Send Payment Request</span>
+            <div id="mpesa-spinner" class="mpesa-spinner"></div>
+          </button>
+        </div>
+        <div id="mpesa-step-2" class="mpesa-step">
+          <div class="mpesa-waiting">
+            <span class="mpesa-phone-icon">📱</span>
+            <h3>Check Your Phone</h3>
+            <p>A payment prompt has been sent to <strong id="mpesa-confirm-phone"></strong>.</p>
+            <p>Enter your M-Pesa PIN to pay <strong id="mpesa-confirm-amount"></strong>.</p>
+            <div class="mpesa-progress-track">
+              <div class="mpesa-progress-bar"></div>
+            </div>
+            <p class="mpesa-countdown">Waiting for confirmation… (<span id="mpesa-countdown-val">60</span>s remaining)</p>
+          </div>
+        </div>
+        <div id="mpesa-step-3" class="mpesa-step">
+          <div class="mpesa-result">
+            <span class="mpesa-result-icon">✅</span>
+            <h3>Payment Confirmed!</h3>
+            <p>Your booking has been confirmed. Check your M-Pesa messages for confirmation.</p>
+            <div class="mpesa-receipt-box">
+              <div>
+                <span class="mpesa-receipt-label">M-Pesa Receipt</span>
+                <span class="mpesa-receipt-num" id="mpesa-receipt-num">—</span>
+              </div>
+              <span style="font-size:1.4rem;">🧾</span>
+            </div>
+            <button class="mpesa-done-btn" onclick="closeMpesaModal()">Done — Back to Browsing</button>
+          </div>
+        </div>
+        <div id="mpesa-step-4" class="mpesa-step">
+          <div class="mpesa-result">
+            <span class="mpesa-result-icon">❌</span>
+            <h3>Payment Failed</h3>
+            <p id="mpesa-fail-reason" class="mpesa-fail-reason">The payment was cancelled or failed. Please try again.</p>
+            <button class="mpesa-retry-btn" onclick="retryMpesaPayment()">Try Again</button>
+            <button class="mpesa-cancel-btn" onclick="closeMpesaModal()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="site-layout.js"></script>
+  <script src="auth.js"></script>
+  <script src="nav-auth.js"></script>
+  <script src="attractions-data.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="mpesa.js"></script>
+  <script src="accommodation.js"></script>
+</body>
+
+</html>

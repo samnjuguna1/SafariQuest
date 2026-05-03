@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restaurants — SafariQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="restaurants.css"/>
+  <script src="auth.js"></script>
+</head>
+<body data-nav-active="restaurants">
+
+<div id="sq-nav-root"></div>
+
+
+
+<!-- ── HERO ── -->
+<section class="hero" id="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="hero-badge">🍽️ Kenya's Finest Dining</span>
+    <h1>Restaurants & <em>Dining</em></h1>
+    <p>From Nairobi's world-class fine dining to Mombasa's authentic Swahili seafood — discover Kenya's incredible culinary scene</p>
+    <div class="hero-search">
+      <input type="text" id="searchInput" placeholder="Search restaurants, cuisines or cities…" autocomplete="off"/>
+      <button class="btn-search" onclick="applySearch()">Search</button>
+    </div>
+    <div class="hero-stats">
+      <span><strong id="statTotal">45</strong> Restaurants</span>
+      <span><strong>5</strong> Cities</span>
+      <span><strong>12+</strong> Cuisines</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── FILTER BAR ── -->
+<div class="filter-bar" id="filterBar">
+  <div class="filter-container">
+
+    <div class="filter-group">
+      <label>City</label>
+      <div class="filter-pills" id="cityFilters">
+        <button class="pill active" onclick="filterCity(this,'all')">All Cities</button>
+        <button class="pill" onclick="filterCity(this,'Nairobi')">Nairobi</button>
+        <button class="pill" onclick="filterCity(this,'Mombasa')">Mombasa</button>
+        <button class="pill" onclick="filterCity(this,'Kisumu')">Kisumu</button>
+        <button class="pill" onclick="filterCity(this,'Nakuru')">Nakuru</button>
+        <button class="pill" onclick="filterCity(this,'Nyeri')">Nyeri</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label>Cuisine</label>
+      <select id="cuisineFilter" onchange="applyFilters()">
+        <option value="all">All Cuisines</option>
+        <option value="Kenyan">Kenyan</option>
+        <option value="Swahili">Swahili</option>
+        <option value="African">African</option>
+        <option value="Indian">Indian</option>
+        <option value="BBQ">BBQ &amp; Steakhouse</option>
+        <option value="Italian">Italian</option>
+        <option value="International">International</option>
+        <option value="European">European</option>
+        <option value="Chinese">Chinese</option>
+        <option value="Ethiopian">Ethiopian</option>
+        <option value="Seafood">Seafood</option>
+        <option value="Coffee">Café &amp; Coffee</option>
+      </select>
+    </div>
+
+
+    <button class="btn-clear" onclick="clearFilters()">✕ Clear</button>
+
+  </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main-content">
+
+  <!-- Results Header -->
+  <div class="results-header">
+    <div class="results-info">
+      <h2 id="resultsTitle">All Restaurants</h2>
+      <span id="resultsCount" class="results-count">45 restaurants</span>
+    </div>
+    <div class="sort-group">
+      <label>Sort by</label>
+      <select id="sortFilter" onchange="applyFilters()">
+        <option value="featured">Featured</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Featured Section -->
+  <div class="section-block" id="featuredSection">
+    <div class="section-label">⭐ Editor's Picks</div>
+    <div class="restaurants-grid featured-grid" id="featuredGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- All Restaurants Grid -->
+  <div class="section-block">
+    <div class="section-label" id="allSectionLabel">All Restaurants</div>
+    <div class="restaurants-grid" id="restaurantsGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="empty-icon">🍽️</div>
+    <h3>No restaurants found</h3>
+    <p>Try adjusting your search or filters</p>
+    <button class="btn-clear-main" onclick="clearFilters()">Clear all filters</button>
+  </div>
+
+</main>
+
+<!-- ── CUISINE EXPLORE SECTION ── -->
+<section class="cuisine-section">
+  <div class="cuisine-container">
+    <div class="cuisine-header">
+      <h2>Explore by <em>Cuisine</em></h2>
+      <p>Kenya's culinary diversity stretches from ancient Swahili traditions to fine French dining</p>
+    </div>
+    <div class="cuisine-grid">
+      <div class="cuisine-card" onclick="setCuisineFilter('Kenyan')">
+        <div class="cuisine-icon">🥩</div>
+        <div class="cuisine-name">Kenyan</div>
+        <div class="cuisine-desc">Nyama choma, ugali &amp; tilapia</div>
+      </div>
+      <div class="cuisine-card" onclick="setCuisineFilter('Swahili')">
+        <div class="cuisine-icon">🦐</div>
+        <div class="cuisine-name">Swahili</div>
+        <div class="cuisine-desc">Coastal spices &amp; fresh seafood</div>
+      </div>
+      <div class="cuisine-card" onclick="setCuisineFilter('Indian')">
+        <div class="cuisine-icon">🍛</div>
+        <div class="cuisine-name">Indian</div>
+        <div class="cuisine-desc">Rich curries &amp; tandoor breads</div>
+      </div>
+      <div class="cuisine-card" onclick="setCuisineFilter('BBQ')">
+        <div class="cuisine-icon">🔥</div>
+        <div class="cuisine-name">BBQ &amp; Steakhouse</div>
+        <div class="cuisine-desc">Grilled meats &amp; churrasco</div>
+      </div>
+      <div class="cuisine-card" onclick="setCuisineFilter('Italian')">
+        <div class="cuisine-icon">🍕</div>
+        <div class="cuisine-name">Italian</div>
+        <div class="cuisine-desc">Fresh pasta &amp; wood-fired pizza</div>
+      </div>
+      <div class="cuisine-card" onclick="setCuisineFilter('Seafood')">
+        <div class="cuisine-icon">🐟</div>
+        <div class="cuisine-name">Seafood</div>
+        <div class="cuisine-desc">Lobster, prawns &amp; lake fish</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="sq-footer-root"></div>
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+<!-- 1. Supabase JS library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="restaurants.js"></script>
+</body>
+</html>

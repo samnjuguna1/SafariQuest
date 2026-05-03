@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Destination — SafariQuest Kenya</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <!-- FIX 1: styles.css must load first — it contains navbar, footer, fonts, and base resets -->
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="attraction-details.css">
+</head>
+
+<body data-nav-active="destinations">
+
+  <div id="sq-nav-root"></div>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="index.html">Home</a>
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+        <a href="destinations.html">Destinations</a>
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+        <span>Loading...</span>
+      </nav>
+
+      <!-- Badges -->
+      <div class="hero-badges">
+        <span class="badge-difficulty moderate">Moderate</span>
+        <span class="badge-category">🌍 Safari</span>
+      </div>
+
+      <!-- Title -->
+      <h1>Loading Destination...</h1>
+
+      <!-- Meta row -->
+      <div class="hero-meta">
+        <span class="meta-location">📍 Kenya</span>
+        <span class="meta-rating">⭐ 4.8</span>
+        <span class="meta-time">🕐 Best: Year-round</span>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="hero-actions">
+        <button class="btn-share">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+          Share
+        </button>
+        <!-- FIX 3: Removed <br> from wishlist button — caused misaligned text next to icon -->
+        <button class="btn-wishlist" id="wishlistBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+          Save to Wishlist
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── QUICK INFO BAR ── -->
+  <div class="info-bar">
+    <div class="info-item">
+      <svg class="info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+      <div>
+        <div class="info-label">Best Time to Visit</div>
+        <div class="info-value" id="info-best-time">—</div>
+      </div>
+    </div>
+    <div class="info-divider"></div>
+    <div class="info-item">
+      <svg class="info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+        <path d="M2 17l10 5 10-5" />
+        <path d="M2 12l10 5 10-5" />
+      </svg>
+      <div>
+        <div class="info-label">Difficulty</div>
+        <div class="info-value" id="info-difficulty">—</div>
+      </div>
+    </div>
+    <div class="info-divider"></div>
+    <div class="info-item">
+      <svg class="info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <div>
+        <div class="info-label">Climate</div>
+        <div class="info-value" id="info-climate">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="page-layout">
+
+    <!-- LEFT: Content column -->
+    <main class="content-col">
+
+      <!-- Gallery -->
+      <section class="gallery-section fade-in">
+        <div class="gallery-grid">
+          <div class="gal-main" id="openGallery" title="Open gallery"></div>
+          <div class="gal-thumbs">
+            <div class="gal-thumb"></div>
+            <div class="gal-thumb gal-more">
+              <div class="gal-more-overlay" id="openGallery2">
+                <svg width="22" height="22" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
+                </svg>
+                <span>View All Photos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Overview -->
+      <section class="detail-section fade-in">
+        <div class="section-label-sm">About This Destination</div>
+        <h2 class="section-h2">Overview</h2>
+        <p class="overview-text" id="overview-text">Loading destination information...</p>
+      </section>
+
+      <!-- Highlights -->
+      <section class="detail-section fade-in">
+        <div class="section-label-sm">What to Expect</div>
+        <h2 class="section-h2">Highlights</h2>
+        <div class="highlights-grid" id="highlights-list"></div>
+      </section>
+
+      <!-- Activities & Services -->
+      <section class="detail-section fade-in" id="activities-section">
+        <div class="section-label-sm">⚡ Activities &amp; Services</div>
+        <h2 class="section-h2">What You Can Do Here</h2>
+        <div class="activities-grid" id="activities-grid">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- Available Services -->
+      <section class="detail-section fade-in" id="services-section">
+        <div class="section-label-sm">Facilities &amp; Amenities</div>
+        <h2 class="section-h2">Available Services</h2>
+        <div class="services-grid" id="services-grid">Loading services…</div>
+      </section>
+
+      <!-- ── EXPLORE ACCOMMODATIONS PREVIEW ── -->
+      <section class="detail-section fade-in" id="accom-preview-section">
+        <div class="accom-preview-header">
+          <div>
+            <div class="section-label-sm">Where to Stay</div>
+            <h2 class="section-h2">Explore Accommodations</h2>
+            <p class="accom-preview-sub">Handpicked lodges, tented camps &amp; hotels near this destination.</p>
+          </div>
+          <a href="#" class="accom-preview-viewall" id="accom-preview-link">
+            View All
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+        </div>
+        <div class="accom-preview-grid" id="accom-preview-grid">
+          <!-- Skeleton while loading -->
+          <div class="apc-skeleton"><div class="apc-sk-img"></div><div class="apc-sk-body"><div class="apc-sk-line"></div><div class="apc-sk-line short"></div></div></div>
+          <div class="apc-skeleton"><div class="apc-sk-img"></div><div class="apc-sk-body"><div class="apc-sk-line"></div><div class="apc-sk-line short"></div></div></div>
+          <div class="apc-skeleton"><div class="apc-sk-img"></div><div class="apc-sk-body"><div class="apc-sk-line"></div><div class="apc-sk-line short"></div></div></div>
+        </div>
+        <div class="accom-preview-footer">
+          <a href="#" class="accom-preview-cta-btn" id="accom-preview-cta">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            See All Accommodations for This Destination
+          </a>
+        </div>
+      </section>
+
+      <!-- Map -->
+      <section class="detail-section fade-in">
+        <div class="section-label-sm">Location</div>
+        <h2 class="section-h2">Getting There</h2>
+        <div class="map-card">
+          <div class="map-placeholder">
+            <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+              opacity=".35">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+              <circle cx="12" cy="9" r="2.5" />
+            </svg>
+            <div class="map-pin-label" id="map-pin-title">Loading...</div>
+          </div>
+          <div class="map-info">
+            <p id="location-note">Location details loading...</p>
+            <a class="btn-maps" id="maps-link" href="#" target="_blank" rel="noopener">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                <circle cx="12" cy="9" r="2.5" />
+              </svg>
+              Open in Google Maps
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reviews -->
+      <section class="detail-section fade-in">
+        <div class="section-label-sm">Community Feedback</div>
+        <h2 class="section-h2">Traveler Reviews</h2>
+        <div class="reviews-summary">
+          <div class="reviews-score">
+            <div class="score-big" id="rating-score">—</div>
+            <div class="score-stars">★★★★★</div>
+            <div class="score-count" id="rating-count">0 reviews</div>
+          </div>
+          <div class="reviews-bars">
+            <div class="rbar-row"><span>5★</span>
+              <div class="rbar">
+                <div class="rbar-fill" style="width:78%"></div>
+              </div><span>78%</span>
+            </div>
+            <div class="rbar-row"><span>4★</span>
+              <div class="rbar">
+                <div class="rbar-fill" style="width:15%"></div>
+              </div><span>15%</span>
+            </div>
+            <div class="rbar-row"><span>3★</span>
+              <div class="rbar">
+                <div class="rbar-fill" style="width:5%"></div>
+              </div><span>5%</span>
+            </div>
+            <div class="rbar-row"><span>2★</span>
+              <div class="rbar">
+                <div class="rbar-fill" style="width:1%"></div>
+              </div><span>1%</span>
+            </div>
+            <div class="rbar-row"><span>1★</span>
+              <div class="rbar">
+                <div class="rbar-fill" style="width:1%"></div>
+              </div><span>1%</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-all-reviews">Read All Reviews</button>
+      </section>
+
+      <!-- Similar Destinations -->
+      <section class="detail-section fade-in">
+        <div class="section-label-sm">You May Also Like</div>
+        <h2 class="section-h2">Similar Destinations</h2>
+        <div class="similar-grid" id="similar-grid"></div>
+      </section>
+
+    </main>
+
+    <!-- RIGHT: Entry Fees Sidebar -->
+    <aside class="info-sidebar">
+      <div class="sidebar-card">
+        
+        <!-- Entry Fees Panel -->
+        <div class="sidebar-fees-panel">
+          <div class="sidebar-panel-header">
+            <div class="sidebar-panel-icon">🎟️</div>
+            <div>
+              <h3 class="sidebar-panel-title">Standard Entry Fees</h3>
+              <p class="sidebar-panel-subtitle">Park & Reserve Entry Rates</p>
+            </div>
+          </div>
+          
+          <p class="sidebar-fees-note">Current fees charged at the gate — payable via M-Pesa or card.</p>
+          
+          <div class="sidebar-fees-list" id="sidebar-fees-list">
+            <!-- Populated by JS -->
+            <div class="sf-loading">Loading fees…</div>
+          </div>
+          
+          <div class="sidebar-fees-disclaimer">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <p>Fees are set by Kenya Wildlife Service (KWS) and reviewed annually. Citizens must present a valid National ID. Children's rates apply for visitors under 12 years old.</p>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="sidebar-actions">
+          <a href="booking.html?destination=" class="sidebar-btn-primary" id="sidebar-book-btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Book This Experience
+          </a>
+          <a href="#" class="sidebar-btn-secondary" id="sidebar-accom-btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            View Accommodation
+          </a>
+        </div>
+
+      </div>
+    </aside>
+
+  </div><!-- end page-layout -->
+
+  <div id="sq-footer-root"></div>
+
+  <!-- ── SCROLL TO TOP ── -->
+  <button id="scrollTop" aria-label="Scroll to top">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <polyline points="18 15 12 9 6 15" />
+    </svg>
+  </button>
+
+  <!-- ── TOAST ── -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ── LIGHTBOX ── -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+    <button class="lb-nav lb-prev" id="lbPrev">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+    </button>
+    <div class="lb-img-wrap"><img id="lbImg" src="" alt="Gallery image" /></div>
+    <button class="lb-nav lb-next" id="lbNext">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    </button>
+    <div class="lb-dots" id="lbDots"></div>
+  </div>
+
+  <script src="site-layout.js"></script>
+  <script src="auth.js"></script>
+  <script src="nav-auth.js"></script>
+  <script src="attractions-data.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="attraction-details.js"></script>
+</body>
+
+</html>

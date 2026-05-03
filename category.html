@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Destinations — SafariQuest Kenya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="category.css"/>
+  <style>
+    .sport-tabs-bar {
+      position: sticky; top: var(--nav-h, 72px); z-index: 900;
+      background: var(--white, #fff);
+      border-bottom: 2px solid rgba(232,84,26,0.12);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+    .sport-tabs-inner {
+      max-width: 1280px; margin: 0 auto; padding: 0 24px;
+      display: flex; overflow-x: auto; scrollbar-width: none;
+    }
+    .sport-tabs-inner::-webkit-scrollbar { display: none; }
+    .sport-tab {
+      flex-shrink: 0; padding: 18px 28px;
+      border: none; background: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem; font-weight: 600;
+      color: #6B6B6B; cursor: pointer;
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+      transition: all 0.2s; white-space: nowrap;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sport-tab:hover { color: #E8541A; }
+    .sport-tab.active { color: #E8541A; border-bottom-color: #E8541A; }
+    .sport-tab .tab-count {
+      background: #FFF0E8; color: #E8541A;
+      font-size: 0.68rem; font-weight: 700;
+      padding: 2px 7px; border-radius: 10px;
+    }
+    .sport-tab.active .tab-count { background: #E8541A; color: #fff; }
+
+    .panel-intro {
+      background: #F5F3F0; padding: 40px 24px 36px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .panel-intro-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; gap: 48px;
+    }
+    .panel-intro-text { flex: 1; }
+    .panel-intro-label {
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.2px;
+      color: #E8541A; margin-bottom: 8px;
+    }
+    .panel-intro-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 800; line-height: 1.2; margin-bottom: 10px;
+      color: #1A1A1A;
+    }
+    .panel-intro-text h2 em { color: #E8541A; font-style: normal; }
+    .panel-intro-text p {
+      color: #6B6B6B; font-size: 0.92rem;
+      line-height: 1.7; max-width: 560px;
+    }
+    .panel-stats { display: flex; gap: 28px; flex-shrink: 0; }
+    .stat-box { text-align: center; }
+    .stat-box strong {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; font-weight: 800; color: #E8541A;
+    }
+    .stat-box span { font-size: 0.72rem; color: #6B6B6B; font-weight: 500; }
+
+    .category-grid-section {
+      max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px;
+    }
+    .grid-header {
+      display: flex; align-items: baseline;
+      justify-content: space-between; margin-bottom: 28px;
+    }
+    .grid-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 700; color: #1A1A1A;
+    }
+    .grid-header span { font-size: 0.82rem; color: #6B6B6B; }
+
+    .dest-card {
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .dest-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.13);
+    }
+
+    .skeleton-card {
+      border-radius: 16px; overflow: hidden; height: 320px;
+      background: #f0ece6;
+    }
+    .skeleton-img {
+      height: 200px;
+      background: linear-gradient(90deg,#f0ece6 25%,#e8e0d8 50%,#f0ece6 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    .skeleton-body { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+    .skeleton-line {
+      height: 11px; border-radius: 4px;
+      background: linear-gradient(90deg,#f0ece6 25%,#e8e0d8 50%,#f0ece6 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    .skeleton-line.short { width: 55%; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    .state-box {
+      grid-column: 1/-1; text-align: center; padding: 64px 24px;
+    }
+    .state-box .state-icon { font-size: 3rem; margin-bottom: 12px; }
+    .state-box h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; margin-bottom: 8px;
+    }
+    .state-box p { color: #6B6B6B; font-size: 0.9rem; }
+
+    .diff-easy        { background: #22c55e; color: #fff; }
+    .diff-moderate    { background: #f59e0b; color: #fff; }
+    .diff-challenging { background: #E8541A; color: #fff; }
+
+    .cat-hero {
+      position: relative; min-height: 320px;
+      margin-top: var(--nav-h, 72px);
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      background-size: cover; background-position: center;
+    }
+    .cat-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg,rgba(26,26,26,0.82) 0%,rgba(232,84,26,0.50) 100%);
+    }
+    .cat-hero-content {
+      position: relative; z-index: 2;
+      color: #fff; padding: 40px 24px;
+    }
+    .cat-hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      backdrop-filter: blur(8px);
+      padding: 6px 18px; border-radius: 24px;
+      font-size: 0.82rem; font-weight: 600; letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+    .cat-hero-content h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; line-height: 1.15; margin-bottom: 10px;
+    }
+    .cat-hero-content h1 em { color: #F47940; font-style: normal; }
+    .cat-hero-content p {
+      font-size: 0.95rem; opacity: 0.85; max-width: 520px;
+      margin: 0 auto; line-height: 1.6;
+    }
+    .cat-breadcrumb {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; font-size: 0.78rem; opacity: 0.7; margin-bottom: 12px;
+    }
+    .cat-breadcrumb a { color: #fff; text-decoration: none; }
+    .cat-breadcrumb a:hover { text-decoration: underline; }
+
+    @media (max-width: 900px) {
+      .panel-intro-inner { flex-direction: column; gap: 20px; }
+      .panel-stats { gap: 16px; }
+    }
+  </style>
+</head>
+<body data-nav-active="destinations">
+
+<div id="sq-nav-root"></div>
+
+
+
+<!-- NAVBAR -->
+
+
+<!-- HERO -->
+<section class="cat-hero" id="catHero">
+  <div class="cat-hero-overlay"></div>
+  <div class="cat-hero-content">
+    <div class="cat-breadcrumb">
+      <a href="destinations.html">Destinations</a>
+      <span>›</span>
+      <span id="heroBreadcrumb">…</span>
+    </div>
+    <span class="cat-hero-badge" id="heroBadge"></span>
+    <h1 id="heroTitle"></h1>
+    <p id="heroDesc"></p>
+  </div>
+</section>
+
+<!-- SPORT TABS -->
+<div class="sport-tabs-bar">
+  <div class="sport-tabs-inner" id="sportTabs">
+    <button class="sport-tab" data-sport="football" onclick="switchSport('football',this)">
+      ⚽ Football <span class="tab-count" id="cnt-football">–</span>
+    </button>
+    <button class="sport-tab" data-sport="golf" onclick="switchSport('golf',this)">
+      ⛳ Golf <span class="tab-count" id="cnt-golf">–</span>
+    </button>
+    <button class="sport-tab" data-sport="rally" onclick="switchSport('rally',this)">
+      🚗 Safari Rally <span class="tab-count" id="cnt-rally">–</span>
+    </button>
+    <button class="sport-tab" data-sport="basketball" onclick="switchSport('basketball',this)">
+      🏀 Basketball <span class="tab-count" id="cnt-basketball">–</span>
+    </button>
+    <button class="sport-tab" data-sport="swimming" onclick="switchSport('swimming',this)">
+      🏊 Swimming <span class="tab-count" id="cnt-swimming">–</span>
+    </button>
+    <button class="sport-tab" data-sport="adventure" onclick="switchSport('adventure',this)">
+      🪂 Adventure <span class="tab-count" id="cnt-adventure">–</span>
+    </button>
+  </div>
+</div>
+
+<!-- PANEL INTRO -->
+<div class="panel-intro" id="panelIntro">
+  <div class="panel-intro-inner">
+    <div class="panel-intro-text">
+      <div class="panel-intro-label" id="introLabel"></div>
+      <h2 id="introTitle"></h2>
+      <p id="introDesc"></p>
+    </div>
+    <div class="panel-stats" id="panelStats"></div>
+  </div>
+</div>
+
+<!-- DESTINATIONS GRID -->
+<div class="category-grid-section">
+  <div class="grid-header">
+    <h3 id="gridTitle">Loading…</h3>
+    <span id="gridCount"></span>
+  </div>
+  <div class="destinations-grid" id="sportsGrid"
+       style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:24px;">
+  </div>
+</div>
+
+<!-- FOOTER -->
+
+
+<!-- SCRIPTS: CDN Supabase first, then config, then page logic -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
+<script src="supabase-config.js"></script>
+<script src="destinations.js"></script>
+<script src="category.js"></script>
+
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

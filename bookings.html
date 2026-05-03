@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Bookings — SafariQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="auth-ui.css" />
+  <link rel="stylesheet" href="bookings-page.css" />
+  <script src="auth.js" defer></script>
+  <script src="page-protection.js" defer></script>
+</head>
+<body class="page-bookings">
+
+<div id="sq-nav-root"></div>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <h1>🗓️ My Bookings</h1>
+    <p>Track, manage, and review all your Kenyan adventures in one place</p>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <div class="rq-checkout" id="restaurantOrderCheckout" hidden>
+    <h2>🍽️ Restaurant order</h2>
+    <p class="sub" id="rqRestaurantLine"></p>
+    <ul class="rq-lines" id="rqLines"></ul>
+    <div class="rq-total"><span>Total due</span><span id="rqTotal"></span></div>
+    <div class="rq-field">
+      <label for="rqPaymentMethod">Payment method</label>
+      <select id="rqPaymentMethod">
+        <option value="cash">Pay at table (cash / card)</option>
+        <option value="mpesa">M-Pesa</option>
+      </select>
+    </div>
+    <div class="rq-field" id="rqMpesaPhoneField" style="display:none">
+      <label for="rqMpesaPhone">M-Pesa phone number</label>
+      <input type="tel" id="rqMpesaPhone" placeholder="07XXXXXXXX or 2547XXXXXXXX" maxlength="13" />
+      <small style="color:#666;font-size:0.85rem;margin-top:4px;display:block">Enter your Safaricom M-Pesa number</small>
+    </div>
+    <div class="rq-field">
+      <label for="rqPaymentNote">Notes for the venue (optional)</label>
+      <input type="text" id="rqPaymentNote" placeholder="e.g. Allergy: nuts" maxlength="200" />
+    </div>
+    <div class="rq-actions">
+      <button type="button" class="rq-btn-primary" id="rqConfirmBtn">Confirm order</button>
+      <button type="button" class="rq-btn-ghost" id="rqDismissBtn">Cancel and clear</button>
+    </div>
+    <div id="rqStatusMessage" style="display:none;margin-top:1rem;padding:0.75rem;border-radius:8px;font-size:0.9rem"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon green">🧳</div>
+      <div>
+        <div class="stat-label">Total Bookings</div>
+        <div class="stat-value" id="totalCount">5</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon gold">✅</div>
+      <div>
+        <div class="stat-label">Confirmed</div>
+        <div class="stat-value" id="confirmedCount">2</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue">🌟</div>
+      <div>
+        <div class="stat-label">Completed</div>
+        <div class="stat-value" id="completedCount">2</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red">💰</div>
+      <div>
+        <div class="stat-label">Total Spent</div>
+        <div class="stat-value" id="totalSpent">KES 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS + FILTERS -->
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="filterTab('all', this)">All</button>
+      <button class="tab-btn" onclick="filterTab('confirmed', this)">Confirmed</button>
+      <button class="tab-btn" onclick="filterTab('pending', this)">Pending</button>
+      <button class="tab-btn" onclick="filterTab('completed', this)">Completed</button>
+      <button class="tab-btn" onclick="filterTab('cancelled', this)">Cancelled</button>
+    </div>
+    <div class="filter-row">
+      <select class="filter-select" onchange="sortBookings(this.value)">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="amount">By Amount</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- BOOKINGS LIST -->
+  <div class="bookings-grid" id="bookingsGrid"></div>
+
+</div>
+
+<!-- BOOKING DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal()">✕</button>
+    <h3 id="modalTitle">Booking Details</h3>
+    <div id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-sm btn-outline" onclick="closeModal()">Close</button>
+      <button class="btn-sm btn-primary" onclick="downloadReceipt()">⬇ Download Receipt</button>
+    </div>
+  </div>
+</div>
+
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+<script src="restaurant-order-checkout.js"></script>
+<script>
+  (function initRestaurantOrderCheckout() {
+    const LS_KEY = 'sq_pending_restaurant_order';
+    const panel = document.getElementById('restaurantOrderCheckout');
+    if (!panel) return;
+    let order = null;
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) order = JSON.parse(raw);
+    } catch (_) {}
+    if (!order || order.type !== 'restaurant_order') return;
+
+    panel.hidden = false;
+    document.getElementById('rqRestaurantLine').textContent =
+      (order.restaurantName || 'Restaurant') +
+      (order.tableNumber ? ' · Table ' + order.tableNumber : '') +
+      ' · ' +
+      (order.customerName || 'Guest');
+    const ul = document.getElementById('rqLines');
+    ul.innerHTML = (order.items || [])
+      .map(function (it) {
+        return (
+          '<li><span>' +
+          (it.qty || 0) +
+          '× ' +
+          (it.name || '') +
+          '</span><span>KES ' +
+          Number(it.subtotal != null ? it.subtotal : (it.price || 0) * (it.qty || 0)).toLocaleString() +
+          '</span></li>'
+        );
+      })
+      .join('');
+    document.getElementById('rqTotal').textContent =
+      'KES ' + Number(order.totalAmount || 0).toLocaleString();
+
+    // Show/hide M-Pesa phone field based on payment method
+    const paymentMethodSelect = document.getElementById('rqPaymentMethod');
+    const mpesaPhoneField = document.getElementById('rqMpesaPhoneField');
+    
+    paymentMethodSelect.addEventListener('change', function() {
+      if (this.value === 'mpesa') {
+        mpesaPhoneField.style.display = 'block';
+      } else {
+        mpesaPhoneField.style.display = 'none';
+      }
+    });
+
+    document.getElementById('rqConfirmBtn').addEventListener('click', async function () {
+      const method = document.getElementById('rqPaymentMethod').value;
+      const note = (document.getElementById('rqPaymentNote').value || '').trim();
+      const phone = (document.getElementById('rqMpesaPhone').value || '').trim();
+      
+      if (method === 'mpesa') {
+        await window.RestaurantOrderCheckout.handleMpesaOrder(order, phone, note);
+      } else {
+        // Cash/card payment
+        await window.RestaurantOrderCheckout.handleCashOrder(order, note);
+      }
+    });
+    
+    document.getElementById('rqDismissBtn').addEventListener('click', function () {
+      if (!confirm('Discard this restaurant checkout draft?')) return;
+      try {
+        localStorage.removeItem(LS_KEY);
+        const slug = order.restaurantSlug || 'restaurant';
+        localStorage.removeItem('sq_cart_' + slug);
+      } catch (_) {}
+      panel.hidden = true;
+      const mpesaPhoneField = document.getElementById('rqMpesaPhoneField');
+      if (mpesaPhoneField) mpesaPhoneField.style.display = 'none';
+      document.getElementById('rqMpesaPhone').value = '';
+      document.getElementById('rqPaymentMethod').value = 'cash';
+      document.getElementById('rqPaymentNote').value = '';
+      const statusMsg = document.getElementById('rqStatusMessage');
+      if (statusMsg) statusMsg.style.display = 'none';
+    });
+  })();
+
+  let currentFilter = 'all';
+  let currentBookings = [];
+
+  // Show skeleton loading state
+  function showLoading() {
+    document.getElementById('bookingsGrid').innerHTML = `
+      <div style="text-align:center;padding:3rem;color:var(--muted)">
+        <div style="font-size:2rem;margin-bottom:1rem">⏳</div>
+        <p>Loading your bookings…</p>
+      </div>`;
+  }
+
+  async function loadBookings() {
+    showLoading();
+    let remoteBookings = [];
+
+    if (window.SQ && window.SQ.isLoggedIn()) {
+      try {
+        remoteBookings = await window.SQ.listUserBookings();
+      } catch (e) {
+        console.warn('Could not load bookings from Supabase:', e);
+      }
+    }
+
+    // Normalize Supabase rows to display format
+    const fromSupabase = remoteBookings.map(b => ({
+      id:       b.id || ('SQ-' + Date.now()),
+      type:     b.booking_type || b.type || 'Hotel',
+      title:    b.attraction_name || b.title || 'Booking',
+      location: b.attraction_location || b.location || 'Kenya',
+      date:     b.check_in || b.date || b.created_at,
+      guests:   b.guests || b.guest_count || 1,
+      amount:   b.total_price || b.amount || 0,
+      status:   (b.status || 'confirmed').toLowerCase(),
+      ref:      b.payment_ref || b.ref || 'N/A',
+      img:      b.image_url || b.img || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=70'
+    }));
+
+    // Also read localStorage fallback (written by hotels.html when offline/not logged in)
+    let fromLocal = [];
+    try {
+      const raw = JSON.parse(localStorage.getItem('sq_bookings') || '[]');
+      fromLocal = raw.map(b => ({
+        id:       b.id || ('SQ-' + Date.now()),
+        type:     'Hotel',
+        title:    b.attraction || 'Hotel Booking',
+        location: 'Kenya',
+        date:     b.checkIn || b.bookedAt || '',
+        guests:   parseInt(b.guests) || 1,
+        amount:   parseInt((b.total || '0').replace(/[^0-9]/g, '')) || 0,
+        status:   (b.status || 'confirmed').toLowerCase(),
+        ref:      'Local-' + b.id,
+        img:      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=70'
+      }));
+    } catch(e) {}
+
+    // Merge: Supabase is authoritative; only add local entries not already in Supabase
+    const supabaseIds = new Set(fromSupabase.map(b => b.ref));
+    const uniqueLocal = fromLocal.filter(b => !supabaseIds.has(b.ref));
+    currentBookings = [...fromSupabase, ...uniqueLocal];
+
+    updateStats();
+    renderBookings();
+  }
+
+  function updateStats() {
+    const confirmed = currentBookings.filter(b =>
+      b.status === 'confirmed' || b.status === 'paid' || b.status === 'pending_payment'
+    ).length;
+    const completed = currentBookings.filter(b => b.status === 'completed').length;
+    const spent = currentBookings.filter(b => b.status !== 'cancelled').reduce((s, b) => s + b.amount, 0);
+    document.getElementById('totalCount').textContent = currentBookings.length;
+    document.getElementById('confirmedCount').textContent = confirmed;
+    document.getElementById('completedCount').textContent = completed;
+    document.getElementById('totalSpent').textContent = `KES ${spent.toLocaleString()}`;
+  }
+
+  function renderBookings() {
+    const grid = document.getElementById('bookingsGrid');
+    let list = currentBookings;
+    if (currentFilter !== 'all') list = list.filter(b => b.status === currentFilter);
+
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="empty-state">
+        <span class="emoji">🏕️</span>
+        <h3>No ${currentFilter === 'all' ? '' : currentFilter} bookings yet</h3>
+        <p>Start exploring Kenya to make your first booking!</p>
+        <br/>
+        <a href="destinations.html" class="btn-sm btn-primary" style="text-decoration:none;padding:10px 22px;border-radius:9px;background:var(--green);color:#fff;font-weight:600;">Explore Destinations</a>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = list.map((b, i) => `
+      <div class="booking-card" style="animation-delay:${i * 0.08}s">
+        <img class="booking-img" src="${b.img}" alt="${b.title}" loading="lazy" />
+        <div class="booking-info">
+          <div class="booking-type">${b.type}</div>
+          <div class="booking-title">${b.title}</div>
+          <div class="booking-meta">
+            <span>📍 ${b.location}</span>
+            <span>📅 ${formatDate(b.date)}</span>
+            <span>👥 ${b.guests} guest${b.guests > 1 ? 's' : ''}</span>
+            <span>🔖 ${b.id}</span>
+          </div>
+          <div class="booking-amount">KES ${b.amount.toLocaleString()}</div>
+        </div>
+        <div class="booking-actions">
+          <span class="status-badge status-${b.status}">${formatStatus(b.status)}</span>
+          <div class="action-btns">
+            <button class="btn-sm btn-primary" onclick='viewDetails(${JSON.stringify(b).replace(/'/g,"&#39;")})'>View Details</button>
+            ${b.status === 'confirmed' || b.status === 'pending_payment' ? `<button class="btn-sm btn-outline" onclick="cancelBooking('${b.id}')">Cancel</button>` : ''}
+            ${b.status === 'completed' ? `<a href="reviews.html?ref=${b.id}" class="btn-sm btn-outline" style="text-decoration:none;display:block">★ Review</a>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterTab(status, btn) {
+    currentFilter = status;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderBookings();
+  }
+
+  function sortBookings(val) {
+    if (val === 'newest') currentBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+    if (val === 'oldest') currentBookings.sort((a, b) => new Date(a.date) - new Date(b.date));
+    if (val === 'amount') currentBookings.sort((a, b) => b.amount - a.amount);
+    renderBookings();
+  }
+
+  let activeBooking = null;
+  function viewDetails(b) {
+    activeBooking = b;
+    document.getElementById('modalTitle').textContent = b.title;
+    document.getElementById('modalBody').innerHTML = `
+      <div class="modal-detail"><span class="label">Booking ID</span><span class="value">${b.id}</span></div>
+      <div class="modal-detail"><span class="label">Type</span><span class="value">${b.type}</span></div>
+      <div class="modal-detail"><span class="label">Location</span><span class="value">${b.location}</span></div>
+      <div class="modal-detail"><span class="label">Date</span><span class="value">${formatDate(b.date)}</span></div>
+      <div class="modal-detail"><span class="label">Guests</span><span class="value">${b.guests}</span></div>
+      <div class="modal-detail"><span class="label">Total Paid</span><span class="value" style="color:var(--green)">KES ${b.amount.toLocaleString()}</span></div>
+      <div class="modal-detail"><span class="label">Payment Ref</span><span class="value">${b.ref}</span></div>
+      <div class="modal-detail"><span class="label">Status</span><span class="value"><span class="status-badge status-${b.status}">${formatStatus(b.status)}</span></span></div>
+    `;
+    document.getElementById('detailModal').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('detailModal').classList.remove('open'); }
+
+  async function cancelBooking(id) {
+    if (!confirm('Are you sure you want to cancel this booking?')) return;
+    // Try to update in Supabase
+    if (window.SQ && window.SQ.isLoggedIn()) {
+      try {
+        await window.SQ.updateUserBooking(id, { status: 'cancelled' });
+      } catch (e) {
+        console.warn('Could not cancel in Supabase:', e);
+      }
+    }
+    currentBookings = currentBookings.map(b => b.id === id ? { ...b, status: 'cancelled' } : b);
+    updateStats();
+    renderBookings();
+  }
+
+  function downloadReceipt() {
+    if (!activeBooking) return;
+    const b = activeBooking;
+    const content = `SAFARIQUEST BOOKING RECEIPT\n${'='.repeat(40)}\nBooking ID: ${b.id}\nDestination: ${b.title}\nLocation:   ${b.location}\nDate:       ${formatDate(b.date)}\nGuests:     ${b.guests}\nAmount:     KES ${b.amount.toLocaleString()}\nPayment:    ${b.ref}\nStatus:     ${capitalize(b.status)}\n${'='.repeat(40)}\nThank you for choosing SafariQuest!\nDiscover. Explore. Experience.`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${b.id}-receipt.txt`;
+    a.click();
+  }
+
+  function formatDate(d) {
+    return new Date(d).toLocaleDateString('en-KE', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function formatStatus(s) {
+    if (!s) return '';
+    return capitalize(String(s).replace(/_/g, ' '));
+  }
+
+  document.getElementById('detailModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('detailModal')) closeModal();
+  });
+
+  // Wait for auth.js (defer) to finish before loading data
+  document.addEventListener('DOMContentLoaded', function() { loadBookings(); });
+</script>
+</body>
+</html>

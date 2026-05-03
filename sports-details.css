@@ -1,0 +1,416 @@
+/* ══════════════════════════════════════════════════════════════════════
+   sports-details.css  —  SafariQuest Kenya
+   Styles for the facility/sports details page.
+   Requires category.css to be loaded first (navbar, footer, base vars).
+══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --orange:      #E8541A;
+  --orange-lt:   #F47940;
+  --orange-pale: #FFF0E8;
+  --dark:        #1A1A1A;
+  --gray:        #6B6B6B;
+  --light-bg:    #F5F3F0;
+  --white:       #FFFFFF;
+  --card-r:      16px;
+  --nav-h:       72px;
+}
+
+/* ── LOADING STATE ─────────────────────────────────────────────────── */
+.sd-loading {
+  min-height: 60vh;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px;
+}
+.sd-loading p { color: var(--gray); font-size: 0.9rem; }
+.sd-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--orange-pale);
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: sd-spin 0.8s linear infinite;
+}
+@keyframes sd-spin { to { transform: rotate(360deg); } }
+
+/* ── NOT FOUND STATE ───────────────────────────────────────────────── */
+.sd-not-found {
+  min-height: 50vh;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 12px;
+  text-align: center; padding: 40px;
+}
+.sd-not-found .nf-icon { font-size: 3rem; }
+.sd-not-found h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 700;
+}
+.sd-not-found p { color: var(--gray); font-size: 0.9rem; }
+.sd-not-found a { color: var(--orange); font-weight: 700; text-decoration: none; }
+.sd-not-found a:hover { text-decoration: underline; }
+
+/* ── HERO ──────────────────────────────────────────────────────────── */
+.sd-hero {
+  position: relative;
+  height: 480px;
+  margin-top: var(--nav-h);
+  background: #1a1a1a center/cover no-repeat;
+  display: flex; align-items: flex-end;
+}
+.sd-hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(10,10,10,0.92) 0%,
+    rgba(10,10,10,0.3) 60%,
+    transparent 100%
+  );
+}
+.sd-hero-content {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 1280px; margin: 0 auto;
+  padding: 0 32px 40px;
+  color: #fff;
+}
+.sd-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.76rem; opacity: 0.65; margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.sd-breadcrumb a { color: #fff; text-decoration: none; }
+.sd-breadcrumb a:hover { text-decoration: underline; }
+.sd-hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--orange); color: #fff;
+  padding: 5px 14px; border-radius: 20px;
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  margin-bottom: 12px;
+}
+.sd-hero-content h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800; line-height: 1.1;
+  margin-bottom: 12px;
+}
+.sd-hero-meta {
+  display: flex; flex-wrap: wrap; gap: 18px;
+  font-size: 0.84rem; opacity: 0.85;
+}
+.sd-hero-meta span { display: flex; align-items: center; gap: 5px; }
+
+/* ── QUICK STATS BAR ───────────────────────────────────────────────── */
+.sd-stats-bar {
+  background: var(--dark); color: #fff;
+}
+.sd-stats-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; overflow-x: auto; scrollbar-width: none;
+}
+.sd-stats-inner::-webkit-scrollbar { display: none; }
+.sd-stat {
+  flex: 1; min-width: 140px;
+  padding: 20px 24px; text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+.sd-stat:last-child { border-right: none; }
+.sd-stat strong {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 800;
+  color: var(--orange); margin-bottom: 3px;
+}
+.sd-stat span {
+  font-size: 0.72rem; opacity: 0.6;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+
+/* ── PAGE BODY LAYOUT ──────────────────────────────────────────────── */
+.sd-body {
+  max-width: 1280px; margin: 0 auto;
+  padding: 48px 32px 80px;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ── SECTION TITLES ────────────────────────────────────────────────── */
+.sd-section { margin-bottom: 44px; }
+.sd-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--orange-pale);
+  display: flex; align-items: center; gap: 10px;
+}
+.sd-section-title .icon {
+  width: 32px; height: 32px;
+  background: var(--orange-pale); color: var(--orange);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+
+/* ── GALLERY ───────────────────────────────────────────────────────── */
+.sd-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 44px;
+}
+.sd-gallery img {
+  width: 100%; height: 160px;
+  object-fit: cover; border-radius: 10px;
+  display: block; transition: transform 0.3s;
+  cursor: pointer;
+}
+.sd-gallery img:first-child {
+  grid-column: 1 / -1; height: 240px;
+}
+.sd-gallery img:hover { transform: scale(1.02); }
+
+/* ── ABOUT ─────────────────────────────────────────────────────────── */
+.sd-about p {
+  color: var(--gray); line-height: 1.8;
+  font-size: 0.94rem; margin-bottom: 14px;
+}
+
+/* ── TAGS ──────────────────────────────────────────────────────────── */
+.sd-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.sd-tag {
+  padding: 5px 12px; border-radius: 20px;
+  background: var(--orange-pale); color: var(--orange);
+  font-size: 0.76rem; font-weight: 600;
+}
+
+/* ── FACILITIES GRID ───────────────────────────────────────────────── */
+.sd-facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+.sd-facility-card {
+  background: var(--light-bg);
+  border-radius: 12px; padding: 18px 16px;
+  display: flex; align-items: flex-start; gap: 12px;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.sd-facility-card:hover {
+  border-color: var(--orange);
+  transform: translateY(-3px);
+}
+.sd-facility-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+.sd-facility-info strong {
+  display: block; font-size: 0.88rem;
+  font-weight: 700; margin-bottom: 4px;
+}
+.sd-facility-info span { font-size: 0.76rem; color: var(--gray); line-height: 1.4; }
+
+/* ── PRICING TABS ──────────────────────────────────────────────────── */
+.sd-pricing-tabs {
+  display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.sd-ptab {
+  padding: 8px 18px; border-radius: 20px;
+  border: 1.5px solid #e0e0e0;
+  background: none; font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif; color: var(--dark);
+}
+.sd-ptab:hover { border-color: var(--orange); color: var(--orange); }
+.sd-ptab.active {
+  background: var(--orange); color: #fff;
+  border-color: var(--orange);
+}
+.sd-pricing-panel { display: none; }
+.sd-pricing-panel.active { display: block; }
+
+/* ── PRICING TABLE ─────────────────────────────────────────────────── */
+.sd-price-table {
+  width: 100%; border-collapse: collapse; font-size: 0.88rem;
+}
+.sd-price-table thead tr { background: var(--dark); color: #fff; }
+.sd-price-table thead th {
+  padding: 12px 16px; text-align: left;
+  font-size: 0.78rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.sd-price-table tbody tr {
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: background 0.15s;
+}
+.sd-price-table tbody tr:hover { background: var(--orange-pale); }
+.sd-price-table tbody td { padding: 13px 16px; }
+.sd-price-table tbody td:nth-child(2) { font-weight: 700; color: var(--orange); }
+.sd-price-note {
+  margin-top: 12px; font-size: 0.78rem; color: var(--gray);
+  display: flex; align-items: flex-start; gap: 6px;
+  background: var(--light-bg); padding: 10px 14px;
+  border-radius: 8px; line-height: 1.5;
+}
+
+/* ── HOW TO BUY STEPS ──────────────────────────────────────────────── */
+.sd-steps { display: flex; flex-direction: column; }
+.sd-step {
+  display: flex; gap: 18px; padding: 20px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.sd-step:last-child { border-bottom: none; }
+.sd-step-num {
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: var(--orange); color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.9rem; margin-top: 2px;
+}
+.sd-step-body strong {
+  display: block; font-size: 0.92rem;
+  font-weight: 700; margin-bottom: 5px;
+}
+.sd-step-body p { font-size: 0.84rem; color: var(--gray); line-height: 1.65; }
+.sd-step-body a { color: var(--orange); font-weight: 600; text-decoration: none; }
+.sd-step-body a:hover { text-decoration: underline; }
+
+/* ── SCHEDULE ──────────────────────────────────────────────────────── */
+.sd-schedule-list { display: flex; flex-direction: column; gap: 12px; }
+.sd-schedule-item {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 16px; background: var(--light-bg);
+  border-radius: 12px; border-left: 4px solid var(--orange);
+}
+.sd-schedule-date {
+  flex-shrink: 0; text-align: center;
+  background: var(--orange); color: #fff;
+  border-radius: 8px; padding: 8px 12px; min-width: 58px;
+}
+.sd-schedule-date .s-day {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem; font-weight: 800;
+  display: block; line-height: 1;
+}
+.sd-schedule-date .s-month {
+  font-size: 0.62rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  opacity: 0.9; display: block;
+}
+.sd-schedule-info { flex: 1; }
+.sd-schedule-info strong {
+  display: block; font-size: 0.92rem;
+  font-weight: 700; margin-bottom: 4px;
+}
+.sd-schedule-info span { font-size: 0.8rem; color: var(--gray); }
+.sd-schedule-badge {
+  flex-shrink: 0; align-self: center;
+  padding: 4px 10px; border-radius: 10px;
+  font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+.badge-live     { background: #dcfce7; color: #16a34a; }
+.badge-upcoming { background: var(--orange-pale); color: var(--orange); }
+.badge-tbc      { background: #f1f5f9; color: #64748b; }
+.sd-schedule-note {
+  margin-top: 16px; padding: 12px 16px;
+  background: #fffbeb; border-radius: 8px;
+  border: 1px solid #fde68a;
+  font-size: 0.8rem; color: #92400e;
+  display: flex; gap: 8px; align-items: flex-start;
+  line-height: 1.5;
+}
+
+/* ── SIDEBAR ───────────────────────────────────────────────────────── */
+.sd-sidebar { display: flex; flex-direction: column; gap: 20px; }
+.sd-card {
+  background: var(--light-bg);
+  border-radius: var(--card-r); padding: 24px;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.sd-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem; font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* ── CTA BUTTONS ───────────────────────────────────────────────────── */
+.sd-btn {
+  display: block; width: 100%;
+  padding: 13px 20px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 700;
+  text-align: center; text-decoration: none;
+  cursor: pointer; transition: all 0.2s;
+  border: none; margin-bottom: 10px;
+}
+.sd-btn:last-child { margin-bottom: 0; }
+.sd-btn-primary   { background: var(--orange); color: #fff; }
+.sd-btn-primary:hover { background: var(--orange-lt); }
+.sd-btn-secondary { background: var(--dark); color: #fff; }
+.sd-btn-secondary:hover { background: #333; }
+.sd-btn-outline   { background: none; color: var(--dark); border: 1.5px solid #ddd; }
+.sd-btn-outline:hover { border-color: var(--orange); color: var(--orange); }
+
+/* ── CONTACT LIST ──────────────────────────────────────────────────── */
+.sd-contact-list { display: flex; flex-direction: column; gap: 14px; }
+.sd-contact-item { display: flex; align-items: flex-start; gap: 12px; font-size: 0.86rem; }
+.sd-ci-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--orange-pale); color: var(--orange);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;
+}
+.sd-contact-item .ci-label {
+  font-size: 0.72rem; color: var(--gray); margin-bottom: 2px;
+}
+.sd-contact-item a { color: var(--orange); text-decoration: none; font-weight: 600; }
+.sd-contact-item a:hover { text-decoration: underline; }
+.sd-contact-item span { font-size: 0.84rem; line-height: 1.4; }
+
+/* ── OPENING HOURS ─────────────────────────────────────────────────── */
+.sd-hours-list { display: flex; flex-direction: column; }
+.sd-hours-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.84rem; padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  gap: 8px;
+}
+.sd-hours-row:last-child { border-bottom: none; }
+.sd-hours-row .h-day { color: var(--gray); flex-shrink: 0; }
+.sd-hours-row .h-time { font-weight: 600; text-align: right; }
+.h-open  { color: #16a34a !important; }
+.h-closed { color: #dc2626 !important; }
+
+/* ── MAP ───────────────────────────────────────────────────────────── */
+.sd-map-card { padding: 0; overflow: hidden; }
+.sd-map-wrap { height: 200px; background: #e8e0d8; position: relative; }
+.sd-map-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+.sd-map-footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.sd-map-footer a {
+  font-size: 0.82rem; color: var(--orange);
+  font-weight: 600; text-decoration: none;
+}
+.sd-map-footer a:hover { text-decoration: underline; }
+
+/* ── RESPONSIVE ────────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .sd-body {
+    grid-template-columns: 1fr;
+    padding: 32px 24px 60px;
+  }
+  .sd-sidebar { order: -1; }
+  .sd-stats-inner { flex-wrap: wrap; }
+  .sd-stat { min-width: 120px; flex: 1 1 120px; }
+}
+@media (max-width: 600px) {
+  .sd-hero { height: 380px; }
+  .sd-hero-content { padding: 0 16px 24px; }
+  .sd-body { padding: 24px 16px 50px; }
+  .sd-gallery img:first-child { height: 180px; }
+  .sd-gallery img { height: 120px; }
+  .sd-pricing-tabs { flex-wrap: wrap; }
+  .sd-schedule-item { flex-wrap: wrap; }
+  .sd-stat { min-width: 100px; }
+}

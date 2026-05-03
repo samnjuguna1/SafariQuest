@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu &amp; Services — SafariQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="restaurant-services.css"/>
+</head>
+<body data-nav-active="restaurants">
+
+<div id="sq-nav-root"></div>
+
+
+
+<!-- ── NAVBAR ── -->
+
+
+<!-- ── HERO BANNER ── -->
+<section class="services-hero" id="servicesHero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <a class="back-link" id="backLink" href="restaurants.html">← Back to Restaurant</a>
+    <div class="hero-tags">
+      <span class="hero-tag" id="heroCuisine">Cuisine</span>
+      <span class="hero-city" id="heroCity">📍 City</span>
+    </div>
+    <h1 id="heroTitle">Menu &amp; Services</h1>
+    <p id="heroDesc">Loading…</p>
+  </div>
+</section>
+
+<!-- ── ON-PREMISES LOCATION STATUS ── -->
+<section class="loc-banner loc-banner--checking" id="locBanner" aria-live="polite">
+  <div class="loc-banner-inner">
+    <div class="loc-banner-icon" id="locIcon" aria-hidden="true">📍</div>
+    <div class="loc-banner-text-wrap">
+      <div class="loc-banner-title" id="locTitle">Location status: Checking…</div>
+      <p class="loc-banner-sub" id="locSub">We use your device location once to confirm you are at the restaurant.</p>
+    </div>
+    <div class="loc-banner-spinner" id="locSpinner" aria-hidden="true"></div>
+    <label class="loc-override">
+      <input type="checkbox" id="locDemoOverride" />
+      <span>I’m already at the restaurant <em>(demo)</em></span>
+    </label>
+  </div>
+</section>
+
+<!-- ── CATEGORY TABS ── -->
+<div class="tabs-bar" id="tabsBar">
+  <div class="tabs-container">
+    <div class="tabs-scroll" id="tabsScroll">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN LAYOUT ── -->
+<div class="page-layout">
+
+  <!-- LEFT: Menu Items -->
+  <main class="menu-main" id="menuMain">
+    <div class="menu-header">
+      <h2 class="menu-cat-title" id="menuCatTitle">All Items</h2>
+      <span class="menu-cat-count" id="menuCatCount"></span>
+    </div>
+    <div class="menu-grid" id="menuGrid">
+      <!-- Populated by JS -->
+    </div>
+    <div class="menu-empty" id="menuEmpty" style="display:none">
+      <div class="empty-icon">🍽️</div>
+      <p>No items in this category yet.</p>
+    </div>
+  </main>
+
+  <!-- RIGHT: Cart Sidebar -->
+  <aside class="cart-sidebar" id="cartSidebar">
+    <div class="cart-card">
+      <!-- Table & Name -->
+      <div class="cart-top">
+        <h3 class="cart-title">Your Order</h3>
+        <div class="cart-inputs">
+          <div class="input-group">
+            <label>Table Number</label>
+            <input type="text" id="tableNumber" placeholder="e.g. 7" class="cart-input"/>
+          </div>
+          <div class="input-group">
+            <label>Your Name</label>
+            <input type="text" id="customerName" placeholder="John Doe" class="cart-input"/>
+          </div>
+          <div class="input-group">
+            <label>Phone (optional)</label>
+            <input type="tel" id="customerPhone" placeholder="+254 7xx xxx xxx" class="cart-input"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Items -->
+      <div class="cart-items-wrap">
+        <div class="cart-empty" id="cartEmpty">
+          <div class="cart-empty-icon">🛒</div>
+          <p>Your cart is empty</p>
+          <span>Add items from the menu</span>
+        </div>
+        <div class="cart-items" id="cartItems" style="display:none">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Special Instructions -->
+      <div class="input-group" id="specialWrap" style="display:none">
+        <label>Special Instructions</label>
+        <textarea id="specialInstructions" class="cart-input cart-textarea" placeholder="Allergies, preferences, special requests…" rows="2"></textarea>
+      </div>
+
+      <!-- Total & Button -->
+      <div class="cart-footer" id="cartFooter" style="display:none">
+        <div class="cart-total-row">
+          <span>Subtotal</span>
+          <span id="cartSubtotal">KSh 0</span>
+        </div>
+        <div class="cart-total-row total">
+          <span>Total</span>
+          <span id="cartTotal">KSh 0</span>
+        </div>
+        <button class="btn-place-order" id="proceedPaymentBtn" type="button">
+          Proceed to payment
+        </button>
+        <button class="btn-clear-cart" type="button" onclick="clearCart()">Clear cart</button>
+        <p class="cart-footnote">Orders are saved to checkout on the next step. Payment is completed on <strong>My Bookings</strong>.</p>
+      </div>
+    </div>
+
+    <!-- Floating cart button (mobile) -->
+    <button class="fab-cart" id="fabCart" onclick="toggleMobileCart()">
+      🛒 <span id="fabCount">0</span> items · <span id="fabTotal">KSh 0</span>
+    </button>
+  </aside>
+</div>
+
+<!-- ── FLOATING CHECKOUT (mobile + desktop) ── -->
+<div class="checkout-floater" id="checkoutFloater" hidden>
+  <div class="checkout-floater-inner">
+    <div class="checkout-floater-sum">
+      <span id="floaterCount">0</span> items · <strong id="floaterTotal">KSh 0</strong>
+    </div>
+    <button type="button" class="btn-floater-pay" id="floaterPayBtn">Proceed to payment</button>
+  </div>
+</div>
+
+<!-- ── ORDER SUCCESS MODAL ── -->
+<div class="modal-overlay" id="successModal" style="display:none" onclick="closeModal()">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-icon">✅</div>
+    <h2>Order Placed!</h2>
+    <p id="modalMessage">Your order has been sent to the kitchen.</p>
+    <div class="modal-order-summary" id="modalSummary"></div>
+    <button class="btn-modal-close" onclick="closeModal()">Continue Browsing</button>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+
+
+<!-- ── SCRIPTS ── -->
+<!-- 1. supabase-config.js MUST load first — it defines SUPABASE_URL, SUPABASE_KEY,
+        getRestaurant(), getRestaurantMenu() and sbFetch() which the page script needs -->
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
+<script src="supabase-client.js"></script>
+
+<!-- 2. Page logic — depends on variables from supabase-config.js above -->
+<script src="restaurant-services.js"></script>
+
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

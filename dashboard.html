@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafariQuest — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="auth-ui.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js" defer></script>
+  <script src="page-protection.js" defer></script>
+</head>
+<body data-nav-active="">
+
+<div id="sq-nav-root"></div>
+
+
+
+  <!-- Mobile sidebar overlay -->
+  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- ═══════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-logo">
+      <div class="logo-icon">🦁</div>
+      <span class="logo-text">SafariQuest</span>
+    </div>
+
+    <!-- Sidebar search -->
+    <div class="sidebar-search-wrap">
+      <span class="sidebar-search-icon">🔍</span>
+      <input class="sidebar-search-input" type="text" id="sidebarSearch" placeholder="Search destinations..." />
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Main</div>
+      <a class="nav-item active" href="dashboard.html">
+        <span class="nav-icon">⊞</span> Overview
+      </a>
+      <a class="nav-item" href="index.html">
+        <span class="nav-icon">⌂</span> Home
+      </a>
+      <a class="nav-item" href="destinations.html">
+        <span class="nav-icon">🌍</span> Destinations
+        <span class="nav-badge">27</span>
+      </a>
+      <a class="nav-item" href="restaurants.html">
+        <span class="nav-icon">🍽</span> Restaurants
+      </a>
+      <a class="nav-item" href="activities.html">
+        <span class="nav-icon">🎯</span> Activities
+      </a>
+      <a class="nav-item" href="hotels.html">
+        <span class="nav-icon">🏨</span> Hotels &amp; Lodges
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">My Travel</div>
+      <a class="nav-item" href="bookings.html">
+        <span class="nav-icon">✈</span> Bookings
+        <span class="nav-badge" id="bookingsBadge">0</span>
+      </a>
+      <a class="nav-item" href="saved.html">
+        <span class="nav-icon">♡</span> Saved Places
+      </a>
+      <a class="nav-item" href="reviews.html">
+        <span class="nav-icon">★</span> My Reviews
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Account</div>
+      <a class="nav-item" href="profile.html">
+        <span class="nav-icon">◯</span> Profile
+      </a>
+      <a class="nav-item" href="settings.html">
+        <span class="nav-icon">⚙</span> Settings
+      </a>
+      <a class="nav-item" href="notifications.html">
+        <span class="nav-icon">🔔</span> Notifications
+        <span class="nav-badge">5</span>
+      </a>
+    </div>
+
+    <!-- Kenya promo card (matches original) -->
+    <div class="sidebar-promo">
+      <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=120&q=80&fit=crop&crop=center"
+           alt="Kenya" class="promo-img">
+      <div class="promo-text">
+        <strong>Discover Kenya</strong>
+        <span>27 new experiences</span>
+      </div>
+      <a href="destinations.html" class="promo-arrow">→</a>
+    </div>
+
+  </aside><!-- /sidebar -->
+
+
+  <!-- ═══════════════════════════════════
+       MAIN AREA
+  ════════════════════════════════════ -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
+      <div class="topbar-greeting">
+        <h1 id="greeting-text">Good morning 👋</h1>
+      </div>
+
+      <!-- Topbar search with live dropdown -->
+      <div class="topbar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="topbarSearch" placeholder="Search destinations, hotels…" autocomplete="off" />
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
+
+      <div class="topbar-actions">
+        <a class="icon-btn heart-btn" href="saved.html" title="Saved Places">♡</a>
+        <a class="icon-btn" href="notifications.html" title="Notifications">
+          🔔
+          <span class="notif-dot"></span>
+        </a>
+        <a class="icon-btn" href="profile.html" title="My Profile" id="topbarProfileBtn" style="width:36px;height:36px;border-radius:50%;background:var(--savanna,#C8A24E);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;text-decoration:none;flex-shrink:0;" id="topbarProfileIcon">
+          <span id="topbarProfileInitials">👤</span>
+        </a>
+        <a class="btn-primary" href="plan.html">✦ Plan Trip</a>
+      </div>
+    </header>
+
+
+    <!-- PAGE CONTENT -->
+    <main class="page-content">
+
+      <!-- ── HERO ── -->
+      <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+          <div class="hero-left">
+            <p class="hero-eyebrow">🌍 Your Safari Story</p>
+            <h2 class="hero-title" id="heroTitle">Good evening 👋</h2>
+            <p class="hero-sub" id="heroSub">Welcome back to your safari dashboard</p>
+            <p class="hero-sub" id="joinedDate">Member since —</p>
+            <div class="hero-pills">
+              <span class="hero-pill">🦁 Maasai Mara</span>
+              <span class="hero-pill">🏔 Kilimanjaro</span>
+              <span class="hero-pill">🏖 Mombasa Coast</span>
+            </div>
+          </div>
+          <div class="hero-right">
+            <a href="plan.html" class="hero-cta-btn">✦ Plan Trip</a>
+            <div class="hero-avatar-wrap">
+              <div class="hero-avatar" id="heroAvatar">S</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DESTINATION TAGS ── -->
+      <div class="dest-tags-row" id="destTags"></div>
+
+      <!-- ── STATS ── -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">✈</div>
+          <div class="stat-badge up">+12%</div>
+          <div class="stat-label">Total Trips</div>
+          <div class="stat-value"><span class="stat-val" data-count="0">0</span></div>
+          <div class="stat-hint">Increased from last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📍</div>
+          <div class="stat-badge up">+8%</div>
+          <div class="stat-label">Destinations</div>
+          <div class="stat-value"><span class="stat-val" data-count="0">0</span></div>
+          <div class="stat-hint">Increased from last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-badge up">+15%</div>
+          <div class="stat-label">Reviews</div>
+          <div class="stat-value"><span class="stat-val" data-count="0">0</span></div>
+          <div class="stat-hint">Increased from last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🗺</div>
+          <div class="stat-badge up">+5%</div>
+          <div class="stat-label">Miles Traveled</div>
+          <div class="stat-value"><span class="stat-val" data-count="0">0</span></div>
+          <div class="stat-hint">Increased from last month</div>
+        </div>
+      </div>
+
+      <!-- ── 2-COL: TRIPS + QUICK NAV ── -->
+      <div class="grid-2col">
+
+        <!-- Upcoming Trips card -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🗓 Upcoming Trips</h3>
+            <a class="link-sm" href="bookings.html">View All →</a>
+          </div>
+
+          <!-- JS renders real bookings here; static fallbacks shown when list is empty -->
+          <div class="trip-list" id="tripList">
+            <div class="trip-item static-trip">
+              <img class="trip-img"
+                src="https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=200&q=80&fit=crop"
+                alt="Maasai Mara">
+              <div class="trip-info">
+                <div class="trip-name">Maasai Mara</div>
+                <div class="trip-meta">
+                  <span>📅 March 15 – March 22</span>
+                  <span>👥 4 travelers</span>
+                </div>
+                <div class="trip-tags">
+                  <span class="tag tag-upcoming">Upcoming</span>
+                  <span class="tag tag-safari">Safari</span>
+                  <span class="tag tag-wildlife">Wildlife</span>
+                </div>
+              </div>
+              <div class="trip-actions">
+                <button class="trip-action">View Details</button>
+                <button class="trip-action-sec">Edit</button>
+              </div>
+            </div>
+
+            <div class="trip-item static-trip">
+              <img class="trip-img"
+                src="https://images.unsplash.com/photo-1586861203927-800a5acdcc4d?w=200&q=80&fit=crop"
+                alt="Zanzibar">
+              <div class="trip-info">
+                <div class="trip-name">Zanzibar</div>
+                <div class="trip-meta">
+                  <span>📅 April 5 – April 12</span>
+                  <span>👥 2 travelers</span>
+                </div>
+                <div class="trip-tags">
+                  <span class="tag tag-upcoming">Upcoming</span>
+                  <span class="tag tag-beach">Beach</span>
+                  <span class="tag tag-relax">Relax</span>
+                </div>
+              </div>
+              <div class="trip-actions">
+                <button class="trip-action">View Details</button>
+                <button class="trip-action-sec">Edit</button>
+              </div>
+            </div>
+
+            <div class="trip-item static-trip">
+              <img class="trip-img"
+                src="https://images.unsplash.com/photo-1609198092458-38a293c7ac4b?w=200&q=80&fit=crop"
+                alt="Kilimanjaro">
+              <div class="trip-info">
+                <div class="trip-name">Kilimanjaro</div>
+                <div class="trip-meta">
+                  <span>📅 May 20 – May 28</span>
+                  <span>👥 6 travelers</span>
+                </div>
+                <div class="trip-tags">
+                  <span class="tag tag-upcoming">Upcoming</span>
+                  <span class="tag tag-trek">Trekking</span>
+                  <span class="tag tag-adventure">Adventure</span>
+                </div>
+              </div>
+              <div class="trip-actions">
+                <button class="trip-action">View Details</button>
+                <button class="trip-action-sec">Edit</button>
+              </div>
+            </div>
+          </div><!-- /#tripList -->
+        </div><!-- /.card -->
+
+        <!-- Right col: Quick Navigate -->
+        <div class="right-col">
+          <div class="card quick-nav-card">
+            <div class="card-header">
+              <h3>Quick Navigate</h3>
+            </div>
+            <div class="quick-links-grid">
+              <a class="quick-link" href="destinations.html">
+                <span class="ql-icon">🌍</span>
+                <span class="ql-label">Destinations</span>
+                <span class="ql-sub">27 new</span>
+              </a>
+              <a class="quick-link" href="restaurants.html">
+                <span class="ql-icon">🍽</span>
+                <span class="ql-label">Restaurants</span>
+                <span class="ql-sub">Top rated</span>
+              </a>
+              <a class="quick-link" href="hotels.html">
+                <span class="ql-icon">🏨</span>
+                <span class="ql-label">Hotels</span>
+                <span class="ql-sub">Lodges &amp; camps</span>
+              </a>
+              <a class="quick-link" href="activities.html">
+                <span class="ql-icon">🎯</span>
+                <span class="ql-label">Activities</span>
+                <span class="ql-sub">Safari &amp; more</span>
+              </a>
+              <a class="quick-link" href="plan.html">
+                <span class="ql-icon">✦</span>
+                <span class="ql-label">Plan a Trip</span>
+                <span class="ql-sub">Start now</span>
+              </a>
+              <a class="quick-link" href="map.html">
+                <span class="ql-icon">🗺</span>
+                <span class="ql-label">Map View</span>
+                <span class="ql-sub">Explore visually</span>
+              </a>
+              <a class="quick-link" href="saved.html">
+                <span class="ql-icon">♡</span>
+                <span class="ql-label">Saved</span>
+                <span class="ql-sub">Your wishlist</span>
+              </a>
+              <a class="quick-link" href="reviews.html">
+                <span class="ql-icon">★</span>
+                <span class="ql-label">Reviews</span>
+                <span class="ql-sub">Share feedback</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- User Profile Card -->
+          <div class="card user-profile-card">
+            <div class="user-profile" id="userProfileBtn">
+              <div class="avatar" id="userAvatar">SK</div>
+              <div class="user-info">
+                <div class="user-name" id="userName">Safari Kweli</div>
+                <div class="user-plan" id="userEmail">Explorer Plan ✦</div>
+              </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn">↩ Sign out</button>
+          </div>
+        </div>
+
+      </div><!-- /.grid-2col -->
+
+
+      <!-- ── RECOMMENDED FOR YOU ── -->
+      <div class="section-header">
+        <h2>✨ Recommended for You</h2>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">All</button>
+          <button class="filter-tab" data-filter="safari">Safari</button>
+          <button class="filter-tab" data-filter="beach">Beach</button>
+          <button class="filter-tab" data-filter="trekking">Trekking</button>
+        </div>
+      </div>
+
+      <div class="explore-grid">
+        <div class="explore-card" data-category="safari">
+          <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&q=80&fit=crop" alt="Amboseli">
+          <button class="heart-btn explore-heart" title="Save">♡</button>
+          <div class="explore-overlay"></div>
+          <div class="explore-category">Adventure</div>
+          <div class="explore-rating">★ 4.8</div>
+          <div class="explore-info">
+            <div class="explore-name">Safari Lodge Experience</div>
+            <div class="explore-location">📍 Amboseli National Park</div>
+            <div class="explore-price">$150–250 &nbsp;<a class="explore-link" href="destinations.html">Explore →</a></div>
+          </div>
+        </div>
+
+        <div class="explore-card" data-category="beach">
+          <img src="https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=600&q=80&fit=crop" alt="Mombasa">
+          <button class="heart-btn explore-heart" title="Save">♡</button>
+          <div class="explore-overlay"></div>
+          <div class="explore-category">Relaxation</div>
+          <div class="explore-rating">★ 4.6</div>
+          <div class="explore-info">
+            <div class="explore-name">Beach Resort Escape</div>
+            <div class="explore-location">📍 Mombasa Coast</div>
+            <div class="explore-price">$100–180 &nbsp;<a class="explore-link" href="destinations.html">Explore →</a></div>
+          </div>
+        </div>
+
+        <div class="explore-card" data-category="trekking">
+          <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80&fit=crop" alt="Mount Kenya">
+          <button class="heart-btn explore-heart" title="Save">♡</button>
+          <div class="explore-overlay"></div>
+          <div class="explore-category">Trekking</div>
+          <div class="explore-rating">★ 4.9</div>
+          <div class="explore-info">
+            <div class="explore-name">Mountain Trekking</div>
+            <div class="explore-location">📍 Mount Kenya</div>
+            <div class="explore-price">$80–120 &nbsp;<a class="explore-link" href="destinations.html">Explore →</a></div>
+          </div>
+        </div>
+
+        <div class="explore-card" data-category="safari">
+          <img src="https://images.unsplash.com/photo-1551009175-8a68da93d5f9?w=600&q=80&fit=crop" alt="Big Five">
+          <button class="heart-btn explore-heart" title="Save">♡</button>
+          <div class="explore-overlay"></div>
+          <div class="explore-category">Safari</div>
+          <div class="explore-rating">★ 4.7</div>
+          <div class="explore-info">
+            <div class="explore-name">Big Five Safari</div>
+            <div class="explore-location">📍 Maasai Mara &amp; Amboseli</div>
+            <div class="explore-price">$200–350 &nbsp;<a class="explore-link" href="destinations.html">Explore →</a></div>
+          </div>
+        </div>
+      </div><!-- /.explore-grid -->
+
+
+      <!-- ── RECENTLY SAVED (horizontal scroll) ── -->
+      <div class="section-header">
+        <h2>Recently Saved</h2>
+        <a class="link-sm" href="saved.html">See all saved →</a>
+      </div>
+
+      <div class="saved-row">
+        <div class="saved-item">
+          <img class="saved-img" src="https://images.unsplash.com/photo-1551009175-8a68da93d5f9?w=300&q=80&fit=crop" alt="Big Five">
+          <div class="saved-item-name">Big Five</div>
+          <div class="saved-item-loc">Maasai Mara &amp; Amboseli</div>
+        </div>
+        <div class="saved-item">
+          <img class="saved-img" src="https://images.unsplash.com/photo-1680116895877-f2b0d8e21e78?w=300&q=80&fit=crop" alt="Rift Valley">
+          <div class="saved-item-name">Great Rift Valley</div>
+          <div class="saved-item-loc">Lake Nakuru &amp; Bogoria</div>
+        </div>
+        <div class="saved-item">
+          <img class="saved-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80&fit=crop" alt="Diani">
+          <div class="saved-item-name">Coastal Paradise</div>
+          <div class="saved-item-loc">Diani &amp; Watamu Beach</div>
+        </div>
+        <div class="saved-item">
+          <img class="saved-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80&fit=crop" alt="Tea Farms">
+          <div class="saved-item-name">Tea Country</div>
+          <div class="saved-item-loc">Kericho &amp; Nandi Hills</div>
+        </div>
+        <div class="saved-item">
+          <img class="saved-img" src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=300&q=80&fit=crop" alt="Mara Sunset">
+          <div class="saved-item-name">Mara Sunset Camp</div>
+          <div class="saved-item-loc">Maasai Mara Reserve</div>
+        </div>
+      </div>
+
+    </main>
+  </div><!-- /.main -->
+
+  <script src="dashboard.js"></script>
+
+<script src="nav-auth.js"></script>
+
+</body>
+</html>

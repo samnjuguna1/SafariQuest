@@ -1,0 +1,250 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Optional: set your deployed M-Pesa backend (or use localStorage sq_mpesa_backend_url) -->
+  <meta name="mpesa-backend-url" content="" />
+  <title>Book Your Trip — SafariQuest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="auth-ui.css" />
+  <script src="auth.js" defer></script>
+  <script src="attractions-data.js" defer></script>
+  <script src="supabase-config.js" defer></script>
+  <script src="mpesa.js" defer></script>
+  <script src="booking-flow.js" defer></script>
+  <style>
+    :root {
+      --green: #1a4731;
+      --green-mid: #2d6a4f;
+      --gold: #c9932a;
+      --gold-light: #f4c56a;
+      --cream: #fdf8f0;
+      --text: #1c1c1c;
+      --muted: #6b7280;
+      --white: #fff;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      --radius: 14px;
+      --bad: #b91c1c;
+      --ok: #15803d;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    .page-hero {
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-mid) 60%, #1b5e38 100%);
+      padding: 2.5rem 1.25rem 2rem;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1400&q=60') center/cover no-repeat;
+      opacity: 0.1;
+    }
+    .page-hero-inner { max-width: 920px; margin: 0 auto; position: relative; }
+    .page-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.6rem, 4vw, 2.3rem); margin-bottom: 0.35rem; }
+    .page-hero p { color: rgba(255, 255, 255, 0.78); font-size: 0.95rem; max-width: 36rem; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 2rem 1.25rem 3.5rem; }
+    .steps {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+    .step-dot {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .step-dot span:first-child {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #d6d3cd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+    .step-dot.active span:first-child { border-color: var(--green); background: var(--green); color: #fff; }
+    .step-dot.done span:first-child { border-color: var(--ok); background: var(--ok); color: #fff; }
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.75rem 1.5rem;
+    }
+    .card h2 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--green); margin-bottom: 1rem; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+    label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 0.35rem; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1.5px solid #e5e7eb;
+      font-family: inherit;
+      font-size: 0.92rem;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--green-mid); }
+    textarea { min-height: 72px; resize: vertical; }
+    .field { margin-bottom: 1rem; }
+    .hint { font-size: 0.85rem; margin-top: 0.75rem; padding: 0.65rem 0.85rem; border-radius: 10px; }
+    .hint-muted { background: #f3f4f6; color: var(--muted); }
+    .hint-ok { background: rgba(21, 128, 61, 0.08); color: var(--ok); }
+    .hint-warn { background: rgba(234, 179, 8, 0.12); color: #a16207; }
+    .hint-bad { background: rgba(185, 28, 28, 0.08); color: var(--bad); }
+    .price-box {
+      background: linear-gradient(180deg, #f8faf8 0%, #fff 100%);
+      border: 1px solid #e8ebe8;
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      margin-top: 1rem;
+    }
+    .price-row { display: flex; justify-content: space-between; font-size: 0.88rem; padding: 0.35rem 0; color: var(--muted); }
+    .price-row.total { font-weight: 700; color: var(--text); font-size: 1.05rem; border-top: 1px dashed #e5e7eb; margin-top: 0.35rem; padding-top: 0.65rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1.35rem; }
+    button.btn, a.btn {
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 11px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-primary { background: var(--green); color: #fff; }
+    .btn-primary:hover { background: var(--green-mid); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-gold { background: var(--gold); color: #fff; }
+    .btn-gold:hover { filter: brightness(1.05); }
+    .btn-outline { background: transparent; color: var(--green); border: 2px solid var(--green); }
+    .pay-message { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.88rem; }
+    .pay-message.info { background: #eff6ff; color: #1e40af; }
+    .pay-message.ok { background: #ecfdf5; color: #166534; }
+    .pay-message.err { background: #fef2f2; color: #991b1b; }
+    .pay-message.warn { background: #fffbeb; color: #92400e; }
+    .note { font-size: 0.8rem; color: var(--muted); margin-top: 1rem; line-height: 1.5; }
+  </style>
+</head>
+<body data-nav-active="">
+
+<div id="sq-nav-root"></div>
+
+
+  
+
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <h1>Book your Kenya adventure</h1>
+      <p>Choose your destination, review pricing, then pay securely with M-Pesa STK Push.</p>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="steps" aria-label="Booking steps">
+      <div class="step-dot active" id="step-dot-1"><span>1</span><span>Trip details</span></div>
+      <div class="step-dot" id="step-dot-2"><span>2</span><span>Review</span></div>
+      <div class="step-dot" id="step-dot-3"><span>3</span><span>M-Pesa</span></div>
+    </div>
+
+    <div class="card" id="step-panel-1">
+      <h2>Trip details</h2>
+      <div class="field">
+        <label for="destination">Destination</label>
+        <select id="destination"></select>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="check_in">Check-in</label>
+          <input type="date" id="check_in" />
+        </div>
+        <div class="field">
+          <label for="check_out">Check-out</label>
+          <input type="date" id="check_out" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="guests">Guests</label>
+        <input type="number" id="guests" min="1" max="20" value="2" />
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="full_name">Full name</label>
+          <input type="text" id="full_name" autocomplete="name" placeholder="Your name" />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" autocomplete="email" placeholder="you@example.com" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="notes">Special requests (optional)</label>
+        <textarea id="notes" placeholder="Dietary needs, flight times, accessibility…"></textarea>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="btn-step2">Continue to review</button>
+      </div>
+    </div>
+
+    <div class="card" id="step-panel-2" hidden>
+      <h2>Review &amp; availability</h2>
+      <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;">
+        <strong id="sum-dest">—</strong><br />
+        <span id="sum-dates">—</span> · <span id="sum-guests">—</span> guests
+      </p>
+      <div class="price-box">
+        <div class="price-row"><span id="pb-nights">—</span></div>
+        <div class="price-row"><span id="pb-rate">—</span><span id="pb-base">—</span></div>
+        <div class="price-row"><span>Service fee (est.)</span><span id="pb-tax">—</span></div>
+        <div class="price-row total"><span>Total due</span><span id="pb-total">—</span></div>
+      </div>
+      <div id="availability-hint" class="hint hint-muted">Choose destination and dates to check availability.</div>
+      <div class="actions">
+        <button type="button" class="btn btn-outline" id="btn-back-1">Back</button>
+        <button type="button" class="btn btn-primary" id="btn-check-av">Check availability</button>
+        <button type="button" class="btn btn-gold" id="btn-step3">Continue to payment</button>
+      </div>
+      <p class="note">Payment step requires a real account (not dev bypass). Set <code>localStorage.setItem('sq_mpesa_backend_url','https://…')</code> to point at your Render/ngrok M-Pesa server.</p>
+    </div>
+
+    <div class="card" id="step-panel-3" hidden>
+      <h2>Pay with M-Pesa</h2>
+      <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;">
+        Booking ID: <strong id="pay-booking-id">—</strong><br />
+        Amount: <strong id="pay-total-line">—</strong>
+      </p>
+      <div class="field">
+        <label for="mpesa_phone">M-Pesa phone number</label>
+        <input type="tel" id="mpesa_phone" placeholder="0712 345 678 or 0112 345 678" autocomplete="tel" />
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:0.4rem;">
+          Enter your Safaricom M-Pesa number. You'll receive a prompt to enter your PIN.
+        </p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn-outline" id="btn-back-2">Back</button>
+        <button type="button" class="btn btn-gold" id="btn-pay">Confirm and Pay</button>
+      </div>
+      <div id="pay-message" class="pay-message" hidden></div>
+    </div>
+  </div>
+<div id="sq-footer-root"></div>
+
+<script src="site-layout.js"></script>
+<script src="nav-auth.js"></script>
+
+</body>
+</html>
