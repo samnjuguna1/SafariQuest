@@ -57,12 +57,25 @@ const destinations = [
 ];
 
 /* ─────────────────────────────────────────
-   DATA: EVENTS — now fetched from Supabase
+   DATA: EVENTS — fetched from Supabase (see getEvents in supabase-client.js)
 ───────────────────────────────────────── */
+
+/** Max cards for homepage Events + Reviews sections (3–4 each) */
+const HOME_EVENTS_LIMIT = 4;
+const HOME_REVIEWS_LIMIT = 4;
 
 /* ─────────────────────────────────────────
    HELPERS
 ───────────────────────────────────────── */
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 function renderStars(count, total = 5) {
   return Array.from({ length: total }, (_, i) =>
     `<span style="color:${i < count ? '#F5A623' : '#ddd'}">&#9733;</span>`
@@ -268,14 +281,14 @@ async function renderEvents() {
   if (!grid) return;
 
   /* Show loading skeleton */
-  grid.innerHTML = Array(4).fill(
+  grid.innerHTML = Array(HOME_EVENTS_LIMIT).fill(
     '<div class="event-card" style="opacity:0.4;pointer-events:none;"><div class="event-img-wrap" style="background:#e0e0e0;height:200px;border-radius:8px;"></div></div>'
   ).join('');
 
   let data = [];
   try {
     if (window.getEvents) {
-      data = await window.getEvents(4);
+      data = await window.getEvents(HOME_EVENTS_LIMIT);
     }
   } catch (e) {
     console.warn('[script.js] Supabase events failed:', e.message);
@@ -315,6 +328,57 @@ async function renderEvents() {
     `;
     grid.appendChild(card);
   });
+}
+
+/* ─────────────────────────────────────────
+   RENDER: HOMEPAGE REVIEWS — Supabase (getHomepageReviews in supabase-config.js)
+───────────────────────────────────────── */
+function reviewStarsHtml(rating) {
+  const n = Math.max(0, Math.min(5, Number(rating) || 0));
+  return '&#9733;'.repeat(n);
+}
+
+function buildTestimonialCard(row) {
+  const reviewer = escapeHtml(row.reviewer_name || 'Traveller');
+  const loc = row.location ? escapeHtml(row.location) : '';
+  const quote = escapeHtml(row.review_text || '');
+  return (
+    '<div class="testi-card">' +
+    '<div class="testi-quote-icon">\u275d</div>' +
+    '<p class="testi-quote">"' + quote + '"</p>' +
+    '<div class="testi-stars">' + reviewStarsHtml(row.rating) + '</div>' +
+    '<div class="testi-author">' +
+    '<div class="avatar">' +
+    '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">' +
+    '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>' +
+    '<circle cx="12" cy="7" r="4"/>' +
+    '</svg></div>' +
+    '<div class="author-info">' +
+    '<strong>' + reviewer + '</strong>' +
+    (loc ? '<span>' + loc + '</span>' : '') +
+    '</div></div></div>'
+  );
+}
+
+async function renderHomepageReviews() {
+  const grid = document.getElementById('testiGrid');
+  if (!grid) return;
+
+  let rows = [];
+  try {
+    if (typeof window.getHomepageReviews === 'function') {
+      rows = await window.getHomepageReviews(HOME_REVIEWS_LIMIT);
+    }
+  } catch (e) {
+    console.warn('[script.js] Homepage reviews failed:', e.message);
+  }
+
+  if (!rows || rows.length === 0) {
+    grid.innerHTML = '<p style="text-align:center;color:#aaa;grid-column:1/-1;">No reviews yet.</p>';
+    return;
+  }
+
+  grid.innerHTML = rows.slice(0, HOME_REVIEWS_LIMIT).map(buildTestimonialCard).join('');
 }
 
 /* ─────────────────────────────────────────
@@ -420,6 +484,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSlideshow();
   await renderDestinations();
   await renderEvents();
+  await renderHomepageReviews();
   initSmoothScroll();
   initScrollReveal();
   initSearch();
