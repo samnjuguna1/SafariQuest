@@ -84,6 +84,53 @@ window.getRestaurant = async function (slug) {
    getEvents()
    Returns upcoming events ordered by date. Limit 10.
 ══════════════════════════════════════════════════════════════════════ */
+const _SQ_EVENTS_FALLBACK = [
+  {
+    id: 'sq-fallback-safari-rally',
+    title: 'Safari Rally Fan Weekend',
+    event_date: '2026-06-21',
+    location: 'Naivasha',
+    category: 'sports',
+    description: 'Catch rally action zones, motorsport showcases, and family activities around Naivasha during race week.',
+    image_url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80&auto=format'
+  },
+  {
+    id: 'sq-fallback-lamu-cultural',
+    title: 'Lamu Cultural Weekend',
+    event_date: '2026-11-15',
+    location: 'Lamu Island',
+    category: 'cultural',
+    description: 'Experience Swahili music, dhow processions, local cuisine, and heritage walks in old town Lamu.',
+    image_url: 'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=800&q=80&auto=format'
+  },
+  {
+    id: 'sq-fallback-nairobi-food',
+    title: 'Nairobi Street Food Fiesta',
+    event_date: '2026-08-10',
+    location: 'Nairobi',
+    category: 'food',
+    description: 'Taste popular Kenyan street dishes, live cooking demos, and evening performances from local artists.',
+    image_url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80&auto=format'
+  },
+  {
+    id: 'sq-fallback-mara-photo',
+    title: 'Mara Wildlife Photo Camp',
+    event_date: '2026-07-04',
+    location: 'Maasai Mara',
+    category: 'wildlife',
+    description: 'A guided wildlife photography camp focused on migration season and golden-hour game drives.',
+    image_url: 'https://images.unsplash.com/photo-1535941339077-2dd1c7963098?w=800&q=80&auto=format'
+  }
+];
+
+function _getFallbackEvents(limit) {
+  const n = Math.min(50, Math.max(1, Number(limit) || 10));
+  return _SQ_EVENTS_FALLBACK
+    .slice()
+    .sort((a, b) => String(a.event_date).localeCompare(String(b.event_date)))
+    .slice(0, n);
+}
+
 window.getEvents = async function (limit = 10) {
   const n = Math.min(50, Math.max(1, Number(limit) || 10));
   const today = new Date().toISOString().slice(0, 10);
@@ -96,10 +143,14 @@ window.getEvents = async function (limit = 10) {
         `events?order=event_date.desc&limit=${n}&select=*`
       );
     }
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn('[supabase-client] getEvents empty response, using fallback events');
+      return _getFallbackEvents(n);
+    }
     console.log(`[supabase-client] getEvents → ${Array.isArray(data) ? data.length : 0} rows`);
     return Array.isArray(data) ? data : [];
   } catch (err) {
     console.warn('[supabase-client] getEvents failed:', err.message);
-    return [];
+    return _getFallbackEvents(n);
   }
 };
