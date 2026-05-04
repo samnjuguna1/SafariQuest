@@ -1259,6 +1259,27 @@ footer .logo-text > span {
 
 .footer-contact-col a:hover { color: var(--orange); }
 
+.footer-bottom-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+a.footer-admin-subtle {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+
+a.footer-admin-subtle:hover {
+  color: rgba(255, 255, 255, 0.42);
+}
+
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.1);
   padding: 20px 0;

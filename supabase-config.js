@@ -140,3 +140,27 @@ window.db = {
   }
 
 };
+
+/**
+ * Homepage testimonials — rows from public.reviews in Supabase (RLS permitting).
+ * Featured rows first, then newest. Limit defaults to 4.
+ */
+window.getHomepageReviews = async function (limit) {
+  const n = Math.min(12, Math.max(1, Number(limit) || 4));
+  try {
+    const data = await sbFetch(
+      `reviews?select=reviewer_name,location,review_text,rating,is_featured&order=is_featured.desc,created_at.desc&limit=${n}`
+    );
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    try {
+      const data = await sbFetch(
+        `reviews?select=reviewer_name,location,review_text,rating&order=created_at.desc&limit=${n}`
+      );
+      return Array.isArray(data) ? data : [];
+    } catch (err2) {
+      console.warn('[supabase-config] getHomepageReviews failed:', err2.message);
+      return [];
+    }
+  }
+};

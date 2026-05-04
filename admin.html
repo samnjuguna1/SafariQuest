@@ -198,6 +198,15 @@
     .btn-secondary:hover { color: var(--text-primary); }
     .btn-primary { background: linear-gradient(135deg, var(--brand-accent), var(--brand-gold)); color: #fff; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
+  <script>
+    (function () {
+      if (!window.Auth || typeof Auth.isLoggedIn !== 'function' || !Auth.isLoggedIn()) {
+        window.location.replace('admin-login.html');
+      }
+    })();
+  </script>
 </head>
 <body>
 

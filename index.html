@@ -10,9 +10,6 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-
-  <!-- Supabase JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body class="page-home" data-nav-active="home">
@@ -206,68 +203,6 @@
   <script src="supabase-config.js"></script>
   <script src="supabase-client.js"></script>
   <script src="script.js"></script>
-
-  <!-- ═══════════════════════════════════════
-     REVIEWS — Supabase fetch
-════════════════════════════════════════ -->
-  <script>
-    (async function loadReviews() {
-      const SUPABASE_URL  = 'https://cbyipmrozqsntojiartw.supabase.co';
-      const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNieWlwbXJvenFzbnRvamlhcnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTkxNTQsImV4cCI6MjA4ODk3NTE1NH0.31TAhmUCV_Uh0W8FGnR2_TLCZDU4YBM1U5LMSMc5JZs';
-
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-      const grid     = document.getElementById('testiGrid');
-
-      // Build star HTML — filled stars only (matches your original style)
-      function stars(rating) {
-        return '&#9733;'.repeat(Math.max(0, Math.min(5, rating)));
-      }
-
-      // Build a card that matches your existing .testi-card markup exactly
-      function buildCard({ reviewer_name, location, review_text, rating }) {
-        return `
-          <div class="testi-card">
-            <div class="testi-quote-icon">❝</div>
-            <p class="testi-quote">"${review_text}"</p>
-            <div class="testi-stars">${stars(rating)}</div>
-            <div class="testi-author">
-              <div class="avatar">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-              <div class="author-info">
-                <strong>${reviewer_name}</strong>
-                ${location ? `<span>${location}</span>` : ''}
-              </div>
-            </div>
-          </div>`;
-      }
-
-      try {
-        const { data: reviews, error } = await supabase
-          .from('reviews')
-          .select('reviewer_name, location, review_text, rating')
-          .eq('is_featured', true)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        if (!reviews || reviews.length === 0) {
-          grid.innerHTML = '<p style="text-align:center;color:#aaa;grid-column:1/-1;">No reviews yet.</p>';
-          return;
-        }
-
-        grid.innerHTML = reviews.map(buildCard).join('');
-
-      } catch (err) {
-        console.error('Reviews fetch error:', err.message);
-        // Silently fall back — grid stays empty rather than showing a broken UI
-        grid.innerHTML = '';
-      }
-    })();
-  </script>
 
 </body>
 

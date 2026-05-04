@@ -7,15 +7,19 @@
      - getRestaurant(slug) → single restaurant by slug
 ══════════════════════════════════════════════════════════════════════ */
 
-/* Re-use the globals already set by supabase-config.js if available,
-   otherwise define them here as fallback */
-const _SQ_URL = (typeof SUPABASE_URL !== 'undefined')
-  ? SUPABASE_URL
-  : 'https://cbyipmrozqsntojiartw.supabase.co';
+/* Re-use the same project + anon JWT as auth.js / supabase-config.js
+   (admin and user accounts live in Supabase Auth — not in any local .js file). */
+const _SQ_URL = (window.SQ_PUBLIC && window.SQ_PUBLIC.url)
+  ? window.SQ_PUBLIC.url
+  : ((typeof SUPABASE_URL !== 'undefined')
+    ? SUPABASE_URL
+    : 'https://cbyipmrozqsntojiartw.supabase.co');
 
-const _SQ_KEY = (typeof SUPABASE_KEY !== 'undefined')
-  ? SUPABASE_KEY
-  : 'sb_publishable_eKZx3549j8unaFOQaZNGlQ_IdVWH5BI';
+const _SQ_KEY = (window.SQ_PUBLIC && window.SQ_PUBLIC.anon)
+  ? window.SQ_PUBLIC.anon
+  : ((typeof SUPABASE_KEY !== 'undefined')
+    ? SUPABASE_KEY
+    : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNieWlwbXJvenFzbnRvamlhcnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTkxNTQsImV4cCI6MjA4ODk3NTE1NH0.31TAhmUCV_Uh0W8FGnR2_TLCZDU4YBM1U5LMSMc5JZs');
 
 /* ── fetch helper with detailed error logging ── */
 async function _sqFetch(path) {

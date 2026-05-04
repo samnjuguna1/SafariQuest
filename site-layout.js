@@ -97,8 +97,10 @@
       '</div></div>' +
       '<div class="footer-bottom">' +
       '<p>© 2026 SafariQuest. All rights reserved.</p>' +
+      '<div class="footer-bottom-right">' +
       '<p class="footer-slogan"><em>Discover. Explore. Experience.</em></p>' +
-      '</div></footer>';
+      '<a href="admin-login.html" class="footer-admin-subtle" aria-label="Staff sign in">Staff</a>' +
+      '</div></div></footer>';
 
     if (navRoot) navRoot.innerHTML = NAV_HTML;
     if (footRoot) footRoot.innerHTML = FOOTER_HTML;
