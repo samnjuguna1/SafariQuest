@@ -76,6 +76,31 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+function formatCompactCount(n) {
+  const x = Number(n) || 0;
+  if (x >= 1_000_000) return (x / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M+';
+  if (x >= 10_000) return Math.round(x / 1000) + 'K+';
+  if (x >= 1000) return (x / 1000).toFixed(1).replace(/\.0$/, '') + 'K+';
+  return String(x);
+}
+
+function formatEventDateDisplay(iso) {
+  if (!iso) return '';
+  const s = String(iso);
+  try {
+    const d = new Date(s.length === 10 ? s + 'T12:00:00' : s);
+    if (Number.isNaN(d.getTime())) return s;
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch {
+    return s;
+  }
+}
+
+function titleCaseWords(str) {
+  if (!str) return '';
+  return String(str).replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
+}
 function renderStars(count, total = 5) {
   return Array.from({ length: total }, (_, i) =>
     `<span style="color:${i < count ? '#F5A623' : '#ddd'}">&#9733;</span>`
@@ -302,13 +327,15 @@ async function renderEvents() {
 
   grid.innerHTML = '';
   data.forEach(event => {
-    const title    = event.title || event.name || 'Event';
-    const date     = event.date  || event.event_date || '';
-    const location = event.location || event.city || '';
-    const desc     = event.description || event.desc || '';
-    const img      = event.image_hero || event.image || event.img ||
+    const title    = escapeHtml(event.title || event.name || 'Event');
+    const dateRaw  = event.event_date || event.date || '';
+    const dateDisp = formatEventDateDisplay(dateRaw);
+    const location = escapeHtml(event.location || event.city || '');
+    const descRaw  = event.description || event.desc || '';
+    const desc     = escapeHtml(descRaw.length > 160 ? descRaw.slice(0, 157) + '…' : descRaw);
+    const img      = event.image_url || event.image_hero || event.image || event.img ||
                      'https://images.unsplash.com/photo-1541532713592-79a0317b272b?w=500&q=80&auto=format';
-    const slug     = event.slug || event.id || '';
+    const eventId  = event.id != null ? encodeURIComponent(String(event.id)) : '';
 
     const card = document.createElement('div');
     card.className = 'event-card';
@@ -316,14 +343,15 @@ async function renderEvents() {
       <div class="event-img-wrap">
         <img class="event-img" src="${img}" alt="${title}" loading="lazy"
              onerror="this.src='https://images.unsplash.com/photo-1541532713592-79a0317b272b?w=500&q=80&auto=format'" />
-        <div class="event-date-badge">${date}</div>
+        <div class="event-date-badge">${dateDisp || dateRaw}</div>
       </div>
       <div class="event-body">
+        ${event.category ? `<div class="event-cat-pill">${escapeHtml(titleCaseWords(event.category))}</div>` : ''}
         <h3>${title}</h3>
-        <div class="event-meta">${calendarIcon()} ${date}</div>
-        <div class="event-meta">${pinIcon()} ${location}</div>
+        <div class="event-meta">${calendarIcon()} ${dateDisp || dateRaw}</div>
+        <div class="event-meta">${pinIcon()} ${location || 'Kenya'}</div>
         <p>${desc}</p>
-        <a href="${slug ? 'events.html?id=' + slug : 'events.html'}" class="learn-more-link">Learn More &#8594;</a>
+        <a href="${eventId ? 'events.html?event=' + eventId : 'events.html'}" class="learn-more-link">Learn More &#8594;</a>
       </div>
     `;
     grid.appendChild(card);
@@ -341,7 +369,7 @@ function reviewStarsHtml(rating) {
 function buildTestimonialCard(row) {
   const reviewer = escapeHtml(row.reviewer_name || 'Traveller');
   const loc = row.location ? escapeHtml(row.location) : '';
-  const quote = escapeHtml(row.review_text || '');
+  const quote = escapeHtml(row.body || row.review_text || '');
   return (
     '<div class="testi-card">' +
     '<div class="testi-quote-icon">\u275d</div>' +
@@ -379,6 +407,54 @@ async function renderHomepageReviews() {
   }
 
   grid.innerHTML = rows.slice(0, HOME_REVIEWS_LIMIT).map(buildTestimonialCard).join('');
+}
+
+/* ─────────────────────────────────────────
+   HERO — stats & slide backgrounds from Supabase
+───────────────────────────────────────── */
+async function renderHeroStats() {
+  const elDest = document.getElementById('heroStatDest');
+  const elRev  = document.getElementById('heroStatReviews');
+  const elRat  = document.getElementById('heroStatRating');
+  if (!elDest || !elRev || !elRat) return;
+
+  try {
+    if (typeof window.getHomepageStats === 'function') {
+      const s = await window.getHomepageStats();
+      elDest.textContent = s.destinationCount ? formatCompactCount(s.destinationCount) : '—';
+      elRev.textContent  = s.reviewVolume ? formatCompactCount(s.reviewVolume) : '—';
+      elRat.textContent  = s.avgRating > 0 ? `${s.avgRating.toFixed(1)}★` : '—';
+      return;
+    }
+  } catch (e) {
+    console.warn('[script.js] Hero stats failed:', e.message);
+  }
+  elDest.textContent = '—';
+  elRev.textContent = '—';
+  elRat.textContent = '—';
+}
+
+async function applyHeroSlideBackgrounds() {
+  const slides = document.querySelectorAll('.hero-slide');
+  if (!slides.length) return;
+
+  let rows = [];
+  try {
+    if (window.db && typeof window.db.getAttractions === 'function') {
+      rows = await window.db.getAttractions({ limit: slides.length, order: 'rating.desc' });
+    }
+  } catch (e) {
+    console.warn('[script.js] Hero slides:', e.message);
+  }
+
+  if (!rows || !rows.length) return;
+
+  rows.forEach((row, i) => {
+    const el = slides[i];
+    if (!el) return;
+    const img = row.image_hero || row.img;
+    if (img) el.style.backgroundImage = 'url(' + JSON.stringify(String(img)) + ')';
+  });
 }
 
 /* ─────────────────────────────────────────
@@ -482,9 +558,13 @@ function initScrollReveal() {
 ───────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', async () => {
   initSlideshow();
-  await renderDestinations();
-  await renderEvents();
-  await renderHomepageReviews();
+  await Promise.all([
+    renderDestinations(),
+    renderEvents(),
+    renderHomepageReviews(),
+    renderHeroStats(),
+    applyHeroSlideBackgrounds()
+  ]);
   initSmoothScroll();
   initScrollReveal();
   initSearch();

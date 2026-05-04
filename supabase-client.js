@@ -85,10 +85,17 @@ window.getRestaurant = async function (slug) {
    Returns upcoming events ordered by date. Limit 10.
 ══════════════════════════════════════════════════════════════════════ */
 window.getEvents = async function (limit = 10) {
+  const n = Math.min(50, Math.max(1, Number(limit) || 10));
+  const today = new Date().toISOString().slice(0, 10);
   try {
-    const data = await _sqFetch(
-      `events?order=date.asc&limit=${limit}&select=*`
+    let data = await _sqFetch(
+      `events?event_date=gte.${today}&order=event_date.asc&limit=${n}&select=*`
     );
+    if (!Array.isArray(data) || data.length === 0) {
+      data = await _sqFetch(
+        `events?order=event_date.desc&limit=${n}&select=*`
+      );
+    }
     console.log(`[supabase-client] getEvents → ${Array.isArray(data) ? data.length : 0} rows`);
     return Array.isArray(data) ? data : [];
   } catch (err) {

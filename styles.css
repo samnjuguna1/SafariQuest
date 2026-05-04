@@ -771,6 +771,19 @@ section { padding: 96px 48px; }
   line-height: 1.35;
 }
 
+.event-cat-pill {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--orange);
+  background: rgba(232, 115, 42, 0.12);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
 .event-meta {
   display: flex;
   align-items: center;

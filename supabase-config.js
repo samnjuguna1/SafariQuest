@@ -142,25 +142,68 @@ window.db = {
 };
 
 /**
- * Homepage testimonials — rows from public.reviews in Supabase (RLS permitting).
- * Featured rows first, then newest. Limit defaults to 4.
+ * Homepage testimonials — public.reviews (body, reviewer_name, rating, status).
  */
 window.getHomepageReviews = async function (limit) {
   const n = Math.min(12, Math.max(1, Number(limit) || 4));
   try {
     const data = await sbFetch(
-      `reviews?select=reviewer_name,location,review_text,rating,is_featured&order=is_featured.desc,created_at.desc&limit=${n}`
+      `reviews?select=reviewer_name,body,rating,status,created_at&order=created_at.desc&limit=${n}`
     );
-    return Array.isArray(data) ? data : [];
+    const rows = Array.isArray(data) ? data : [];
+    const ok = rows.filter(function (r) {
+      var s = (r.status || '').toString().toLowerCase();
+      return !s || s === 'approved' || s === 'published' || s === 'active';
+    });
+    return ok.length ? ok : rows;
   } catch (err) {
-    try {
-      const data = await sbFetch(
-        `reviews?select=reviewer_name,location,review_text,rating&order=created_at.desc&limit=${n}`
-      );
-      return Array.isArray(data) ? data : [];
-    } catch (err2) {
-      console.warn('[supabase-config] getHomepageReviews failed:', err2.message);
-      return [];
-    }
+    console.warn('[supabase-config] getHomepageReviews failed:', err.message);
+    return [];
   }
+};
+
+/**
+ * Hero strip: destination count, total review volume, avg attraction rating (all from attractions + count header).
+ */
+window.getHomepageStats = async function () {
+  const out = {
+    destinationCount: 0,
+    reviewVolume: 0,
+    avgRating: 0
+  };
+  try {
+    const res = await fetch(`${_SQ_CFG_URL}/rest/v1/attractions?select=id`, {
+      headers: {
+        apikey: _SQ_CFG_ANON,
+        Authorization: 'Bearer ' + _SQ_CFG_ANON,
+        Prefer: 'count=exact'
+      }
+    });
+    const cr = res.headers.get('content-range') || '';
+    const totalPart = cr.split('/')[1];
+    if (totalPart) out.destinationCount = parseInt(totalPart, 10) || 0;
+  } catch (e) {
+    console.warn('[supabase-config] getHomepageStats count failed:', e.message);
+  }
+  try {
+    const rows = await sbFetch('attractions?select=rating,review_count&limit=500');
+    if (!Array.isArray(rows) || !rows.length) return out;
+    var sumR = 0;
+    var sumReviews = 0;
+    var n = 0;
+    rows.forEach(function (row) {
+      var rv = Number(row.rating);
+      if (!isNaN(rv) && rv > 0) {
+        sumR += rv;
+        n += 1;
+      }
+      var rc = Number(row.review_count);
+      if (!isNaN(rc) && rc > 0) sumReviews += rc;
+    });
+    out.reviewVolume = sumReviews;
+    out.avgRating = n ? sumR / n : 0;
+  } catch (e2) {
+    console.warn('[supabase-config] getHomepageStats aggregate failed:', e2.message);
+  }
+  return out;
 };
