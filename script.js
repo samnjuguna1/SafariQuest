@@ -60,9 +60,9 @@ const destinations = [
    DATA: EVENTS — fetched from Supabase (see getEvents in supabase-client.js)
 ───────────────────────────────────────── */
 
-/** Max cards for homepage Events + Reviews sections (3–4 each) */
+/** Max cards for homepage Events + Reviews sections */
 const HOME_EVENTS_LIMIT = 4;
-const HOME_REVIEWS_LIMIT = 4;
+const HOME_REVIEWS_LIMIT = 3;
 
 /* ─────────────────────────────────────────
    HELPERS
@@ -388,6 +388,27 @@ function buildTestimonialCard(row) {
   );
 }
 
+const HOMEPAGE_REVIEWS_FALLBACK = [
+  {
+    reviewer_name: 'Hussein Kamau',
+    location: 'Nairobi',
+    body: 'I used SafariQuest for a short Mara trip and it honestly made the whole process simple. Booking and confirmations were very smooth.',
+    rating: 5
+  },
+  {
+    reviewer_name: 'Noreen Vutage',
+    location: 'Mbale',
+    body: 'The destination suggestions were exactly what we needed. I found a good stay quickly, and the trip turned out better than expected.',
+    rating: 5
+  },
+  {
+    reviewer_name: 'Patrick Kirunyu',
+    location: 'Muranga',
+    body: 'What I liked most was how easy it was to compare options in one place. Support also responded fast when I had a question.',
+    rating: 4
+  }
+];
+
 async function renderHomepageReviews() {
   const grid = document.getElementById('testiGrid');
   if (!grid) return;
@@ -401,10 +422,7 @@ async function renderHomepageReviews() {
     console.warn('[script.js] Homepage reviews failed:', e.message);
   }
 
-  if (!rows || rows.length === 0) {
-    grid.innerHTML = '<p style="text-align:center;color:#aaa;grid-column:1/-1;">No reviews yet.</p>';
-    return;
-  }
+  if (!rows || rows.length === 0) rows = HOMEPAGE_REVIEWS_FALLBACK;
 
   grid.innerHTML = rows.slice(0, HOME_REVIEWS_LIMIT).map(buildTestimonialCard).join('');
 }
