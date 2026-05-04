@@ -176,9 +176,10 @@
 
 
 <script src="auth.js"></script>
+<script src="supabase-client.js"></script>
 <script>
-/* ── Event Data ── */
-var EVENTS = [
+/* ── Event Data (fallback) ── */
+var EVENTS_FALLBACK = [
   {
     id: 'wildebeest-migration',
     name: 'Great Wildebeest Migration',
@@ -209,7 +210,7 @@ var EVENTS = [
     date: 'June 2026',
     location: 'Naivasha & Rift Valley',
     price: 'KSh 2,500',
-    description: 'The legendary Safari Rally returns — the most gruelling round of the FIA World Rally Championship, contested on Kenya's dramatic and challenging terrain.',
+    description: 'The legendary Safari Rally returns — the most gruelling round of the FIA World Rally Championship, contested on Kenya\'s dramatic and challenging terrain.',
     image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80'
   },
   {
@@ -313,8 +314,54 @@ var EVENTS = [
   }
 ];
 
-var filtered = EVENTS.slice();
+var EVENTS = [];
+var filtered = [];
 var currentEvent = null;
+
+function monthShortFromDate(value) {
+  if (!value) return '';
+  try {
+    var d = new Date(String(value).length === 10 ? String(value) + 'T12:00:00' : String(value));
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-GB', { month: 'short' });
+  } catch (_) {
+    return '';
+  }
+}
+
+async function initEventsData() {
+  var data = [];
+  try {
+    if (window.getEvents) {
+      data = await window.getEvents(30);
+    }
+  } catch (_) {}
+
+  if (Array.isArray(data) && data.length) {
+    EVENTS = data.map(function(ev, idx) {
+      var isoDate = ev.event_date || ev.date || '';
+      var readableDate = isoDate
+        ? new Date(String(isoDate).length === 10 ? String(isoDate) + 'T12:00:00' : String(isoDate))
+            .toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+        : 'Date TBA';
+      return {
+        id: String(ev.id || ('event-' + idx)),
+        name: ev.title || ev.name || 'Upcoming Event',
+        category: ev.category || 'Cultural',
+        month: monthShortFromDate(isoDate) || 'all',
+        date: readableDate,
+        location: ev.location || ev.city || 'Kenya',
+        price: ev.is_free ? 'Free entry' : (ev.price ? ('KSh ' + ev.price) : 'See details'),
+        description: ev.description || 'Join us for an unforgettable Kenyan experience.',
+        image: ev.image_url || ev.image_hero || ev.image || 'https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=80'
+      };
+    });
+  } else {
+    EVENTS = EVENTS_FALLBACK.slice();
+  }
+
+  filtered = EVENTS.slice();
+}
 
 /* ── Render grid ── */
 function renderGrid() {
@@ -430,12 +477,16 @@ document.getElementById('bookingModal').addEventListener('click', function(e) {
 
 /* Navbar scroll */
 window.addEventListener('scroll', function() {
-  document.getElementById('navbar').style.boxShadow =
+  var nav = document.getElementById('navbar');
+  if (!nav) return;
+  nav.style.boxShadow =
     window.scrollY > 10 ? '0 4px 20px rgba(0,0,0,.12)' : '0 2px 12px rgba(0,0,0,.07)';
 });
 
 /* Init */
-renderGrid();
+initEventsData().then(function() {
+  renderGrid();
+});
 
 /* Require auth before final booking confirmation */
 const _confirmBookingOriginal = confirmBooking;
