@@ -1,0 +1,182 @@
+<!-- Replace the existing <script> block at the bottom of admin.html with this -->
+<script>
+  // Bar chart
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const visitors = [420, 610, 530, 780, 890, 1100, 960];
+  const maxV = Math.max(...visitors);
+  const chart = document.getElementById('barChart');
+  if (chart) {
+    days.forEach((d, i) => {
+      const group = document.createElement('div');
+      group.className = 'bar-group';
+      const pct = Math.round((visitors[i] / maxV) * 100);
+      group.innerHTML = `<div class="bar" style="height:${pct}%;opacity:${0.5 + pct/200}"></div><div class="bar-label">${d}</div>`;
+      chart.appendChild(group);
+    });
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+  function openModal() {
+    document.getElementById('addUserModal').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('addUserModal').classList.remove('open');
+  }
+  document.getElementById('addUserModal')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  function showSection(name) {
+    const titles = {
+      users:'Manage Users', roles:'Roles & Permissions',
+      destinations:'Destinations', hotels:'Hotels',
+      events:'Events', reviews:'Reviews',
+      reports:'Reports', settings:'Settings', logs:'Audit Logs'
+    };
+    document.getElementById('page-title').textContent = titles[name] || 'Dashboard';
+    document.getElementById('page-subtitle').textContent = 'Admin panel — SafariQuest';
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (event?.currentTarget) event.currentTarget.classList.add('active');
+  }
+
+  // ── Show/hide the loading spinner ────────────────────────────────────────
+  function showLoading(msg) {
+    let el = document.getElementById('sq-admin-loading');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'sq-admin-loading';
+      el.style.cssText = 'position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--brand-dark);z-index:999;gap:16px;';
+      el.innerHTML = `<div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--brand-gold);border-radius:50%;animation:spin 0.8s linear infinite;"></div><p style="color:var(--text-muted);font-size:0.9rem;">${msg || 'Loading dashboard...'}</p>`;
+      // Add spin keyframes once
+      if (!document.getElementById('sq-spin-style')) {
+        const s = document.createElement('style');
+        s.id = 'sq-spin-style';
+        s.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+        document.head.appendChild(s);
+      }
+      document.body.appendChild(el);
+    } else {
+      el.querySelector('p').textContent = msg || 'Loading dashboard...';
+      el.style.display = 'flex';
+    }
+  }
+
+  function hideLoading() {
+    const el = document.getElementById('sq-admin-loading');
+    if (el) el.style.display = 'none';
+  }
+
+  // ── Load real stats from Supabase ────────────────────────────────────────
+  async function loadDashboardStats() {
+    const url  = window.SQ_PUBLIC?.url  || 'https://cbyipmrozqsntojiartw.supabase.co';
+    const anon = window.SQ_PUBLIC?.anon || '';
+    const token = window.Auth?.getAccessToken?.() || anon;
+
+    const headers = {
+      'apikey': anon,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
+    async function count(table) {
+      try {
+        const res = await fetch(`${url}/rest/v1/${table}?select=id`, {
+          headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
+        });
+        const range = res.headers.get('content-range') || '';
+        const match = range.match(/\/(\d+)$/);
+        return match ? parseInt(match[1]) : '–';
+      } catch { return '–'; }
+    }
+
+    // Fetch counts in parallel
+    const [users, destinations, events, reviews] = await Promise.all([
+      count('profiles'),
+      count('attractions'),
+      count('events'),
+      count('reviews')
+    ]);
+
+    // Update stat cards
+    const vals = document.querySelectorAll('.stat-value');
+    if (vals[0]) vals[0].textContent = typeof users === 'number' ? users.toLocaleString() : users;
+    if (vals[1]) vals[1].textContent = typeof destinations === 'number' ? destinations.toLocaleString() : destinations;
+    if (vals[2]) vals[2].textContent = typeof events === 'number' ? events.toLocaleString() : events;
+    if (vals[3]) vals[3].textContent = typeof reviews === 'number' ? reviews.toLocaleString() : reviews;
+  }
+
+  // ── Main init ─────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', async function () {
+    showLoading('Verifying access...');
+
+    // Wait for auth.js to be ready (it loads async)
+    let attempts = 0;
+    while ((!window.Auth || !window.Auth.isLoggedIn) && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+
+    if (!window.Auth || !window.Auth.isLoggedIn()) {
+      window.location.href = 'admin-login.html';
+      return;
+    }
+
+    const user = window.Auth.getUser();
+    if (!user) {
+      window.location.href = 'admin-login.html';
+      return;
+    }
+
+    showLoading('Checking admin privileges...');
+
+    let isAdmin = false;
+    try {
+      isAdmin = await window.Auth.isUserAdmin();
+    } catch (e) {
+      console.error('Could not verify admin status:', e);
+    }
+
+    if (!isAdmin) {
+      await window.Auth.signOut();
+      alert('Access denied. Administrators only.');
+      window.location.href = 'admin-login.html';
+      return;
+    }
+
+    // ── Populate sidebar admin info ──────────────────────────────────────
+    const adminName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Admin';
+    const initials  = adminName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
+    const adminNameEl   = document.querySelector('.admin-name');
+    const adminAvatarEl = document.querySelector('.admin-avatar');
+    if (adminNameEl)   adminNameEl.textContent   = adminName;
+    if (adminAvatarEl) adminAvatarEl.textContent = initials;
+
+    // Update topbar subtitle
+    const subtitle = document.getElementById('page-subtitle');
+    if (subtitle) subtitle.textContent = `Welcome back, ${adminName} — here's what's happening.`;
+
+    // ── Wire logout button ───────────────────────────────────────────────
+    const logoutBtn = document.querySelector('.topbar-btn[onclick*="logout"], #sq-admin-logout');
+    if (!logoutBtn) {
+      // Find the "Logout" topbar button by text
+      document.querySelectorAll('.topbar-btn').forEach(btn => {
+        if (btn.textContent.includes('Logout') || btn.textContent.includes('🚪')) {
+          btn.addEventListener('click', async function () {
+            if (confirm('Are you sure you want to logout?')) {
+              await window.Auth.signOut();
+              window.location.href = 'index.html';
+            }
+          });
+        }
+      });
+    }
+
+    // ── Load live stats then show dashboard ─────────────────────────────
+    showLoading('Loading dashboard data...');
+    await loadDashboardStats();
+    hideLoading();
+  });
+</script>
