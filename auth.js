@@ -16,8 +16,21 @@
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
 const SUPABASE_URL  = 'https://cbyipmrozqsntojiartw.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNieWlwbXJvenFzbnRvamlhcnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTkxNTQsImV4cCI6MjA4ODk3NTE1NH0.31TAhmUCV_Uh0W8FGnR2_TLCZDU4YBM1U5LMSMc5JZs';
+
 /** Exposed for dashboard realtime (supabase-js) — same project as SQ helpers */
 window.SQ_PUBLIC = { url: SUPABASE_URL, anon: SUPABASE_ANON };
+
+// ─── FIX 1: Initialize Supabase JS client for RLS-aware queries ──────────────
+(function initSupabaseClient() {
+  try {
+    if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+      window._sqClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    }
+  } catch (e) {
+    console.warn('SafariQuest: Could not init Supabase JS client', e);
+  }
+})();
+
 const DEV_USERS_KEY = 'sq_dev_users';
 const DEV_BYPASS_FLAG_KEY = 'sq_enable_dev_auth_bypass';
 const AUTH_DEBUG_FLAG_KEY = 'sq_auth_debug';
@@ -145,28 +158,7 @@ const SQ = (() => {
 
   async function signInWithEmail(email, password) {
     debugLog('signIn start', { email, dev_bypass_enabled: DEV_AUTH_BYPASS });
-    
-    // Check for hardcoded admin credentials first
-    if (email.toLowerCase() === 'adminsafariquest@gmail.com' && password === 'admin123') {
-      const adminSession = {
-        access_token: 'admin_' + Date.now(),
-        refresh_token: 'admin_refresh',
-        expires_at: Date.now() + 24 * 60 * 60 * 1000,
-        user: {
-          id: 'admin_safariquest',
-          email: 'adminsafariquest@gmail.com',
-          user_metadata: { 
-            full_name: 'SafariQuest Admin',
-            role: 'admin'
-          }
-        },
-        is_admin: true
-      };
-      saveSession(adminSession);
-      debugLog('admin login successful', { email });
-      return adminSession;
-    }
-    
+
     const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
       method:  'POST',
       headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
@@ -194,22 +186,26 @@ const SQ = (() => {
       throw new Error(data.error_description || data.msg || 'Login failed');
     }
     saveSession(data);
+
+    // ─── FIX 2: Sync the Supabase JS client session after login ──────────────
+    if (window._sqClient && data.access_token && data.refresh_token) {
+      try {
+        await window._sqClient.auth.setSession({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        });
+      } catch (e) {
+        debugLog('setSession on sqClient failed', { message: e?.message });
+      }
+    }
+
     await ensureProfile(data.user, data.access_token).catch(() => {});
     return data;
   }
 
   // ── Sign Up ────────────────────────────────────────────────────────────────
-  /**
-   * Registers a new user via Supabase Auth, then writes a matching row into
-   * the `profiles` table so credentials/metadata are stored in the DB.
-   *
-   * Supabase Auth already stores email + hashed password automatically;
-   * the profiles upsert adds full_name and any extra metadata you want to
-   * persist server-side.
-   */
   async function signUp(email, password, meta = {}) {
     debugLog('signUp start', { email, dev_bypass_enabled: DEV_AUTH_BYPASS, meta });
-    // 1. Create the auth account
     const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
       method:  'POST',
       headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
@@ -236,13 +232,21 @@ const SQ = (() => {
       throw new Error(data.error_description || data.msg || 'Sign-up failed');
     }
 
-    // 2. Persist session if Supabase returned one immediately
-    //    (happens when "Confirm email" is disabled in your project settings)
     if (data.access_token) {
       saveSession(data);
 
-      // 3. Write profile row to `profiles` table
-      //    Uses the access token so RLS policies can identify the user.
+      // Sync JS client session
+      if (window._sqClient && data.refresh_token) {
+        try {
+          await window._sqClient.auth.setSession({
+            access_token: data.access_token,
+            refresh_token: data.refresh_token,
+          });
+        } catch (e) {
+          debugLog('setSession on sqClient (signUp) failed', { message: e?.message });
+        }
+      }
+
       try {
         await upsertProfile({
           id:         data.user?.id,
@@ -252,12 +256,10 @@ const SQ = (() => {
         }, data.access_token);
         debugLog('profile upsert ok', { id: data.user?.id, email });
       } catch (profileErr) {
-        // Non-fatal — auth succeeded even if profile write fails
         console.warn('SafariQuest: profile upsert failed', profileErr);
         debugLog('profile upsert failed', { message: profileErr?.message || String(profileErr) });
       }
     } else if (DEV_AUTH_BYPASS) {
-      // Local dev shortcut when Supabase requires email confirmation.
       saveDevUser(email, password, meta);
       createDevSession(email, meta);
       debugLog('signUp no token; dev bypass session created', { email });
@@ -267,15 +269,8 @@ const SQ = (() => {
   }
 
   // ── Profile upsert ────────────────────────────────────────────────────────
-  /**
-   * Writes (or updates) a row in the public.profiles table.
-   * Your Supabase table should have at minimum: id (uuid), email, full_name.
-   *
-   * Make sure you have an RLS policy that allows:
-   *   INSERT / UPDATE for authenticated users WHERE id = auth.uid()
-   */
   async function upsertProfile(profile, accessToken) {
-    if (!profile.id) return; // no-op if no user id
+    if (!profile.id) return;
     const token = accessToken || getAccessToken();
     if (!token) return;
 
@@ -285,7 +280,7 @@ const SQ = (() => {
         'apikey':        SUPABASE_ANON,
         'Authorization': `Bearer ${token}`,
         'Content-Type':  'application/json',
-        'Prefer':        'resolution=merge-duplicates', // upsert behaviour
+        'Prefer':        'resolution=merge-duplicates',
       },
       body: JSON.stringify(profile),
     });
@@ -298,25 +293,55 @@ const SQ = (() => {
     debugLog('upsertProfile response ok', { status: res.status, id: profile?.id, email: profile?.email });
   }
 
-  // ── Profile read / sync helpers ───────────────────────────────────────────
+  // ── Profile read ──────────────────────────────────────────────────────────
+  // ─── FIX 3: fetchProfileById now tries Supabase JS client first ──────────
   async function fetchProfileById(userId, accessToken) {
     if (!userId) return null;
     const token = accessToken || getAccessToken();
     if (!token) return null;
 
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=*`,
-      {
-        headers: {
-          'apikey': SUPABASE_ANON,
-          'Authorization': `Bearer ${token}`,
-        },
-      }
-    );
+    // Try Supabase JS client first (handles RLS correctly)
+    if (window._sqClient) {
+      try {
+        const { data, error } = await window._sqClient
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
 
-    if (!res.ok) return null;
-    const rows = await res.json().catch(() => []);
-    return Array.isArray(rows) && rows.length ? rows[0] : null;
+        debugLog('fetchProfileById via sqClient', { data, error });
+
+        if (!error && data) return data;
+        if (error?.code === 'PGRST116') return null;
+      } catch (e) {
+        debugLog('fetchProfileById sqClient error', { message: e?.message });
+      }
+    }
+
+    // Fallback: raw REST with user JWT
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=*`,
+        {
+          headers: {
+            'apikey':        SUPABASE_ANON,
+            'Authorization': `Bearer ${token}`,
+            'Accept':        'application/json',
+          },
+        }
+      );
+
+      if (!res.ok) {
+        debugLog('fetchProfileById REST failed', { status: res.status });
+        return null;
+      }
+      const rows = await res.json().catch(() => []);
+      debugLog('fetchProfileById REST result', { rows });
+      return Array.isArray(rows) && rows.length ? rows[0] : null;
+    } catch (e) {
+      debugLog('fetchProfileById REST error', { message: e?.message });
+      return null;
+    }
   }
 
   async function ensureProfile(user, accessToken) {
@@ -346,7 +371,64 @@ const SQ = (() => {
     return fetchProfileById(user.id, getAccessToken());
   }
 
-  // ── Dashboard: bookings / recommended / saved (PostgREST + user JWT) ───────
+  // ── Check if user is admin ────────────────────────────────────────────────
+  // ─── FIX 4: isUserAdmin uses a direct RPC call as primary method ─────────
+  async function isUserAdmin() {
+    const user = getUser();
+    if (!user?.id) return false;
+
+    const token = getAccessToken();
+    if (!token) return false;
+
+    // Method 1: Try Supabase JS client with synced session (most reliable)
+    if (window._sqClient) {
+      try {
+        const { data, error } = await window._sqClient
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        debugLog('isUserAdmin via sqClient', { data, error });
+
+        if (!error && data) {
+          return data.role === 'admin';
+        }
+      } catch (e) {
+        debugLog('isUserAdmin sqClient error', { message: e?.message });
+      }
+    }
+
+    // Method 2: Raw REST with user JWT
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(user.id)}&select=role`,
+        {
+          headers: {
+            'apikey':        SUPABASE_ANON,
+            'Authorization': `Bearer ${token}`,
+            'Accept':        'application/json',
+          },
+        }
+      );
+
+      debugLog('isUserAdmin REST', { status: res.status, ok: res.ok });
+
+      if (res.ok) {
+        const rows = await res.json().catch(() => []);
+        debugLog('isUserAdmin REST rows', { rows });
+        if (Array.isArray(rows) && rows.length) {
+          return rows[0].role === 'admin';
+        }
+      }
+    } catch (e) {
+      debugLog('isUserAdmin REST error', { message: e?.message });
+    }
+
+    return false;
+  }
+
+  // ── Dashboard helpers ──────────────────────────────────────────────────────
 
   function authRestHeaders(optionalToken) {
     const token = optionalToken || getAccessToken();
@@ -509,47 +591,18 @@ const SQ = (() => {
         headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}` },
       }).catch(() => {});
     }
+    if (window._sqClient) {
+      await window._sqClient.auth.signOut().catch(() => {});
+    }
     saveSession(null);
   }
 
-  // ── OAuth (Google / Facebook) ─────────────────────────────────────────────
-  /**
-   * Redirects to Supabase's OAuth flow.
-   * provider: 'google' | 'facebook'
-   * Redirect returns to the current page (login or register); add both URLs in
-   * Supabase → Authentication → URL Configuration → Redirect URLs.
-   */
+  // ── OAuth ─────────────────────────────────────────────────────────────────
   function signInWithOAuth(provider) {
     const baseUrl = window.location.href.replace(/#.*$/, '');
     const redirectTo = encodeURIComponent(baseUrl);
     window.location.href =
       `${SUPABASE_URL}/auth/v1/authorize?provider=${encodeURIComponent(provider)}&redirect_to=${redirectTo}`;
-  }
-
-  /**
-   * Sends Supabase password-recovery email. User must open the link and set
-   * a new password on update-password.html (add that URL under Auth → Redirect URLs).
-   */
-  async function requestPasswordReset(email, redirectTo) {
-    const trimmed = String(email || '').trim().toLowerCase();
-    if (!trimmed) throw new Error('Email is required');
-    const target =
-      redirectTo ||
-      new URL('update-password.html', window.location.href).href;
-    const url = new URL(`${SUPABASE_URL}/auth/v1/recover`);
-    url.searchParams.set('redirect_to', target);
-    const res = await fetch(url.toString(), {
-      method: 'POST',
-      headers: { apikey: SUPABASE_ANON, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: trimmed }),
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(
-        data.error_description || data.msg || data.message || 'Could not send reset email'
-      );
-    }
-    return true;
   }
 
   return {
@@ -565,6 +618,7 @@ const SQ = (() => {
     signUp,
     upsertProfile,
     getProfile,
+    isUserAdmin,
     listUserBookings,
     getUserBookingById,
     createUserBooking,
@@ -576,7 +630,6 @@ const SQ = (() => {
     deleteUserSavedBySlug,
     signOut,
     signInWithOAuth,
-    requestPasswordReset,
     _debug: {
       enabled: AUTH_DEBUG,
       devBypassEnabled: DEV_AUTH_BYPASS,
@@ -623,15 +676,12 @@ const AvatarStore = {
 function updateNavForUser(user) {
   const path = window.location.pathname.toLowerCase();
   const isAuthPage = path.endsWith('/login.html') || path.endsWith('/register.html') || path.endsWith('login.html') || path.endsWith('register.html');
-  const isProfilePage = path.endsWith('/profile.html') || path.endsWith('profile.html');
-  
   if (isAuthPage) return;
 
   document.querySelectorAll('.sq-avatar-menu').forEach(node => node.remove());
 
-  // Find login/register buttons by class (preferred) or by text content
   const loginBtn =
-    document.querySelector('.nav-login, a[href*="login.html"].btn-plan, a[href*="login.html"].btn-solid, .btn-nav-outline') ||
+    document.querySelector('.nav-login, a[href*="login.html"].btn-plan, a[href*="login.html"].btn-solid') ||
     document.querySelector('a[href*="login.html"], button[onclick*="login.html"]') ||
     Array.from(document.querySelectorAll('button,a')).find(el => {
       const t = (el.textContent || '').trim().toLowerCase();
@@ -645,19 +695,13 @@ function updateNavForUser(user) {
       return t.includes('sign up') || t.includes('register');
     });
 
-  // Hide login/signup buttons on profile page
-  if (isProfilePage) {
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (registerBtn) registerBtn.style.display = 'none';
-  }
-
   if (!loginBtn && !registerBtn) return;
 
   if (user) {
     const displayName = getDisplayName(user);
     const avatarUrl   = getAvatarUrl(user);
-    const initials   = getInitials(user);
-    const avatarMenu = document.createElement('div');
+    const initials    = getInitials(user);
+    const avatarMenu  = document.createElement('div');
     avatarMenu.className = 'sq-avatar-menu';
     avatarMenu.innerHTML = `
       <button class="sq-avatar-btn" aria-label="My account" aria-expanded="false">
@@ -802,9 +846,19 @@ async function resumePendingIntent() {
   window.location.href = url.toString();
 }
 
-function handlePostLoginRedirect(defaultUrl = 'dashboard.html') {
+async function handlePostLoginRedirect(defaultUrl = 'dashboard.html') {
   const intent = PendingIntent.get();
   PendingIntent.clear();
+
+  try {
+    const isAdmin = await SQ.isUserAdmin();
+    if (isAdmin) {
+      window.location.href = 'admin.html';
+      return;
+    }
+  } catch (e) {
+    console.warn('Could not check admin status:', e);
+  }
 
   if (!intent?.returnUrl) {
     window.location.href = defaultUrl;
@@ -847,6 +901,31 @@ function ensureAuthStyles() {
 // ─── BOOTSTRAP ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   ensureAuthStyles();
+
+  // ─── FIX 5: Re-init Supabase JS client on DOM ready (CDN may not be ready earlier) ──
+  if (!window._sqClient) {
+    try {
+      if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+        window._sqClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      }
+    } catch (e) {
+      console.warn('SafariQuest: Could not init Supabase JS client on DOMContentLoaded', e);
+    }
+  }
+
+  // Restore JS client session from stored token
+  const storedSession = SQ.getSession();
+  if (window._sqClient && storedSession?.access_token && storedSession?.refresh_token) {
+    try {
+      await window._sqClient.auth.setSession({
+        access_token:  storedSession.access_token,
+        refresh_token: storedSession.refresh_token,
+      });
+    } catch (e) {
+      console.warn('SafariQuest: setSession on boot failed', e?.message);
+    }
+  }
+
   const fromHash = SQ.handleHashSession();
 
   let user = SQ.getUser();
@@ -860,13 +939,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     await resumePendingIntent();
   }
 
-  // ── Show any redirect messages (from page-protection.js) ──
+  // Show any redirect messages
   const stored = sessionStorage.getItem('sq_redirect_message');
   if (stored) {
     try {
       const { message, type } = JSON.parse(stored);
       sessionStorage.removeItem('sq_redirect_message');
-      // Small delay so the page renders first
       setTimeout(() => {
         const toast = document.createElement('div');
         toast.className = `sq-toast sq-${type || 'error'} sq-show`;
@@ -890,6 +968,7 @@ window.Auth                = {
   resumePendingIntent,
   handlePostLoginRedirect,
   readResumedData,
+  updateNav: () => updateNavForUser(SQ.getUser()),
 };
 window.PendingIntent       = PendingIntent;
 window.requireAuth         = requireAuth;
@@ -915,7 +994,7 @@ window.AuthDebug = {
       is_dev_auth: !!session?.is_dev_auth,
       user_id: user?.id || null,
       email: user?.email || null,
-      email_confirmed_at: user?.email_confirmed_at || null
+      sqClient_ready: !!window._sqClient,
     });
   }
 };
