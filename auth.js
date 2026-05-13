@@ -752,19 +752,28 @@ function updateNavForUser(user) {
       }
     });
 
-    document.getElementById('sq-logout-btn')?.addEventListener('click', async () => {
+    avatarMenu.querySelector('#sq-logout-btn')?.addEventListener('click', async () => {
       await SQ.signOut();
       window.location.href = 'index.html';
     });
 
+    // ── Fallback file input for non-profile pages ──────────────────────────
     const uploadInput = document.createElement('input');
     uploadInput.type = 'file';
     uploadInput.accept = 'image/*';
     uploadInput.style.display = 'none';
     avatarMenu.appendChild(uploadInput);
 
-    document.getElementById('sq-upload-avatar-btn')?.addEventListener('click', () => {
-      uploadInput.click();
+    // ── FIX: On profile.html, delegate to the page's own uploader ──────────
+    // profile.html's #avatar-file-input has full Supabase Storage upload logic.
+    // On all other pages, fall back to the local uploadInput (localStorage preview).
+    avatarMenu.querySelector('#sq-upload-avatar-btn')?.addEventListener('click', () => {
+      const profileInput = document.getElementById('avatar-file-input');
+      if (profileInput) {
+        profileInput.click();
+      } else {
+        uploadInput.click();
+      }
     });
 
     uploadInput.addEventListener('change', async () => {
