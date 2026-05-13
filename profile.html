@@ -5,282 +5,648 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Profile — SafariQuest</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="profile-styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ─── SafariQuest Brand Tokens (light theme matching site) ─── */
+    :root {
+      --brand-orange:       #e8622a;
+      --brand-orange-dark:  #c44d18;
+      --brand-orange-light: #f07d45;
+      --brand-navy:         #1a2744;
+      --text-primary:       #1a2744;
+      --text-secondary:     #4a5568;
+      --text-muted:         #718096;
+      --bg-page:            #f7f5f2;
+      --bg-white:           #ffffff;
+      --bg-surface-2:       #f2efe9;
+      --border:             #e2ddd6;
+      --border-light:       #ede9e3;
+      --success:            #2e7d32;
+      --success-light:      #e8f5e9;
+      --danger:             #c62828;
+      --danger-light:       #ffebee;
+      --shadow-sm:          0 1px 4px rgba(26,39,68,0.07);
+      --shadow-md:          0 4px 18px rgba(26,39,68,0.10);
+      --shadow-lg:          0 8px 32px rgba(26,39,68,0.13);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sora', sans-serif; background: var(--bg-page); color: var(--text-primary); min-height: 100vh; }
+
+    /* ── Page loader ── */
+    #page-loader {
+      position: fixed; inset: 0; background: #fff; z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.4s;
+    }
+    #page-loader.hidden { opacity: 0; pointer-events: none; }
+    .loader-logo { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--brand-orange); margin-bottom: 20px; }
+    .loader-spinner { width: 38px; height: 38px; border: 3px solid var(--border); border-top-color: var(--brand-orange); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    .loader-text { margin-top: 14px; font-size: 0.78rem; color: var(--text-muted); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error banner ── */
+    .error-banner { display: none; background: var(--danger-light); border-bottom: 1px solid rgba(198,40,40,0.25); color: var(--danger); padding: 12px 5%; font-size: 0.85rem; font-weight: 500; }
+    .error-banner.show { display: block; }
+
+    /* ── Cover ── */
+    .cover {
+      height: 240px;
+      background: linear-gradient(135deg, #2d1b10 0%, #8b3a1a 45%, #e8622a 100%);
+      position: relative; overflow: hidden; cursor: pointer; transition: filter 0.2s;
+    }
+    .cover:hover { filter: brightness(1.06); }
+    .cover-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: opacity 0.5s; }
+    .cover-hover-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.25s; background: rgba(0,0,0,0.22); pointer-events: none; }
+    .cover:hover .cover-hover-hint { opacity: 1; }
+    .cover-hover-hint span { color: #fff; font-size: 0.85rem; font-weight: 600; background: rgba(0,0,0,0.38); padding: 8px 20px; border-radius: 20px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
+    .cover-edit { position: absolute; bottom: 16px; right: 20px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.38); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; backdrop-filter: blur(6px); font-family: inherit; transition: background 0.2s; z-index: 2; }
+    .cover-edit:hover { background: rgba(255,255,255,0.3); }
+
+    /* Hidden inputs */
+    #cover-file-input, #avatar-file-input { display: none; }
+
+    /* ── Profile header ── */
+    .profile-header { background: var(--bg-white); border-bottom: 1px solid var(--border); padding: 0 5%; box-shadow: var(--shadow-sm); }
+    .avatar-wrap { position: relative; display: inline-block; margin-top: -58px; cursor: pointer; }
+    .avatar { width: 114px; height: 114px; border-radius: 50%; border: 4px solid var(--bg-white); background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-light)); display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 2.5rem; color: #fff; overflow: hidden; box-shadow: var(--shadow-md); transition: filter 0.2s; }
+    .avatar-wrap:hover .avatar { filter: brightness(0.88); }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .avatar-initials { pointer-events: none; }
+    .avatar-edit { position: absolute; bottom: 4px; right: 4px; width: 30px; height: 30px; background: var(--brand-orange); border-radius: 50%; border: 2px solid var(--bg-white); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.75rem; box-shadow: 0 2px 6px rgba(232,98,42,0.4); transition: transform 0.2s, background 0.2s; }
+    .avatar-wrap:hover .avatar-edit { transform: scale(1.15); background: var(--brand-orange-dark); }
+    .upload-ring { position: absolute; inset: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+    .avatar-wrap.uploading .avatar { opacity: 0.6; }
+    .avatar-wrap.uploading .upload-ring { opacity: 1; }
+    .upload-ring svg { width: 114px; height: 114px; animation: spin 0.8s linear infinite; }
+
+    .profile-meta { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 14px 0 22px; }
+    .profile-name h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--text-primary); margin-top: 10px; }
+    .profile-name p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
+    .profile-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .pbadge { padding: 4px 13px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; border: 1px solid; }
+    .pbadge-verified { color: var(--success); border-color: rgba(46,125,50,0.35); background: var(--success-light); }
+    .pbadge-traveler { color: var(--brand-orange-dark); border-color: rgba(232,98,42,0.35); background: rgba(232,98,42,0.08); }
+
+    .btn-edit-profile { background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark)); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit; box-shadow: 0 3px 12px rgba(232,98,42,0.32); transition: opacity 0.2s, transform 0.15s; display: flex; align-items: center; gap: 6px; }
+    .btn-edit-profile:hover { opacity: 0.92; transform: translateY(-1px); }
+
+    /* ── Stats ── */
+    .stats-row { display: flex; background: var(--bg-white); border-bottom: 1px solid var(--border); flex-wrap: wrap; box-shadow: var(--shadow-sm); }
+    .stat-item { text-align: center; padding: 16px 30px; border-right: 1px solid var(--border); transition: background 0.15s; cursor: default; }
+    .stat-item:last-child { border-right: none; }
+    .stat-item:hover { background: rgba(232,98,42,0.04); }
+    .stat-item .val { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--brand-orange); }
+    .stat-item .lbl { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── Layout ── */
+    .layout { display: grid; grid-template-columns: 310px 1fr; gap: 24px; padding: 28px 5%; }
+    @media (max-width: 880px) { .layout { grid-template-columns: 1fr; } }
+
+    /* ── Cards ── */
+    .card { background: var(--bg-white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s; }
+    .card:hover { box-shadow: var(--shadow-md); }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-size: 0.92rem; font-weight: 600; color: var(--text-primary); }
+    .card-action { font-size: 0.78rem; color: var(--brand-orange); cursor: pointer; background: none; border: none; font-family: inherit; font-weight: 600; padding: 4px 8px; border-radius: 6px; transition: background 0.15s; }
+    .card-action:hover { background: rgba(232,98,42,0.08); }
+    .card-body { padding: 20px; }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.73rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--bg-surface-2); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; font-family: inherit; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--brand-orange); box-shadow: 0 0 0 3px rgba(232,98,42,0.12); background: #fff; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .btn-save { background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark)); color: #fff; border: none; padding: 12px 24px; border-radius: 9px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit; width: 100%; margin-top: 8px; transition: opacity 0.2s, transform 0.15s; box-shadow: 0 3px 10px rgba(232,98,42,0.28); }
+    .btn-save:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── Info items ── */
+    .info-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+    .info-item:last-child { border-bottom: none; }
+    .info-icon { font-size: 1rem; margin-top: 1px; }
+    .info-label { font-size: 0.72rem; color: var(--text-muted); }
+    .info-value { font-size: 0.85rem; margin-top: 2px; color: var(--text-primary); }
+
+    /* ── Trip cards ── */
+    .trip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .trip-card { background: var(--bg-surface-2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+    .trip-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .trip-img { height: 90px; object-fit: cover; width: 100%; display: block; }
+    .trip-info { padding: 10px 12px; }
+    .trip-name { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+    .trip-date { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+    .trip-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 10px; font-size: 0.66rem; font-weight: 600; background: rgba(232,98,42,0.1); color: var(--brand-orange-dark); }
+    .trip-add { display: flex; align-items: center; justify-content: center; min-height: 130px; cursor: pointer; border: 2px dashed var(--border); border-radius: 10px; background: transparent; transition: border-color 0.2s, background 0.2s; }
+    .trip-add:hover { border-color: var(--brand-orange); background: rgba(232,98,42,0.04); }
+    .trip-add div { text-align: center; color: var(--text-muted); }
+    .trip-add:hover div { color: var(--brand-orange); }
+
+    /* ── Toggles ── */
+    .notif-item { display: flex; justify-content: space-between; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--border-light); }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-label .title { font-size: 0.85rem; color: var(--text-primary); }
+    .notif-label .desc { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+    .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: #ccc; border-radius: 24px; cursor: pointer; transition: 0.3s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    input:checked + .toggle-slider { background: var(--brand-orange); }
+    input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    /* ── Security ── */
+    .security-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border-light); }
+    .security-item:last-child { border-bottom: none; }
+    .sec-left .title { font-size: 0.85rem; color: var(--text-primary); }
+    .sec-left .desc { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+    .sec-status { font-size: 0.72rem; padding: 3px 10px; border-radius: 10px; font-weight: 600; }
+    .sec-status.on { background: var(--success-light); color: var(--success); }
+    .sec-status.off { background: var(--danger-light); color: var(--danger); }
+    .btn-sec { background: var(--bg-surface-2); border: 1px solid var(--border); color: var(--text-secondary); padding: 7px 14px; border-radius: 7px; font-size: 0.78rem; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+    .btn-sec:hover { color: var(--brand-orange); border-color: var(--brand-orange); background: rgba(232,98,42,0.05); }
+
+    /* ── Danger zone ── */
+    .danger-zone { border-color: rgba(198,40,40,0.22); }
+    .btn-danger { background: var(--danger-light); border: 1px solid rgba(198,40,40,0.3); color: var(--danger); padding: 10px 18px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; width: 100%; margin-top: 10px; }
+    .btn-danger:hover { background: rgba(198,40,40,0.15); }
+
+    /* ── Toast ── */
+    .toast { position: fixed; bottom: 28px; right: 28px; color: #fff; padding: 13px 22px; border-radius: 10px; font-size: 0.85rem; font-weight: 500; transform: translateY(80px); opacity: 0; transition: all 0.35s; z-index: 9999; box-shadow: var(--shadow-lg); }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+    .toast.info { background: var(--brand-orange); }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── Skeleton ── */
+    .skeleton { background: linear-gradient(90deg, #ece8e2 25%, #e2ddd6 50%, #ece8e2 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  </style>
 </head>
-<body data-nav-active="profile">
+<body>
 
 <div id="sq-nav-root"></div>
 
-<!-- Cover Photo -->
-<div class="cover">
-  <div class="cover-pattern"></div>
-  <button class="cover-edit" id="coverEditBtn">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-      <circle cx="12" cy="13" r="4"/>
-    </svg>
-    Change Cover
-  </button>
-  <input type="file" id="coverInput" accept="image/*" style="display:none;">
+<!-- Page loader -->
+<div id="page-loader">
+  <div class="loader-logo">SafariQuest</div>
+  <div class="loader-spinner"></div>
+  <div class="loader-text">Loading your profile…</div>
+</div>
+
+<!-- Error banner -->
+<div class="error-banner" id="error-banner"></div>
+
+<!-- Hidden file inputs -->
+<input type="file" id="cover-file-input" accept="image/*" />
+<input type="file" id="avatar-file-input" accept="image/*" />
+
+<!-- Cover -->
+<div class="cover" id="cover-area" onclick="document.getElementById('cover-file-input').click()">
+  <div class="cover-bg" id="cover-bg"></div>
+  <div class="cover-hover-hint"><span>📷 Click to change cover photo</span></div>
+  <button class="cover-edit" onclick="event.stopPropagation(); document.getElementById('cover-file-input').click()">📷 Change Cover</button>
 </div>
 
 <!-- Profile Header -->
 <div class="profile-header">
-  <div class="avatar-wrap">
-    <div class="profile-avatar" id="profileAvatar">AO</div>
-    <div class="avatar-edit" id="avatarEditBtn">✏️</div>
-    <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+  <div class="avatar-wrap" id="avatar-wrap" onclick="document.getElementById('avatar-file-input').click()">
+    <div class="avatar" id="avatar-display">
+      <span class="avatar-initials" id="avatar-initials">??</span>
+    </div>
+    <div class="upload-ring">
+      <svg viewBox="0 0 114 114" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="57" cy="57" r="52" stroke="rgba(232,98,42,0.18)" stroke-width="4"/>
+        <circle cx="57" cy="57" r="52" stroke="var(--brand-orange)" stroke-width="4" stroke-dasharray="82 245" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="avatar-edit">✏️</div>
   </div>
   <div class="profile-meta">
     <div class="profile-name">
-      <h1 id="profileName">Amara Ochieng</h1>
-      <p id="profileLocation">📍 Nairobi, Kenya · Member since January 2025</p>
+      <h1 id="display-name"><span class="skeleton" style="display:inline-block;width:220px;height:2rem;">&nbsp;</span></h1>
+      <p id="display-meta"><span class="skeleton" style="display:inline-block;width:280px;height:0.85rem;margin-top:6px;">&nbsp;</span></p>
       <div class="profile-badges">
-        <span class="pbadge pbadge-verified">
-          <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
-          </svg>
-          Verified
-        </span>
-        <span class="pbadge pbadge-traveler">🌍 Explorer</span>
+        <span class="pbadge pbadge-verified" id="badge-verified" style="display:none">✓ Verified</span>
+        <span class="pbadge pbadge-traveler" id="badge-traveler" style="display:none">🌍 Explorer</span>
       </div>
     </div>
-    <button class="btn-edit-profile" onclick="scrollToEditForm()">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-      </svg>
-      Edit Profile
-    </button>
+    <button class="btn-edit-profile" id="btn-save-top" onclick="saveProfile()">💾 Save Changes</button>
   </div>
 </div>
 
 <!-- Stats -->
 <div class="stats-row">
-  <div class="stat-item"><div class="val" id="statTrips">0</div><div class="lbl">Trips Logged</div></div>
-  <div class="stat-item"><div class="val" id="statReviews">0</div><div class="lbl">Reviews Written</div></div>
-  <div class="stat-item"><div class="val" id="statSaved">0</div><div class="lbl">Places Saved</div></div>
-  <div class="stat-item"><div class="val" id="statRating">N/A</div><div class="lbl">Avg. Rating Given</div></div>
-  <div class="stat-item"><div class="val" id="statCountries">0</div><div class="lbl">Countries Visited</div></div>
+  <div class="stat-item"><div class="val" id="stat-trips">—</div><div class="lbl">Trips Logged</div></div>
+  <div class="stat-item"><div class="val" id="stat-reviews">—</div><div class="lbl">Reviews Written</div></div>
+  <div class="stat-item"><div class="val" id="stat-saved">—</div><div class="lbl">Places Saved</div></div>
+  <div class="stat-item"><div class="val" id="stat-rating">—</div><div class="lbl">Avg. Rating Given</div></div>
+  <div class="stat-item"><div class="val" id="stat-countries">—</div><div class="lbl">Countries Visited</div></div>
 </div>
 
 <div class="layout">
   <!-- Sidebar -->
   <div>
-    <!-- About -->
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">About Me</span>
-      </div>
+      <div class="card-header"><span class="card-title">About Me</span><button class="card-action">Edit</button></div>
       <div class="card-body">
-        <div class="info-item">
-          <span class="info-icon">📧</span>
-          <div><div class="info-label">Email</div><div class="info-value" id="infoEmail">Loading...</div></div>
-        </div>
-        <div class="info-item">
-          <span class="info-icon">📞</span>
-          <div><div class="info-label">Phone</div><div class="info-value" id="infoPhone">Not provided</div></div>
-        </div>
-        <div class="info-item">
-          <span class="info-icon">📍</span>
-          <div><div class="info-label">Location</div><div class="info-value" id="infoLocation">Not set</div></div>
-        </div>
-        <div class="info-item">
-          <span class="info-icon">🌍</span>
-          <div><div class="info-label">Travel Style</div><div class="info-value" id="infoTravelStyle">Adventure & Culture</div></div>
-        </div>
-        <div class="info-item">
-          <span class="info-icon">🗓️</span>
-          <div><div class="info-label">Member Since</div><div class="info-value" id="infoMemberSince">Recently</div></div>
-        </div>
+        <div class="info-item"><span class="info-icon">📧</span><div><div class="info-label">Email</div><div class="info-value" id="info-email">—</div></div></div>
+        <div class="info-item"><span class="info-icon">📞</span><div><div class="info-label">Phone</div><div class="info-value" id="info-phone">—</div></div></div>
+        <div class="info-item"><span class="info-icon">📍</span><div><div class="info-label">Location</div><div class="info-value" id="info-location">—</div></div></div>
+        <div class="info-item"><span class="info-icon">🌍</span><div><div class="info-label">Travel Style</div><div class="info-value" id="info-style">—</div></div></div>
+        <div class="info-item"><span class="info-icon">🗓️</span><div><div class="info-label">Member Since</div><div class="info-value" id="info-since">—</div></div></div>
       </div>
     </div>
 
-    <!-- Security -->
     <div class="card">
       <div class="card-header"><span class="card-title">Security</span></div>
-      <div class="card-body" style="padding-top:12px;padding-bottom:12px;">
-        <div class="security-item">
-          <div class="sec-left"><div class="title">Password</div><div class="desc">Last changed recently</div></div>
-          <button class="btn-sec" onclick="changePassword()">Change</button>
-        </div>
-        <div class="security-item">
-          <div class="sec-left"><div class="title">Two-Factor Auth</div><div class="desc">Via Authenticator App</div></div>
-          <span class="sec-status off">Disabled</span>
-        </div>
-        <div class="security-item">
-          <div class="sec-left"><div class="title">Login Sessions</div><div class="desc">Active sessions</div></div>
-          <button class="btn-sec" onclick="manageSessions()">Manage</button>
-        </div>
-        <div class="security-item">
-          <div class="sec-left"><div class="title">Login Alerts</div><div class="desc">Email on new login</div></div>
-          <span class="sec-status on">On</span>
-        </div>
+      <div class="card-body" style="padding-top:8px;padding-bottom:8px;">
+        <div class="security-item"><div class="sec-left"><div class="title">Password</div><div class="desc">Last changed 3 months ago</div></div><button class="btn-sec">Change</button></div>
+        <div class="security-item"><div class="sec-left"><div class="title">Two-Factor Auth</div><div class="desc">Via Authenticator App</div></div><span class="sec-status on">Enabled</span></div>
+        <div class="security-item"><div class="sec-left"><div class="title">Login Sessions</div><div class="desc">2 active sessions</div></div><button class="btn-sec">Manage</button></div>
+        <div class="security-item"><div class="sec-left"><div class="title">Login Alerts</div><div class="desc">Email on new login</div></div><span class="sec-status on">On</span></div>
+      </div>
+    </div>
+
+    <div class="card danger-zone">
+      <div class="card-header"><span class="card-title" style="color:var(--danger)">⚠️ Danger Zone</span></div>
+      <div class="card-body">
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">These actions are permanent and cannot be undone.</p>
+        <button class="btn-danger">Deactivate Account</button>
+        <button class="btn-danger" style="margin-top:8px;">Delete All My Data</button>
       </div>
     </div>
   </div>
 
-  <!-- Main Column -->
+  <!-- Main column -->
   <div>
-    <!-- Edit Profile -->
-    <div class="card" id="editProfileCard">
+    <div class="card">
       <div class="card-header"><span class="card-title">Edit Profile</span></div>
       <div class="card-body">
         <div class="form-row">
-          <div class="form-group">
-            <label>First Name</label>
-            <input type="text" id="inputFirstName" placeholder="Enter first name" />
-          </div>
-          <div class="form-group">
-            <label>Last Name</label>
-            <input type="text" id="inputLastName" placeholder="Enter last name" />
-          </div>
+          <div class="form-group"><label>First Name</label><input type="text" id="input-first" placeholder="First name" /></div>
+          <div class="form-group"><label>Last Name</label><input type="text" id="input-last" placeholder="Last name" /></div>
         </div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="inputEmail" placeholder="your@email.com" />
-        </div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="input-email" placeholder="email@example.com" /></div>
         <div class="form-row">
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="tel" id="inputPhone" placeholder="+254 712 345 678" />
-          </div>
+          <div class="form-group"><label>Phone Number</label><input type="tel" id="input-phone" placeholder="+254 7xx xxx xxx" /></div>
           <div class="form-group">
             <label>Country</label>
-            <select id="inputCountry">
-              <option value="Kenya">Kenya</option>
-              <option value="Uganda">Uganda</option>
-              <option value="Tanzania">Tanzania</option>
-              <option value="Ethiopia">Ethiopia</option>
-              <option value="Rwanda">Rwanda</option>
-              <option value="Other">Other</option>
+            <select id="input-country">
+              <option value="Kenya">Kenya</option><option value="Uganda">Uganda</option>
+              <option value="Tanzania">Tanzania</option><option value="Ethiopia">Ethiopia</option>
+              <option value="Rwanda">Rwanda</option><option value="Other">Other</option>
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label>Location (City)</label>
-          <input type="text" id="inputLocation" placeholder="e.g., Nairobi" />
-        </div>
-        <div class="form-group">
-          <label>Bio</label>
-          <textarea rows="3" id="inputBio" placeholder="Tell other travellers about yourself..."></textarea>
-        </div>
+        <div class="form-group"><label>Bio</label><textarea rows="3" id="input-bio" placeholder="Tell other travellers about yourself…"></textarea></div>
         <div class="form-row">
           <div class="form-group">
             <label>Travel Style</label>
-            <select id="inputTravelStyle">
-              <option value="Adventure & Culture">Adventure & Culture</option>
-              <option value="Luxury">Luxury</option>
-              <option value="Budget">Budget</option>
-              <option value="Family">Family</option>
-              <option value="Solo">Solo</option>
-              <option value="Business">Business</option>
+            <select id="input-style">
+              <option>Adventure &amp; Culture</option><option>Luxury</option>
+              <option>Budget</option><option>Family</option><option>Solo</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Date of Birth</label>
-            <input type="date" id="inputDOB" />
-          </div>
+          <div class="form-group"><label>Date of Birth</label><input type="date" id="input-dob" /></div>
         </div>
-        <button class="btn-save" onclick="saveProfile()">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-            <polyline points="17 21 17 13 7 13 7 21"/>
-            <polyline points="7 3 7 8 15 8"/>
-          </svg>
-          Save Profile
-        </button>
+        <button class="btn-save" id="btn-save-form" onclick="saveProfile()">💾 Save Profile</button>
       </div>
     </div>
 
-    <!-- Recent Trips -->
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">My Recent Trips</span>
-        <button class="card-action" onclick="window.location.href='bookings.html'">View all →</button>
-      </div>
+      <div class="card-header"><span class="card-title">My Recent Trips</span><button class="card-action">View all</button></div>
       <div class="card-body">
-        <div class="trip-grid" id="tripGrid">
-          <div style="text-align:center;padding:40px;color:var(--muted);grid-column:1/-1;">
-            <div class="spinner" style="margin:0 auto 16px;"></div>
-            <p>Loading trips...</p>
-          </div>
+        <div class="trip-grid" id="trips-grid">
+          <!-- skeleton -->
+          <div class="trip-card"><div class="skeleton" style="height:90px;border-radius:0;"></div><div class="trip-info"><div class="skeleton" style="height:0.82rem;width:75%;margin-bottom:6px;"></div><div class="skeleton" style="height:0.7rem;width:45%;"></div></div></div>
+          <div class="trip-card"><div class="skeleton" style="height:90px;border-radius:0;"></div><div class="trip-info"><div class="skeleton" style="height:0.82rem;width:75%;margin-bottom:6px;"></div><div class="skeleton" style="height:0.7rem;width:45%;"></div></div></div>
         </div>
       </div>
     </div>
 
-    <!-- Notification Preferences -->
     <div class="card">
       <div class="card-header"><span class="card-title">Notification Preferences</span></div>
-      <div class="card-body" style="padding-top:12px;padding-bottom:12px;">
-        <div class="notif-item">
-          <div class="notif-label"><div class="title">New Destinations</div><div class="desc">Get notified when new places are added</div></div>
-          <label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
-        </div>
-        <div class="notif-item">
-          <div class="notif-label"><div class="title">Event Reminders</div><div class="desc">Upcoming events in your wishlist</div></div>
-          <label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
-        </div>
-        <div class="notif-item">
-          <div class="notif-label"><div class="title">Deals & Offers</div><div class="desc">Exclusive travel deals for members</div></div>
-          <label class="toggle"><input type="checkbox" /><span class="toggle-slider"></span></label>
-        </div>
-        <div class="notif-item">
-          <div class="notif-label"><div class="title">Review Responses</div><div class="desc">When someone replies to your reviews</div></div>
-          <label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
-        </div>
-        <div class="notif-item">
-          <div class="notif-label"><div class="title">Weekly Newsletter</div><div class="desc">Kenya travel inspiration every week</div></div>
-          <label class="toggle"><input type="checkbox" /><span class="toggle-slider"></span></label>
-        </div>
+      <div class="card-body" style="padding-top:8px;padding-bottom:8px;">
+        <div class="notif-item"><div class="notif-label"><div class="title">New Destinations</div><div class="desc">Get notified when new places are added</div></div><label class="toggle"><input type="checkbox" id="notif-destinations" checked /><span class="toggle-slider"></span></label></div>
+        <div class="notif-item"><div class="notif-label"><div class="title">Event Reminders</div><div class="desc">Upcoming events in your wishlist</div></div><label class="toggle"><input type="checkbox" id="notif-events" checked /><span class="toggle-slider"></span></label></div>
+        <div class="notif-item"><div class="notif-label"><div class="title">Deals &amp; Offers</div><div class="desc">Exclusive travel deals for members</div></div><label class="toggle"><input type="checkbox" id="notif-deals" /><span class="toggle-slider"></span></label></div>
+        <div class="notif-item"><div class="notif-label"><div class="title">Review Responses</div><div class="desc">When someone replies to your reviews</div></div><label class="toggle"><input type="checkbox" id="notif-reviews" checked /><span class="toggle-slider"></span></label></div>
+        <div class="notif-item"><div class="notif-label"><div class="title">Weekly Newsletter</div><div class="desc">Kenya travel inspiration every week</div></div><label class="toggle"><input type="checkbox" id="notif-newsletter" /><span class="toggle-slider"></span></label></div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast">✅ Profile saved successfully!</div>
-<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+<div class="toast" id="toast"></div>
 
-<!-- Photo Management Modal -->
-<div class="modal-overlay" id="photoModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="modalTitle">Manage Photo</h3>
-      <button class="modal-close" onclick="closePhotoModal()">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <button class="modal-btn modal-btn-primary" onclick="selectPhoto()">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-          <polyline points="17 8 12 3 7 8"/>
-          <line x1="12" y1="3" x2="12" y2="15"/>
-        </svg>
-        Upload New Photo
-      </button>
-      <button class="modal-btn modal-btn-danger" onclick="removePhoto()" id="removePhotoBtn">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <polyline points="3 6 5 6 21 6"/>
-          <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-        </svg>
-        Remove Photo
-      </button>
-      <button class="modal-btn modal-btn-secondary" onclick="closePhotoModal()">Cancel</button>
-    </div>
-  </div>
-</div>
+<!-- ════════════════════════════════════════
+     ⚠️  REPLACE THESE WITH YOUR VALUES
+     ════════════════════════════════════════ -->
+<script>
+  const SUPABASE_URL  = 'https://cbyipmrozqsntojiartw.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNieWlwbXJvenFzbnRvamlhcnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzOTkxNTQsImV4cCI6MjA4ODk3NTE1NH0.31TAhmUCV_Uh0W8FGnR2_TLCZDU4YBM1U5LMSMc5JZs';
+  const PROFILE_TABLE = 'profiles';   // ← table that stores user profiles
+  const TRIPS_TABLE   = 'trips';      // ← trips table (set to null to skip)
+  const AVATAR_BUCKET = 'avatars';    // ← Storage bucket for avatars
+  const COVER_BUCKET  = 'covers';     // ← Storage bucket for covers
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   SafariQuest Profile — Supabase Integration
+   ═══════════════════════════════════════════════════════ */
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+let currentUser = null;
+let profileData = {};
+
+const $  = id => document.getElementById(id);
+const el = id => $(id);
+
+/* ── Toast ── */
+function showToast(msg, type = 'success') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* ── Error banner ── */
+function showError(msg) {
+  const b = $('error-banner');
+  b.textContent = '⚠️ ' + msg;
+  b.classList.add('show');
+}
+
+/* ── Helpers ── */
+function initials(f, l) { return ((f?.[0] || '') + (l?.[0] || '')).toUpperCase() || '??'; }
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-KE', { month: 'long', year: 'numeric' });
+}
+
+/* ── Populate all UI from profile object ── */
+function populateProfile(p) {
+  if (!p) return;
+  const first = p.first_name || '';
+  const last  = p.last_name  || '';
+  const name  = [first, last].filter(Boolean).join(' ') || 'Unknown User';
+
+  // Header
+  $('display-name').textContent = name;
+  $('display-meta').innerHTML = `📍 ${p.country || 'Location not set'} &nbsp;·&nbsp; Member since ${fmtDate(p.created_at)}`;
+  $('badge-verified').style.display = p.is_verified ? '' : 'none';
+  $('badge-traveler').style.display = '';
+
+  // Avatar
+  const initEl = $('avatar-initials');
+  const avatarEl = $('avatar-display');
+  let img = avatarEl.querySelector('img');
+  if (p.avatar_url) {
+    initEl.style.display = 'none';
+    if (!img) { img = document.createElement('img'); avatarEl.appendChild(img); }
+    img.src = p.avatar_url; img.alt = name;
+  } else {
+    if (img) img.remove();
+    initEl.style.display = '';
+    initEl.textContent = initials(first, last);
+  }
+
+  // Cover
+  if (p.cover_url) {
+    $('cover-bg').style.backgroundImage = `url('${p.cover_url}')`;
+    $('cover-bg').style.opacity = '1';
+  }
+
+  // Sidebar
+  $('info-email').textContent    = p.email        || '—';
+  $('info-phone').textContent    = p.phone        || '—';
+  $('info-location').textContent = p.country      || '—';
+  $('info-style').textContent    = p.travel_style || '—';
+  $('info-since').textContent    = fmtDate(p.created_at);
+
+  // Form
+  $('input-first').value = first;
+  $('input-last').value  = last;
+  $('input-email').value = p.email        || '';
+  $('input-phone').value = p.phone        || '';
+  $('input-bio').value   = p.bio          || '';
+  $('input-dob').value   = p.date_of_birth || '';
+  [...$('input-country').options].forEach(o => { o.selected = o.value === p.country; });
+  [...$('input-style').options].forEach(o => { o.selected = o.text === p.travel_style; });
+
+  // Stats
+  $('stat-trips').textContent     = p.trips_count     ?? '0';
+  $('stat-reviews').textContent   = p.reviews_count   ?? '0';
+  $('stat-saved').textContent     = p.saved_count     ?? '0';
+  $('stat-rating').textContent    = p.avg_rating      ? `${p.avg_rating}★` : '—';
+  $('stat-countries').textContent = p.countries_count ?? '0';
+
+  // Notifications
+  $('notif-destinations').checked = p.notif_destinations ?? true;
+  $('notif-events').checked       = p.notif_events       ?? true;
+  $('notif-deals').checked        = p.notif_deals        ?? false;
+  $('notif-reviews').checked      = p.notif_reviews      ?? true;
+  $('notif-newsletter').checked   = p.notif_newsletter   ?? false;
+}
+
+/* ── Render trips from Supabase ── */
+async function loadTrips() {
+  if (!currentUser || !TRIPS_TABLE) { renderStaticTrips(); return; }
+  const { data, error } = await sb
+    .from(TRIPS_TABLE)
+    .select('id, name, destination, trip_date, image_url, reviewed')
+    .eq('user_id', currentUser.id)
+    .order('trip_date', { ascending: false })
+    .limit(3);
+
+  if (error || !data?.length) { renderStaticTrips(); return; }
+  const grid = $('trips-grid');
+  grid.innerHTML = '';
+  data.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'trip-card';
+    const badge = t.reviewed
+      ? `<span class="trip-badge">⭐ Reviewed</span>`
+      : `<span class="trip-badge" style="background:rgba(232,98,42,0.08);color:var(--brand-orange-dark)">Pending Review</span>`;
+    card.innerHTML = `
+      ${t.image_url
+        ? `<img class="trip-img" src="${t.image_url}" alt="${t.name || t.destination}" />`
+        : `<div class="skeleton" style="height:90px;border-radius:0;"></div>`}
+      <div class="trip-info">
+        <div class="trip-name">${t.name || t.destination || 'Trip'}</div>
+        <div class="trip-date">${t.trip_date ? new Date(t.trip_date).toLocaleDateString('en-KE',{month:'long',year:'numeric'}) : ''}</div>
+        ${badge}
+      </div>`;
+    grid.appendChild(card);
+  });
+  const add = document.createElement('div');
+  add.className = 'trip-add';
+  add.innerHTML = `<div><div style="font-size:1.8rem">➕</div><div style="font-size:0.78rem;margin-top:6px">Log a Trip</div></div>`;
+  grid.appendChild(add);
+}
+
+function renderStaticTrips() {
+  $('trips-grid').innerHTML = `
+    <div class="trip-card"><img class="trip-img" src="https://images.unsplash.com/photo-1571564977040-a4b72a65f5b2?w=400&q=80" alt="Maasai Mara" /><div class="trip-info"><div class="trip-name">Maasai Mara Safari</div><div class="trip-date">March 2025</div><span class="trip-badge">⭐ Reviewed</span></div></div>
+    <div class="trip-card"><img class="trip-img" src="https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=400&q=80" alt="Diani Beach" /><div class="trip-info"><div class="trip-name">Diani Beach Retreat</div><div class="trip-date">December 2024</div><span class="trip-badge">⭐ Reviewed</span></div></div>
+    <div class="trip-card"><img class="trip-img" src="https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=400&q=80" alt="Mount Kenya" /><div class="trip-info"><div class="trip-name">Mount Kenya Hike</div><div class="trip-date">August 2024</div><span class="trip-badge" style="background:rgba(232,98,42,0.08);color:var(--brand-orange-dark)">Pending Review</span></div></div>
+    <div class="trip-add"><div><div style="font-size:1.8rem">➕</div><div style="font-size:0.78rem;margin-top:6px">Log a Trip</div></div></div>`;
+}
+
+/* ── Save profile to Supabase ── */
+async function saveProfile() {
+  const b1 = $('btn-save-form'), b2 = $('btn-save-top');
+  b1.disabled = true; b1.textContent = '⏳ Saving…'; b2.disabled = true;
+
+  const updates = {
+    first_name:           $('input-first').value.trim(),
+    last_name:            $('input-last').value.trim(),
+    email:                $('input-email').value.trim(),
+    phone:                $('input-phone').value.trim(),
+    country:              $('input-country').value,
+    bio:                  $('input-bio').value.trim(),
+    travel_style:         $('input-style').value,
+    date_of_birth:        $('input-dob').value || null,
+    notif_destinations:   $('notif-destinations').checked,
+    notif_events:         $('notif-events').checked,
+    notif_deals:          $('notif-deals').checked,
+    notif_reviews:        $('notif-reviews').checked,
+    notif_newsletter:     $('notif-newsletter').checked,
+    updated_at:           new Date().toISOString(),
+  };
+
+  if (currentUser) {
+    const { error } = await sb.from(PROFILE_TABLE).upsert({ id: currentUser.id, ...updates });
+    if (error) {
+      showToast('❌ Save failed: ' + error.message, 'error');
+    } else {
+      profileData = { ...profileData, ...updates };
+      populateProfile(profileData);
+      showToast('✅ Profile saved successfully!');
+    }
+  } else {
+    showToast('✅ Profile saved! (demo mode)', 'info');
+  }
+
+  b1.disabled = false; b1.textContent = '💾 Save Profile'; b2.disabled = false;
+}
+
+/* ── Upload image to Supabase Storage ── */
+async function uploadImage(file, bucket, prefix) {
+  if (!currentUser) return null;
+  const ext  = file.name.split('.').pop();
+  const path = `${prefix}/${currentUser.id}-${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from(bucket).upload(path, file, { upsert: true });
+  if (error) { showToast('❌ Upload failed: ' + error.message, 'error'); return null; }
+  return sb.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+
+/* ── Cover picker ── */
+$('cover-file-input').addEventListener('change', async function () {
+  const file = this.files[0];
+  if (!file?.type.startsWith('image/')) return;
+  this.value = '';
+  // Instant preview
+  const r = new FileReader();
+  r.onload = e => { $('cover-bg').style.backgroundImage = `url('${e.target.result}')`; $('cover-bg').style.opacity = '1'; };
+  r.readAsDataURL(file);
+  // Persist
+  const url = await uploadImage(file, COVER_BUCKET, 'covers');
+  if (url) {
+    await sb.from(PROFILE_TABLE).update({ cover_url: url }).eq('id', currentUser.id);
+    showToast('✅ Cover photo updated!');
+  } else { showToast('✅ Cover updated! (preview only)', 'info'); }
+});
+
+/* ── Avatar picker ── */
+$('avatar-file-input').addEventListener('change', async function () {
+  const file = this.files[0];
+  if (!file?.type.startsWith('image/')) return;
+  this.value = '';
+  const wrap = $('avatar-wrap');
+  wrap.classList.add('uploading');
+  const r = new FileReader();
+  r.onload = e => {
+    $('avatar-initials').style.display = 'none';
+    let img = $('avatar-display').querySelector('img');
+    if (!img) { img = document.createElement('img'); $('avatar-display').appendChild(img); }
+    img.src = e.target.result; img.alt = 'Avatar';
+    wrap.classList.remove('uploading');
+  };
+  r.readAsDataURL(file);
+  // Persist
+  const url = await uploadImage(file, AVATAR_BUCKET, 'avatars');
+  if (url) {
+    await sb.from(PROFILE_TABLE).update({ avatar_url: url }).eq('id', currentUser.id);
+    showToast('✅ Profile photo updated!');
+  } else { showToast('✅ Photo updated! (preview only)', 'info'); }
+  wrap.classList.remove('uploading');
+});
+
+/* ══════════════════════
+   INIT
+   ══════════════════════ */
+async function init() {
+  try {
+    const { data: { user } } = await sb.auth.getUser();
+    currentUser = user;
+
+    if (!user) {
+      // Demo mode — no active session
+      console.info('SafariQuest: no session — loading demo data');
+      populateProfile({
+        first_name: 'Samuel', last_name: 'Kamande',
+        email: 'samuel.kamande@email.com', phone: '+254 712 345 678',
+        country: 'Kenya', travel_style: 'Adventure & Culture',
+        bio: "Passionate adventurer exploring Kenya's hidden gems one destination at a time. 🌍",
+        date_of_birth: '1994-07-15', is_verified: true,
+        created_at: new Date().toISOString(),
+        trips_count: 14, reviews_count: 8, saved_count: 23,
+        avg_rating: 4.8, countries_count: 2,
+        notif_destinations: true, notif_events: true, notif_deals: false,
+        notif_reviews: true, notif_newsletter: false,
+      });
+      renderStaticTrips();
+      return;
+    }
+
+    // Fetch profile row
+    const { data: profile, error } = await sb
+      .from(PROFILE_TABLE)
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+
+    profileData = profile || {};
+    if (!profileData.email) profileData.email = user.email;
+    if (!profileData.created_at) profileData.created_at = user.created_at;
+
+    populateProfile(profileData);
+    await loadTrips();
+
+  } catch (err) {
+    console.error(err);
+    showError('Could not load profile — ' + (err.message || 'unknown error'));
+  } finally {
+    const loader = $('page-loader');
+    loader.classList.add('hidden');
+    setTimeout(() => loader.remove(), 500);
+  }
+}
+
+init();
+</script>
 
 <div id="sq-footer-root"></div>
-
 <script src="site-layout.js"></script>
 <script src="nav-auth.js"></script>
-<script src="auth.js"></script>
-<script src="profile.js"></script>
 </body>
 </html>
